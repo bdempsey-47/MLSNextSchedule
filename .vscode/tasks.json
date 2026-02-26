@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "shell",
+      "args": ["build"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "test",
+      "command": "dotnet",
+      "type": "shell",
+      "args": ["test", "MLSNext.Tests/MLSNext.Tests.csproj", "--verbosity=normal", "--logger=console;verbosity=detailed"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": ["build"]
+    },
+    {
+      "label": "test (watch)",
+      "command": "dotnet",
+      "type": "shell",
+      "args": ["watch", "test", "MLSNext.Tests/MLSNext.Tests.csproj", "--", "--verbosity=normal"],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^.*$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*\\[F\\]",
+          "endsPattern": "^.*completed\\..*"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "build and test",
+      "command": "dotnet",
+      "type": "shell",
+      "args": ["test", "MLSNext.Tests/MLSNext.Tests.csproj", "--verbosity=normal", "--no-build"],
+      "group": {
+        "kind": "test"
+      },
+      "problemMatcher": "$msCompile",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": ["build"]
+    },
+    {
+      "label": "coverage",
+      "command": "dotnet",
+      "type": "shell",
+      "args": ["test", "MLSNext.Tests/MLSNext.Tests.csproj", "/p:CollectCoverage=true", "/p:CoverageFormat=lcov"],
+      "group": {
+        "kind": "test"
+      },
+      "problemMatcher": "$msCompile",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": ["build"]
+    }
+  ]
+}
