@@ -1,0 +1,21 @@
+.match-list {
+  margin-top: 20px;
+}
+
+.match-list-title {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .match-grid {
+    grid-template-columns: 1fr;
+  }
+}
