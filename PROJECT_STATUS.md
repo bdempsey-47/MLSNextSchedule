@@ -401,16 +401,21 @@ MLS Next Schedule — Complete Stack Ready for Deployment
 3. ✅ `npm run dev` and verified UI at http://localhost:5173
 4. ✅ Test filter interactions and mock data rendering
 
-**Short Term — Connect Frontend to Backend (In Progress)**
-1. ✅ Setup local SQL database with Modular11 data
+**Short Term — Connect Frontend to Backend ✅ COMPLETE**
+1. ✅ Setup local SQL database with live Modular11 data
    - ✅ Started LocalDB instance (MSSQLLocalDB)
    - ✅ Updated connection strings in AppDbContextFactory and local.settings.json
    - ✅ Ran EF migrations to create schema with League→Division→Region hierarchy
-   - ✅ Inserted test match data to verify database connectivity
-   - ✅ Database schema validated with 10 tables + 25+ matches available
-2. ⏳ Start local .NET backend: `func start` (using Azure Functions Core Tools)
-3. ⏳ Update `.env.development` with local backend URL if needed
-4. ⏳ Test API integration: filters → real match data
+   - ✅ Fixed Score column size (migration IncreaseScoreColumnSize)
+   - ✅ Fetched live Academy Tournament 35 data for Jan 1 - Jun 30, 2026
+   - ✅ Successfully populated 25 real matches with 28 teams + scores
+   - ✅ Database schema validated and data verified
+
+**Next: Start Backend & Connect Frontend**
+1. ⏳ Start local .NET backend using Azure Functions Core Tools: `func start`
+2. ⏳ Or manually run: `dotnet run --project MLSNext.Functions` (may require configuration)
+3. ⏳ Test API at `http://localhost:7071/api/matches`
+4. ⏳ Start frontend: `npm run dev` in MLSNext.Web
 5. ⏳ Build production bundle: `npm run build`
 
 **Medium Term — Azure Deployment (40 mins)**

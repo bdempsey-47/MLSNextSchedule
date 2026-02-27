@@ -171,9 +171,8 @@ public class ScheduleParser
     }
 
     /// <summary>
-    /// Extract score from the score-match-table span and associate with team names.
-    /// Score format: If available, returns "HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"
-    /// Example: "3 Dragons to 0 Wizards"
+    /// Extract score from the score-match-table span.
+    /// Score format: Returns simple format like "3-0" for home goals - away goals
     /// If score is empty or not found, returns null.
     /// </summary>
     private string? ExtractScoreWithTeamAssociation(IElement block, string homeTeam, string awayTeam)
@@ -209,9 +208,9 @@ public class ScheduleParser
             
             if (scoreParts.Count == 2)
             {
-                // Format as: "HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"
-                var score = $"{scoreParts[0]} {homeTeam} to {scoreParts[1]} {awayTeam}";
-                _logger.LogDebug("Extracted score with teams: {Score}", score);
+                // Format as: "HOME_GOALS-AWAY_GOALS" (e.g., "3-0")
+                var score = $"{scoreParts[0]}-{scoreParts[1]}";
+                _logger.LogDebug("Extracted score: {Score}", score);
                 return score;
             }
             else if (!string.IsNullOrEmpty(scoreText))
