@@ -42,7 +42,7 @@ public class MatchUpsertServiceIntegrationTests
             Gender = "Male",
             Division = "Premier",
             Competition = "AD",
-            Venue = "New Park",
+            VenueName = "New Park",
             Score = "TBD"
         };
 
@@ -71,7 +71,7 @@ public class MatchUpsertServiceIntegrationTests
             Gender = "Male",
             Division = "Premier",
             Competition = "AD",
-            Venue = "Central Park",
+            VenueName = "Central Park",
             Score = "TBD"
         };
 
@@ -87,7 +87,7 @@ public class MatchUpsertServiceIntegrationTests
             Gender = "Male",
             Division = "Premier",
             Competition = "AD",
-            Venue = "Central Park",
+            VenueName = "Central Park",
             Score = "2-1" // Updated score
         };
 
@@ -116,7 +116,7 @@ public class MatchUpsertServiceIntegrationTests
                 Gender = "Male",
                 Division = "Premier",
                 Competition = "AD",
-                Venue = "Venue A",
+                VenueName = "Venue A",
                 Score = "TBD"
             },
             new ParsedMatch
@@ -129,7 +129,7 @@ public class MatchUpsertServiceIntegrationTests
                 Gender = "Female",
                 Division = "Select",
                 Competition = "AD",
-                Venue = "Venue B",
+                VenueName = "Venue B",
                 Score = "TBD"
             }
         };
@@ -158,7 +158,7 @@ public class MatchUpsertServiceIntegrationTests
             Gender = "Male",
             Division = "Competitive",
             Competition = "Premier League",
-            Venue = "Unique Venue",
+            VenueName = "Unique Venue",
             Score = "TBD"
         };
 
@@ -187,7 +187,7 @@ public class MatchUpsertServiceIntegrationTests
             Gender = "Male",
             Division = "Premier",
             Competition = "AD",
-            Venue = "Reusable Venue",
+            VenueName = "Reusable Venue",
             Score = "TBD"
         };
 
@@ -205,7 +205,7 @@ public class MatchUpsertServiceIntegrationTests
             Gender = "Male",
             Division = "Premier",
             Competition = "AD",
-            Venue = "Reusable Venue", // Same venue
+            VenueName = "Reusable Venue", // Same venue
             Score = "TBD"
         };
 

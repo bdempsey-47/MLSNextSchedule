@@ -41,7 +41,7 @@ public class IngestionOrchestratorIntegrationTests
                 EndDate = ""
             });
 
-        _parser = new ScheduleParser();
+        _parser = new ScheduleParser(new Mock<ILogger<ScheduleParser>>().Object);
         var loggerMock = new Mock<ILogger<MatchUpsertService>>();
         _upsertService = new MatchUpsertService(_dbContext, loggerMock.Object);
 
@@ -56,25 +56,48 @@ public class IngestionOrchestratorIntegrationTests
         var htmlResponse = @"
 <html>
   <div class='visible-xs'>
-    <div>
-      <div>m-001</div>
-      <div>03/15/2026 14:00</div>
-      <div>Dragons</div>
-      <div>Phoenix</div>
-      <div>U13</div>
-      <div>Male</div>
-      <div>Premier</div>
-      <div>AD</div>
-      <div>Park A</div>
-      <div>TBD</div>
+    <div class='mobile-block-match-info'>
+      <div class='row marg-0 dspl-f'>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Home Team</div>
+          <div class='row row-content-mobile'><p>Dragons</p></div>
+        </div>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Away Team</div>
+          <div class='row row-content-mobile'><p>Phoenix</p></div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Match ID</div>
+          <div class='row row-content-mobile'>m-001</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Date</div>
+          <div class='row row-content-mobile'>03/15/2026 2:00pm</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Age</div>
+          <div class='row row-content-mobile'>U13</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Gender</div>
+          <div class='row row-content-mobile'>MALE</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Competition</div>
+          <div class='row row-content-mobile'>AD</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Division</div>
+          <div class='row row-content-mobile'>Premier</div>
+        </div>
+      </div>
     </div>
   </div>
 </html>";
-
-        _clientMock
-            .Setup(c => c.FetchPageAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(htmlResponse)
-            .Returns(Task.FromResult("<html>No data available</html>")); // Second call ends pagination
 
         _clientMock
             .SetupSequence(c => c.FetchPageAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
@@ -96,17 +119,45 @@ public class IngestionOrchestratorIntegrationTests
         var page1Html = @"
 <html>
   <div class='visible-xs'>
-    <div>
-      <div>m-001</div>
-      <div>03/15/2026 14:00</div>
-      <div>Team A</div>
-      <div>Team B</div>
-      <div>U13</div>
-      <div>Male</div>
-      <div>Premier</div>
-      <div>AD</div>
-      <div>Venue 1</div>
-      <div>TBD</div>
+    <div class='mobile-block-match-info'>
+      <div class='row marg-0 dspl-f'>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Home Team</div>
+          <div class='row row-content-mobile'><p>Team A</p></div>
+        </div>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Away Team</div>
+          <div class='row row-content-mobile'><p>Team B</p></div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Match ID</div>
+          <div class='row row-content-mobile'>m-001</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Date</div>
+          <div class='row row-content-mobile'>03/15/2026 2:00pm</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Age</div>
+          <div class='row row-content-mobile'>U13</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Gender</div>
+          <div class='row row-content-mobile'>MALE</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Competition</div>
+          <div class='row row-content-mobile'>AD</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Division</div>
+          <div class='row row-content-mobile'>Premier</div>
+        </div>
+      </div>
     </div>
   </div>
 </html>";
@@ -114,17 +165,45 @@ public class IngestionOrchestratorIntegrationTests
         var page2Html = @"
 <html>
   <div class='visible-xs'>
-    <div>
-      <div>m-002</div>
-      <div>03/16/2026 16:00</div>
-      <div>Team C</div>
-      <div>Team D</div>
-      <div>U15</div>
-      <div>Female</div>
-      <div>Select</div>
-      <div>AD</div>
-      <div>Venue 2</div>
-      <div>2-1</div>
+    <div class='mobile-block-match-info'>
+      <div class='row marg-0 dspl-f'>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Home Team</div>
+          <div class='row row-content-mobile'><p>Team C</p></div>
+        </div>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Away Team</div>
+          <div class='row row-content-mobile'><p>Team D</p></div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Match ID</div>
+          <div class='row row-content-mobile'>m-002</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Date</div>
+          <div class='row row-content-mobile'>03/16/2026 4:00pm</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Age</div>
+          <div class='row row-content-mobile'>U15</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Gender</div>
+          <div class='row row-content-mobile'>FEMALE</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Competition</div>
+          <div class='row row-content-mobile'>AD</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Division</div>
+          <div class='row row-content-mobile'>Select</div>
+        </div>
+      </div>
     </div>
   </div>
 </html>";
@@ -151,29 +230,87 @@ public class IngestionOrchestratorIntegrationTests
         var htmlWithDuplicate = @"
 <html>
   <div class='visible-xs'>
-    <div>
-      <div>m-dup-001</div>
-      <div>03/15/2026 14:00</div>
-      <div>Dragons</div>
-      <div>Phoenix</div>
-      <div>U13</div>
-      <div>Male</div>
-      <div>Premier</div>
-      <div>AD</div>
-      <div>Park</div>
-      <div>TBD</div>
+    <div class='mobile-block-match-info'>
+      <div class='row marg-0 dspl-f'>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Home Team</div>
+          <div class='row row-content-mobile'><p>Dragons</p></div>
+        </div>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Away Team</div>
+          <div class='row row-content-mobile'><p>Phoenix</p></div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Match ID</div>
+          <div class='row row-content-mobile'>m-dup-001</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Date</div>
+          <div class='row row-content-mobile'>03/15/2026 2:00pm</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Age</div>
+          <div class='row row-content-mobile'>U13</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Gender</div>
+          <div class='row row-content-mobile'>MALE</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Competition</div>
+          <div class='row row-content-mobile'>AD</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Division</div>
+          <div class='row row-content-mobile'>Premier</div>
+        </div>
+      </div>
     </div>
-    <div>
-      <div>m-dup-001</div>
-      <div>03/15/2026 14:00</div>
-      <div>Dragons</div>
-      <div>Phoenix</div>
-      <div>U13</div>
-      <div>Male</div>
-      <div>Premier</div>
-      <div>AD</div>
-      <div>Park</div>
-      <div>TBD</div>
+  </div>
+  <div class='visible-xs'>
+    <div class='mobile-block-match-info'>
+      <div class='row marg-0 dspl-f'>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Home Team</div>
+          <div class='row row-content-mobile'><p>Dragons</p></div>
+        </div>
+        <div class='col-xs-5'>
+          <div class='row row-heading-mobile'>Away Team</div>
+          <div class='row row-content-mobile'><p>Phoenix</p></div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Match ID</div>
+          <div class='row row-content-mobile'>m-dup-001</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Date</div>
+          <div class='row row-content-mobile'>03/15/2026 2:00pm</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Age</div>
+          <div class='row row-content-mobile'>U13</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Gender</div>
+          <div class='row row-content-mobile'>MALE</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Competition</div>
+          <div class='row row-content-mobile'>AD</div>
+        </div>
+        <div class='col-xs-4'>
+          <div class='row row-heading-mobile'>Division</div>
+          <div class='row row-content-mobile'>Premier</div>
+        </div>
+      </div>
     </div>
   </div>
 </html>";
