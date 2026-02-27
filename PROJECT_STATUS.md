@@ -401,22 +401,87 @@ MLS Next Schedule — Complete Stack Ready for Deployment
 3. ✅ `npm run dev` and verified UI at http://localhost:5173
 4. ✅ Test filter interactions and mock data rendering
 
-**Short Term — Connect Frontend to Backend ✅ COMPLETE**
-1. ✅ Setup local SQL database with live Modular11 data
-   - ✅ Started LocalDB instance (MSSQLLocalDB)
-   - ✅ Updated connection strings in AppDbContextFactory and local.settings.json
-   - ✅ Ran EF migrations to create schema with League→Division→Region hierarchy
-   - ✅ Fixed Score column size (migration IncreaseScoreColumnSize)
-   - ✅ Fetched live Academy Tournament 35 data for Jan 1 - Jun 30, 2026
-   - ✅ Successfully populated 25 real matches with 28 teams + scores
-   - ✅ Database schema validated and data verified
+## 🔄 Latest Session Summary (Feb 27, 2026 - Session 2)
 
-**Next: Start Backend & Connect Frontend**
-1. ⏳ Start local .NET backend using Azure Functions Core Tools: `func start`
-2. ⏳ Or manually run: `dotnet run --project MLSNext.Functions` (may require configuration)
-3. ⏳ Test API at `http://localhost:7071/api/matches`
-4. ⏳ Start frontend: `npm run dev` in MLSNext.Web
-5. ⏳ Build production bundle: `npm run build`
+### Phase 3 — React Frontend Complete ✅
+### Phase 2 — Backend Complete ✅
+
+**Current Session Work (Database Population & Testing):**
+
+1. **Set up local SQL development environment** ✅
+   - Started LocalDB instance (MSSQLLocalDB)
+   - Updated connection strings to use LocalDB (AppDbContextFactory, local.settings.json)
+   - Applied all EF migrations (InitialCreate, RefactorDivisionToRegionHierarchy, IncreaseScoreColumnSize)
+   - Schema complete with League→Division→Region→Match hierarchy
+
+2. **Populated database with live Modular11 data** ✅
+   - Fetched Academy Tournament 35 matches from Jan 1 - Jun 30, 2026
+   - Successfully ingested 25 real matches with 28 teams
+   - Database ready for frontend API testing
+
+3. **Optimized score format** ✅
+   - Initial format: Verbose with team names ("3 Tonka Fusion Elite to 0 Wisconsin United FC")
+   - Updated format: Clean numeric ("3-0")
+   - Rationale: Team data already exists in separate fields; UI can format as needed
+   - Current scores in database: 3-0, 2-1, 4-0, 1-3, 1-1, 1-7, 3-3, 2-2, 6-0, etc.
+
+4. **Enhanced score parsing for tie-breaker scenarios** ✅
+   - Updated ScheduleParser to detect and preserve penalty kick notations
+   - Parser now preserves full text if it contains: parentheses, "AET", "PK", "pk"
+   - Example patterns to capture: "2-2 (5-4 PK)", "3-3 (AET)", "1-1 (4-3 PK)"
+   - **Current observation:** Our dataset has 3 ties (1-1, 3-3, 2-2) but no penalty kick notation
+   - Possible reasons: Tournament rules, match status filtering, or API doesn't include this data
+
+**Database Status - Ready for Frontend Testing:**
+- ✅ LocalDB running with 25 live matches
+- ✅ Schema complete and validated
+- ✅ Score format optimized (simple numeric)
+- ✅ Tie-breaker notation support implemented
+- ✅ All changes committed to Git
+
+**Next Steps (Ready to Begin):**
+1. Start .NET Functions backend: `func start` or manually configure
+2. Test API integration: `http://localhost:7071/api/matches`
+3. Connect React frontend and test filters with real data
+4. Build production bundle: `npm run build`
+5. Azure deployment (Phase 4)
+
+**Technical Notes:**
+
+**Score Format Evolution:**
+- Initially designed to include team names for readability
+- Simplified to numeric format ("3-0") for cleaner persistent storage
+- Team context available via HomeTeamId/AwayTeamId foreign keys
+- Frontend has flexibility to display any format (e.g., "Dragons 3 - 0 Phoenix")
+
+**Penalty Kick / Tie-Breaker Handling:**
+- Parser now preserves full score text if it contains extra time or PK notation
+- Current dataset: 3 ties observed (1-1, 3-3, 2-2) with no PK notation
+- Investigation needed for future sessions:
+  - Does Modular11 only report PK results for completed matches? (We're filtering "scheduled")
+  - Does Homegrown Tournament (12) use PK vs Academy Tournament (35)?
+  - Is PK data even included in public Modular11 API response?
+- If needed, can modify Verification config to fetch completed matches or different tournament
+- Score column now supports 500 chars for notations like "2-2 (5-4 PK)"
+
+**Architecture Summary:**
+```
+LocalDB (MLSNext)
+├── Leagues (1 record: MLS Next)
+├── Divisions (2: Homegrown=12, Academy=35) ← Currently using Academy
+├── Regions (geographic: Pioneer, Southeast, etc.)
+├── Matches (25 live from Jan-Jun 2026)
+│   ├── HomeTeam (28 total teams)
+│   ├── AwayTeam
+│   ├── Score (simplified format: "3-0")
+│   ├── Age Groups (U13-U18)
+│   └── Competitions (AD, etc.)
+└── Supporting tables
+    ├── Teams (28 Academy teams)
+    ├── Venues (1 TBD)
+    ├── AgeGroups (6: U13-U18)
+    └── Competitions (AD)
+```
 
 **Medium Term — Azure Deployment (40 mins)**
 1. **Deploy Backend** — Azure Function App (Consumption Plan)

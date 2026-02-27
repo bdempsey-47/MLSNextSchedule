@@ -209,6 +209,17 @@ public class ScheduleParser
             if (scoreParts.Count == 2)
             {
                 // Format as: "HOME_GOALS-AWAY_GOALS" (e.g., "3-0")
+                // If the original scoreText had additional info (e.g., penalty kicks),
+                // preserve the full text as-is
+                if (scoreText.Contains("(") || scoreText.Contains(")") || 
+                    scoreText.Contains("AET") || scoreText.Contains("PK") || 
+                    scoreText.Contains("pk"))
+                {
+                    // Preserve full text with penalty kick or extra time notation
+                    _logger.LogDebug("Extracted score with tie-breaker notation: {Score}", scoreText);
+                    return scoreText;
+                }
+                
                 var score = $"{scoreParts[0]}-{scoreParts[1]}";
                 _logger.LogDebug("Extracted score: {Score}", score);
                 return score;
