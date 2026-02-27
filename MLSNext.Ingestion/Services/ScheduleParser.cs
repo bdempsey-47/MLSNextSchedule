@@ -137,8 +137,10 @@ public class ScheduleParser
         var gender = GetValue(matchData, "Gender");
         var competition = GetValue(matchData, "Competition");
         var division = GetValue(matchData, "Division");
-        var venue = GetValue(matchData, "Venue");
-        var score = GetValue(matchData, "Score");
+        
+        // Look for venue using multiple possible field names
+        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name");
+
 
         // Validate required fields
         if (string.IsNullOrEmpty(homeTeam) || string.IsNullOrEmpty(awayTeam) || 
@@ -148,6 +150,9 @@ public class ScheduleParser
                 matchId, homeTeam, awayTeam, ageGroup, division);
             return null;
         }
+
+        // Extract score from the score-match-table span (NOT from mobile-block-match-info)
+        var score = ExtractScoreWithTeamAssociation(block, homeTeam, awayTeam);
 
         return new ParsedMatch
         {
@@ -162,6 +167,96 @@ public class ScheduleParser
             VenueName = venue ?? "TBD",
             Score = score
         };
+    }
+
+    /// <summary>
+    /// Extract score from the score-match-table span and associate with team names.
+    /// Score format: If available, returns "HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"
+    /// Example: "3 Dragons to 0 Wizards"
+    /// If score is empty or not found, returns null.
+    /// </summary>
+    private string? ExtractScoreWithTeamAssociation(IElement block, string homeTeam, string awayTeam)
+    {
+        try
+        {
+            // Look for score in the mobile version (col-xs-2 container-score)
+            var scoreElement = block.QuerySelector(".col-xs-2 .score-match-table");
+            
+            if (scoreElement == null)
+            {
+                // Try desktop version as fallback
+                scoreElement = block.QuerySelector(".col-sm-2 .score-match-table");
+            }
+
+            if (scoreElement == null)
+            {
+                _logger.LogDebug("No score element found for match");
+                return null;
+            }
+
+            var scoreText = scoreElement.TextContent?.Trim();
+            
+            if (string.IsNullOrWhiteSpace(scoreText))
+            {
+                _logger.LogDebug("Score element exists but is empty (likely scheduled match)");
+                return null;
+            }
+
+            // Parse score format: expected to be "HOME_GOALS against AWAY_GOALS" or similar
+            // Extract just the numeric portions
+            var scoreParts = ExtractScoreParts(scoreText);
+            
+            if (scoreParts.Count == 2)
+            {
+                // Format as: "HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"
+                var score = $"{scoreParts[0]} {homeTeam} to {scoreParts[1]} {awayTeam}";
+                _logger.LogDebug("Extracted score with teams: {Score}", score);
+                return score;
+            }
+            else if (!string.IsNullOrEmpty(scoreText))
+            {
+                // If we can't parse it consistently, return as-is
+                _logger.LogDebug("Could not parse score parts from '{ScoreText}', returning as-is", scoreText);
+                return scoreText;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error extracting score");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Extract numeric score parts from score text.
+    /// Handles formats like "3 - 0", "3-0", "3to0", "3 to 0", "3 : 0", etc.
+    /// </summary>
+    private List<string> ExtractScoreParts(string scoreText)
+    {
+        var parts = new List<string>();
+        
+        // Remove common separators and split
+        var cleaned = scoreText.Replace(" to ", "-")
+                               .Replace(" - ", "-")
+                               .Replace(" : ", "-")
+                               .Replace(":", "-")
+                               .Replace(" vs ", "-")
+                               .Replace("vs", "-")
+                               .Replace(" ", "");
+
+        var scoreParts = cleaned.Split('-', StringSplitOptions.RemoveEmptyEntries);
+        
+        foreach (var part in scoreParts)
+        {
+            if (int.TryParse(part.Trim(), out var _))
+            {
+                parts.Add(part.Trim());
+            }
+        }
+
+        return parts;
     }
 
     private string? GetValue(Dictionary<string, string> data, string key)

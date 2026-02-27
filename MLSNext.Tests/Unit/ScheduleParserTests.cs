@@ -24,6 +24,15 @@ public class ScheduleParserTests
         var html = @"
 <html>
   <div class='visible-xs'>
+    <!-- Match row with score -->
+    <div class='row match-row-mobile'>
+      <div class='col-xs-5'></div>
+      <div class='col-xs-2 container-score text-center'>
+        <span class='score-match-table mobile-color'>2-1</span>
+      </div>
+      <div class='col-xs-5'></div>
+    </div>
+    <!-- Match details block -->
     <div class='mobile-block-match-info'>
       <div class='row marg-0 dspl-f'>
         <div class='col-xs-5'>
@@ -86,6 +95,7 @@ public class ScheduleParserTests
         matches[0].Division.Should().Be("Premier");
         matches[0].Competition.Should().Be("AD");
         matches[0].VenueName.Should().Be("Central Park");
+        matches[0].Score.Should().Be("2 Dragons FC to 1 Phoenix United");
     }
 
     [Fact]
@@ -95,6 +105,12 @@ public class ScheduleParserTests
         var html = @"
 <html>
   <div class='visible-xs'>
+    <!-- Match row with score -->
+    <div class='row match-row-mobile'>
+      <div class='col-xs-2 container-score text-center'>
+        <span class='score-match-table mobile-color'>1-0</span>
+      </div>
+    </div>
     <div class='mobile-block-match-info'>
       <div class='row marg-0 dspl-f'>
         <div class='col-xs-5'>
@@ -137,6 +153,12 @@ public class ScheduleParserTests
     </div>
   </div>
   <div class='visible-xs'>
+    <!-- Match row with score -->
+    <div class='row match-row-mobile'>
+      <div class='col-xs-2 container-score text-center'>
+        <span class='score-match-table mobile-color'>3-2</span>
+      </div>
+    </div>
     <div class='mobile-block-match-info'>
       <div class='row marg-0 dspl-f'>
         <div class='col-xs-5'>
@@ -246,15 +268,21 @@ public class ScheduleParserTests
     }
 
     [Theory]
-    [InlineData("2-1")]
-    [InlineData("0-0")]
-    [InlineData("TBD")]
-    public void ParseMatches_WithVariousScores_ParsesCorrectly(string score)
+    [InlineData("2-1", "2 Dragons FC to 1 Phoenix United")]
+    [InlineData("0-0", "0 Dragons FC to 0 Phoenix United")]
+    [InlineData("TBD", "TBD")]
+    public void ParseMatches_WithVariousScores_ParsesCorrectly(string scoreInput, string expectedScore)
     {
-        // Arrange - Note: Current API returns empty for Score field, but parser supports it
+        // Arrange - Score is extracted from the score-match-table span element
         var html = $@"
 <html>
   <div class='visible-xs'>
+    <!-- Match row with score -->
+    <div class='row match-row-mobile'>
+      <div class='col-xs-2 container-score text-center'>
+        <span class='score-match-table mobile-color'>{scoreInput}</span>
+      </div>
+    </div>
     <div class='mobile-block-match-info'>
       <div class='row marg-0 dspl-f'>
         <div class='col-xs-5'>
@@ -294,12 +322,6 @@ public class ScheduleParserTests
           <div class='row row-content-mobile'>Premier</div>
         </div>
       </div>
-      <div class='row marg-0 pad-10'>
-        <div class='col-xs-4'>
-          <div class='row row-heading-mobile'>Score</div>
-          <div class='row row-content-mobile'>{score}</div>
-        </div>
-      </div>
     </div>
   </div>
 </html>";
@@ -309,6 +331,6 @@ public class ScheduleParserTests
 
         // Assert
         matches.Should().HaveCount(1);
-        matches[0].Score.Should().Be(score);
+        matches[0].Score.Should().Be(expectedScore);
     }
 }

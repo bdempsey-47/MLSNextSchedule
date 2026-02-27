@@ -26,7 +26,7 @@ public class Modular11Client
     /// </summary>
     /// <param name="pageNumber">The 1-indexed page number</param>
     /// <returns>Raw HTML response body</returns>
-    public async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default)
+    public virtual async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default)
     {
         await Task.Delay(ThrottleMilliseconds, ct);
 
