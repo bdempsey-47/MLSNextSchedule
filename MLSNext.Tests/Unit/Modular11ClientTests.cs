@@ -49,8 +49,8 @@ public class Modular11ClientTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
-                IsAny<HttpRequestMessage>(),
-                IsAny<CancellationToken>())
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(response);
 
         // Act
@@ -72,8 +72,8 @@ public class Modular11ClientTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
-                IsAny<HttpRequestMessage>(),
-                IsAny<CancellationToken>())
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(response);
 
         // Act & Assert
@@ -97,9 +97,9 @@ public class Modular11ClientTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
-                Is<HttpRequestMessage>(req => 
+                ItExpr.Is<HttpRequestMessage>(req => 
                     req.RequestUri!.Query.Contains($"open_page={pageNumber}")),
-                IsAny<CancellationToken>())
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(response);
 
         // Act
@@ -109,9 +109,9 @@ public class Modular11ClientTests
         _httpMessageHandlerMock.Protected().Verify(
             "SendAsync",
             Times.Once(),
-            Is<HttpRequestMessage>(req => 
+            ItExpr.Is<HttpRequestMessage>(req => 
                 req.RequestUri!.Query.Contains($"open_page={pageNumber}")),
-            IsAny<CancellationToken>());
+            ItExpr.IsAny<CancellationToken>());
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public class Modular11ClientTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
-                IsAny<HttpRequestMessage>(),
-                IsAny<CancellationToken>())
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(response)
             .Callback<HttpRequestMessage, CancellationToken>((req, ct) =>
             {
@@ -145,7 +145,7 @@ public class Modular11ClientTests
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
-            IsAny<HttpRequestMessage>(),
-            IsAny<CancellationToken>());
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>());
     }
 }

@@ -94,7 +94,8 @@ try
     Console.WriteLine();
     
     Console.WriteLine("Parsing matches from HTML...\n");
-    var matches = parser.ParseMatches(html);
+    var tournamentId = int.TryParse(settings.TournamentId, out var id) ? id : 35;
+    var matches = parser.ParseMatches(html, tournamentId);
     
     if (!matches.Any())
     {

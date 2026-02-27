@@ -34,7 +34,7 @@ public class GetMatches
                 .Include(m => m.AwayTeam)
                 .Include(m => m.Venue)
                 .Include(m => m.AgeGroup)
-                .Include(m => m.Division)
+                .Include(m => m.Region)
                 .Include(m => m.Competition)
                 .AsQueryable();
 
@@ -66,7 +66,7 @@ public class GetMatches
             // Filter by division
             if (!string.IsNullOrEmpty(division))
             {
-                matches = matches.Where(m => m.Division.Name == division);
+                matches = matches.Where(m => m.Region.Name == division);
             }
 
             var results = await matches

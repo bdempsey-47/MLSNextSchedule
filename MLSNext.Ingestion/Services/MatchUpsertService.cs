@@ -54,7 +54,8 @@ public class MatchUpsertService
                     var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, ct);
                     var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
-                    var division = await LookupOrCreateDivisionAsync(parsedMatch.Division, ct);
+                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, ct);
+                    var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
                     var competition = await LookupOrCreateCompetitionAsync(parsedMatch.Competition, ct);
                     var ageGroup = await LookupOrCreateAgeGroupAsync(parsedMatch.AgeGroup, ct);
 
@@ -64,7 +65,7 @@ public class MatchUpsertService
                         HomeTeamId = homeTeam.Id,
                         AwayTeamId = awayTeam.Id,
                         VenueId = venue.Id,
-                        DivisionId = division.Id,
+                        RegionId = region.Id,
                         CompetitionId = competition.Id,
                         AgeGroupId = ageGroup.Id,
                         MatchDateUtc = parsedMatch.MatchDate,
@@ -132,21 +133,64 @@ public class MatchUpsertService
         return venue;
     }
 
-    private async Task<Division> LookupOrCreateDivisionAsync(string name, CancellationToken ct)
+    private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, CancellationToken ct)
     {
+        // Map tournament ID to division name: 12=Homegrown, 35=Academy
+        var divisionName = tournamentId switch
+        {
+            12 => "Homegrown",
+            35 => "Academy",
+            _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
+        };
+
         var division = await _dbContext.Divisions
-            .Where(d => d.Name == name)
+            .Where(d => d.TournamentId == tournamentId)
             .FirstOrDefaultAsync(ct);
 
         if (division == null)
         {
-            division = new Division { Name = name };
+            // Ensure MLS Next league exists
+            var league = await _dbContext.Leagues
+                .Where(l => l.Name == "MLSNext")
+                .FirstOrDefaultAsync(ct);
+            
+            if (league == null)
+            {
+                league = new League { Name = "MLSNext" };
+                await _dbContext.Leagues.AddAsync(league, ct);
+                await _dbContext.SaveChangesAsync(ct);
+                _logger.LogInformation("Created MLSNext league");
+            }
+
+            division = new Division 
+            { 
+                LeagueId = league.Id,
+                Name = divisionName,
+                TournamentId = tournamentId
+            };
             await _dbContext.Divisions.AddAsync(division, ct);
             await _dbContext.SaveChangesAsync(ct);
-            _logger.LogDebug("Created new division: {DivisionName}", name);
+            _logger.LogInformation("Created {DivisionName} division for tournament {TournamentId}", divisionName, tournamentId);
         }
 
         return division;
+    }
+
+    private async Task<Region> LookupOrCreateRegionAsync(int divisionId, string name, CancellationToken ct)
+    {
+        var region = await _dbContext.Regions
+            .Where(r => r.DivisionId == divisionId && r.Name == name)
+            .FirstOrDefaultAsync(ct);
+
+        if (region == null)
+        {
+            region = new Region { DivisionId = divisionId, Name = name };
+            await _dbContext.Regions.AddAsync(region, ct);
+            await _dbContext.SaveChangesAsync(ct);
+            _logger.LogDebug("Created new region: {RegionName} in division {DivisionId}", name, divisionId);
+        }
+
+        return region;
     }
 
     private async Task<Competition> LookupOrCreateCompetitionAsync(string name, CancellationToken ct)

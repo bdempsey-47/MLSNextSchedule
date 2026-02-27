@@ -40,7 +40,8 @@ public class MatchUpsertServiceIntegrationTests
             AwayTeamName = "New Phoenix",
             AgeGroup = "U13",
             Gender = "Male",
-            Division = "Premier",
+            Division = "NorthEast",
+            TournamentId = 12,
             Competition = "AD",
             VenueName = "New Park",
             Score = "TBD"
@@ -69,7 +70,8 @@ public class MatchUpsertServiceIntegrationTests
             AwayTeamName = "Phoenix",
             AgeGroup = "U13",
             Gender = "Male",
-            Division = "Premier",
+            Division = "NorthEast",
+            TournamentId = 12,
             Competition = "AD",
             VenueName = "Central Park",
             Score = "TBD"
@@ -85,7 +87,8 @@ public class MatchUpsertServiceIntegrationTests
             AwayTeamName = "Phoenix",
             AgeGroup = "U13",
             Gender = "Male",
-            Division = "Premier",
+            Division = "NorthEast",
+            TournamentId = 12,
             Competition = "AD",
             VenueName = "Central Park",
             Score = "2-1" // Updated score
@@ -114,7 +117,8 @@ public class MatchUpsertServiceIntegrationTests
                 AwayTeamName = "Team B",
                 AgeGroup = "U13",
                 Gender = "Male",
-                Division = "Premier",
+                Division = "NorthEast",
+                TournamentId = 12,
                 Competition = "AD",
                 VenueName = "Venue A",
                 Score = "TBD"
@@ -127,7 +131,8 @@ public class MatchUpsertServiceIntegrationTests
                 AwayTeamName = "Team D",
                 AgeGroup = "U15",
                 Gender = "Female",
-                Division = "Select",
+                Division = "SouthEast",
+                TournamentId = 35,
                 Competition = "AD",
                 VenueName = "Venue B",
                 Score = "TBD"
@@ -157,6 +162,7 @@ public class MatchUpsertServiceIntegrationTests
             AgeGroup = "U17",
             Gender = "Male",
             Division = "Competitive",
+            TournamentId = 12,
             Competition = "Premier League",
             VenueName = "Unique Venue",
             Score = "TBD"
@@ -169,7 +175,8 @@ public class MatchUpsertServiceIntegrationTests
         _dbContext.Teams.Should().Contain(t => t.Name == "Unique Team 1");
         _dbContext.Teams.Should().Contain(t => t.Name == "Unique Team 2");
         _dbContext.AgeGroups.Should().Contain(a => a.Name == "U17");
-        _dbContext.Divisions.Should().Contain(d => d.Name == "Competitive");
+        _dbContext.Divisions.Should().Contain(d => d.Name == "Homegrown");  // Now checking for division
+        _dbContext.Regions.Should().Contain(r => r.Name == "Competitive"); // Changed to check region
         _dbContext.Venues.Should().Contain(v => v.Name == "Unique Venue");
     }
 
@@ -185,7 +192,8 @@ public class MatchUpsertServiceIntegrationTests
             AwayTeamName = "Other Team",
             AgeGroup = "U13",
             Gender = "Male",
-            Division = "Premier",
+            Division = "NorthEast",
+            TournamentId = 12,
             Competition = "AD",
             VenueName = "Reusable Venue",
             Score = "TBD"
@@ -203,7 +211,8 @@ public class MatchUpsertServiceIntegrationTests
             AwayTeamName = "Another Team",
             AgeGroup = "U13",
             Gender = "Male",
-            Division = "Premier",
+            Division = "NorthEast",
+            TournamentId = 12,
             Competition = "AD",
             VenueName = "Reusable Venue", // Same venue
             Score = "TBD"

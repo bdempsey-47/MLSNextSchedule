@@ -10,7 +10,9 @@ public class AppDbContext : DbContext
     public DbSet<Match> Matches { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Venue> Venues { get; set; }
+    public DbSet<League> Leagues { get; set; }
     public DbSet<Division> Divisions { get; set; }
+    public DbSet<Region> Regions { get; set; }
     public DbSet<Competition> Competitions { get; set; }
     public DbSet<AgeGroup> AgeGroups { get; set; }
     public DbSet<RawIngestionLog> RawIngestionLogs { get; set; }
@@ -44,9 +46,9 @@ public class AppDbContext : DbContext
                 .HasForeignKey(m => m.VenueId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(m => m.Division)
-                .WithMany(d => d.Matches)
-                .HasForeignKey(m => m.DivisionId)
+            entity.HasOne(m => m.Region)
+                .WithMany(r => r.Matches)
+                .HasForeignKey(m => m.RegionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(m => m.Competition)
@@ -79,12 +81,39 @@ public class AppDbContext : DbContext
             entity.HasIndex(v => v.Name).IsUnique();
         });
 
-        // Division entity configuration
+        // Division entity configuration (Homegrown/Academy)
         modelBuilder.Entity<Division>(entity =>
         {
             entity.HasKey(d => d.Id);
             entity.Property(d => d.Name).HasMaxLength(100).IsRequired();
-            entity.HasIndex(d => d.Name).IsUnique();
+            entity.Property(d => d.TournamentId).IsRequired();
+            entity.HasIndex(d => new { d.LeagueId, d.Name }).IsUnique();
+
+            entity.HasOne(d => d.League)
+                .WithMany(l => l.Divisions)
+                .HasForeignKey(d => d.LeagueId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // League entity configuration
+        modelBuilder.Entity<League>(entity =>
+        {
+            entity.HasKey(l => l.Id);
+            entity.Property(l => l.Name).HasMaxLength(100).IsRequired();
+            entity.HasIndex(l => l.Name).IsUnique();
+        });
+
+        // Region entity configuration (geographic regions within a division)
+        modelBuilder.Entity<Region>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Name).HasMaxLength(100).IsRequired();
+            entity.HasIndex(r => new { r.DivisionId, r.Name }).IsUnique();
+
+            entity.HasOne(r => r.Division)
+                .WithMany(d => d.Regions)
+                .HasForeignKey(r => r.DivisionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Competition entity configuration

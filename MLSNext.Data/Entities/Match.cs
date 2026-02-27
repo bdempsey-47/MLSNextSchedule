@@ -9,7 +9,7 @@ public class Match
     public int HomeTeamId { get; set; }
     public int AwayTeamId { get; set; }
     public int VenueId { get; set; }
-    public int DivisionId { get; set; }
+    public int RegionId { get; set; }
     public int CompetitionId { get; set; }
     public int AgeGroupId { get; set; }
 
@@ -24,7 +24,7 @@ public class Match
     public Team HomeTeam { get; set; } = null!;
     public Team AwayTeam { get; set; } = null!;
     public Venue Venue { get; set; } = null!;
-    public Division Division { get; set; } = null!;
+    public Region Region { get; set; } = null!;
     public Competition Competition { get; set; } = null!;
     public AgeGroup AgeGroup { get; set; } = null!;
 }

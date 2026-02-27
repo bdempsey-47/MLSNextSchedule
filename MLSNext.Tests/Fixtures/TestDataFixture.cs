@@ -17,7 +17,8 @@ public static class TestDataFixture
             AwayTeamName = "Phoenix United",
             AgeGroup = "U13",
             Gender = "Male",
-            Division = "Premier",
+            Division = "NorthEast",
+            TournamentId = 12,
             Competition = "AD",
             VenueName = "Central Park",
             Score = "TBD"

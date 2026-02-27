@@ -64,7 +64,7 @@ public class IngestionOrchestrator
                 }
 
                 // Parse matches from HTML
-                var parsedMatches = _parser.ParseMatches(htmlContent);
+                var parsedMatches = _parser.ParseMatches(htmlContent, _client.TournamentId);
 
                 if (parsedMatches.Count == 0)
                 {

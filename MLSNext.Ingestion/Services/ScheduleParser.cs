@@ -21,9 +21,9 @@ public class ScheduleParser
     }
 
     /// <summary>
-    /// Parse HTML response and extract all matches.
+    /// Parse HTML response and extract all matches for a specific tournament.
     /// </summary>
-    public List<ParsedMatch> ParseMatches(string htmlContent)
+    public List<ParsedMatch> ParseMatches(string htmlContent, int tournamentId)
     {
         var matches = new List<ParsedMatch>();
 
@@ -46,7 +46,7 @@ public class ScheduleParser
             {
                 try
                 {
-                    var match = ExtractMatchFromBlock(block);
+                    var match = ExtractMatchFromBlock(block, tournamentId);
                     if (match != null)
                     {
                         matches.Add(match);
@@ -72,7 +72,7 @@ public class ScheduleParser
     /// <summary>
     /// Extract a single match from a mobile block element.
     /// </summary>
-    private ParsedMatch? ExtractMatchFromBlock(IElement block)
+    private ParsedMatch? ExtractMatchFromBlock(IElement block, int tournamentId)
     {
         // Find the hidden details block (mobile-block-match-info)
         var detailsBlock = block.QuerySelector(".mobile-block-match-info");
@@ -164,6 +164,7 @@ public class ScheduleParser
             Gender = gender ?? "Unknown",
             Competition = competition ?? "Unknown",
             Division = division,
+            TournamentId = tournamentId,
             VenueName = venue ?? "TBD",
             Score = score
         };

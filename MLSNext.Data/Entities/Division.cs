@@ -1,10 +1,17 @@
 namespace MLSNext.Data.Entities;
 
+/// <summary>
+/// Represents a division within a league (e.g., Homegrown, Academy).
+/// Maps to Modular11 tournament IDs.
+/// </summary>
 public class Division
 {
     public int Id { get; set; }
-    public required string Name { get; set; } // e.g. "Premier", "Select"
+    public int LeagueId { get; set; }
+    public required string Name { get; set; }  // "Homegrown" or "Academy"
+    public int TournamentId { get; set; }      // 12 (Homegrown) or 35 (Academy)
 
     // Navigation
-    public ICollection<Match> Matches { get; set; } = new List<Match>();
+    public League League { get; set; } = null!;
+    public ICollection<Region> Regions { get; set; } = new List<Region>();
 }

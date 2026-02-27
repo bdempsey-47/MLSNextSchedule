@@ -83,7 +83,7 @@ public class ScheduleParserTests
 </html>";
 
         // Act
-        var matches = _parser.ParseMatches(html);
+        var matches = _parser.ParseMatches(html, 12);
 
         // Assert
         matches.Should().HaveCount(1);
@@ -92,7 +92,8 @@ public class ScheduleParserTests
         matches[0].AwayTeamName.Should().Be("Phoenix United");
         matches[0].AgeGroup.Should().Be("U13");
         matches[0].Gender.Should().Be("MALE");
-        matches[0].Division.Should().Be("Premier");
+        matches[0].Division.Should().Be("Premier");  // Parser extracts what's in HTML
+        matches[0].TournamentId.Should().Be(12);     // Parser preserves tournament ID
         matches[0].Competition.Should().Be("AD");
         matches[0].VenueName.Should().Be("Central Park");
         matches[0].Score.Should().Be("2 Dragons FC to 1 Phoenix United");
@@ -203,7 +204,7 @@ public class ScheduleParserTests
 </html>";
 
         // Act
-        var matches = _parser.ParseMatches(html);
+        var matches = _parser.ParseMatches(html, 12);
 
         // Assert
         matches.Should().HaveCount(2);
@@ -220,7 +221,7 @@ public class ScheduleParserTests
         var html = "<html></html>";
 
         // Act
-        var matches = _parser.ParseMatches(html);
+        var matches = _parser.ParseMatches(html, 12);
 
         // Assert
         matches.Should().BeEmpty();
@@ -241,7 +242,7 @@ public class ScheduleParserTests
 </html>";
 
         // Act
-        var matches = _parser.ParseMatches(html);
+        var matches = _parser.ParseMatches(html, 12);
 
         // Assert
         matches.Should().BeEmpty();
@@ -261,7 +262,7 @@ public class ScheduleParserTests
 </html>";
 
         // Act
-        var matches = _parser.ParseMatches(html);
+        var matches = _parser.ParseMatches(html, 12);
 
         // Assert - Should skip blocks without proper structure
         matches.Should().BeEmpty();
@@ -327,7 +328,7 @@ public class ScheduleParserTests
 </html>";
 
         // Act
-        var matches = _parser.ParseMatches(html);
+        var matches = _parser.ParseMatches(html, 12);
 
         // Assert
         matches.Should().HaveCount(1);

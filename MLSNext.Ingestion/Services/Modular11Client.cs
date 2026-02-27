@@ -12,7 +12,8 @@ public class Modular11Client
     private readonly HttpClient _httpClient;
     private readonly ILogger<Modular11Client> _logger;
     private readonly Modular11Settings _settings;
-    private const int ThrottleMilliseconds = 200;
+    private const int MinThrottleMilliseconds = 1000;
+    private const int MaxThrottleMilliseconds = 3000;
 
     public Modular11Client(HttpClient httpClient, ILogger<Modular11Client> logger, Modular11Settings settings)
     {
@@ -22,13 +23,20 @@ public class Modular11Client
     }
 
     /// <summary>
+    /// Get the tournament ID for this client instance.
+    /// </summary>
+    public int TournamentId => int.TryParse(_settings.TournamentId, out var id) ? id : 0;
+
+    /// <summary>
     /// Fetch a page of match data from Modular11.
     /// </summary>
     /// <param name="pageNumber">The 1-indexed page number</param>
     /// <returns>Raw HTML response body</returns>
     public virtual async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default)
     {
-        await Task.Delay(ThrottleMilliseconds, ct);
+        var throttleMs = Random.Shared.Next(MinThrottleMilliseconds, MaxThrottleMilliseconds + 1);
+        _logger.LogDebug("Throttling request for page {PageNumber} by {ThrottleMs}ms", pageNumber, throttleMs);
+        await Task.Delay(throttleMs, ct);
 
         var queryParams = BuildQueryParams(pageNumber);
         var url = $"https://www.modular11.com/public_schedule/league/get_matches?{queryParams}";

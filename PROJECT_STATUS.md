@@ -1,7 +1,7 @@
 # MLS NEXT Schedule Ingestion — Project Status & Handoff
 
-**Last Updated:** February 26, 2026  
-**Status:** Foundation Complete — Ready for Functions & Frontend
+**Last Updated:** February 27, 2026  
+**Status:** Functions Complete — Ready for React Frontend & Azure Deployment
 
 ---
 
@@ -77,6 +77,26 @@
   - Successfully parsed 25 real matches with all fields including team-associated scores
   - Example output: Match 18 — City SC Utah 1 vs Phoenix Premier FC 1
 
+### 6. Azure Functions Host (`MLSNext.Functions`)
+**HTTP Endpoints - All Implemented ✅**
+- `GET /api/matches` — Query with filters: team, startDate, endDate, ageGroup, division (returns top 100)
+- `GET /api/teams` — Returns all teams sorted by name
+- `GET /api/divisions` — Returns all divisions sorted by name
+- `GET /api/agegroups` — Returns all age groups sorted by name
+- `POST /api/ingestion/trigger` — Manually trigger an ingestion run (testing); returns execution time
+
+**Timer Trigger - Implemented ✅**
+- `ScheduledIngestion` — Nightly timer trigger at midnight UTC (CRON: `0 0 0 * * *`)
+
+**Dependency Injection - Configured ✅**
+- Program.cs wires up: DbContext, Modular11Settings, HTTP client factory, all ingestion services
+- Supports both local.settings.json and Azure App Settings configuration
+
+### 7. Modular11 API Intelligence
+- **Throttling Strategy:** Random 1-3 second delay between requests (respectful to API)
+- **Change Detection:** Daily full-scan approach (Modular11 API does not support `modified_since` parameter)
+- **GPS Coordinates:** Not available in Modular11 public API (venue names only, geocoding deferred to Phase 3)
+
 ---
 
 ## 📂 Current Project Structure
@@ -128,43 +148,58 @@ MLSNextSchedule/
 
 ---
 
+## 📊 Data Model Refactoring (Feb 27)
+
+### League→Division→Region Hierarchy
+To support dual Homegrown and Academy programs, the data model was restructured:
+
+```
+League (MLSNext)
+├── Division (Homegrown - Tournament 12)
+│   ├── TournamentId: 12
+│   └── Regions
+│       ├── NorthEast
+│       ├── Southeast
+│       ├── Mountain
+│       └── Frontier
+│           └── Matches
+└── Division (Academy - Tournament 35)
+    ├── TournamentId: 35
+    └── Regions
+        └── [same regions]
+            └── Matches
+```
+
+**New Entities:**
+- `League.cs` — Container for divisions (single MLSNext instance)
+- `Region.cs` — Geographic region with Matches collection
+
+**Updated Entities:**
+- `Division.cs` — Now represents programs (Homegrown/Academy), not geographic regions
+  - Added `LeagueId` (FK to League)
+  - Added `TournamentId` (12 or 35)
+  - Now has `Regions` collection (was `Matches`)
+- `Match.cs` — Changed from `DivisionId` to `RegionId` FK
+- `ParsedMatch.cs` — Added `TournamentId` field
+
+**Migration:**
+- Created: `20260227190439_RefactorDivisionToRegionHierarchy.cs`
+- Handles all schema transformations with proper FK relationships
+- Includes UNIQUE composite indexes: (LeagueId, DivisionName) and (DivisionId, RegionName)
+
+**Ingestion Updates:**
+- `Modular11Client` — Exposes `TournamentId` property
+- `ScheduleParser` — Accepts `tournamentId` parameter, passes to ParsedMatch
+- `MatchUpsertService` — Automatically creates League→Division→Region hierarchy based on tournament ID
+
+**Test Coverage:**
+- ✅ 36/36 tests passing (all data model tests updated)
+- ✅ 14 Functions integration tests validate new schema
+- ✅ 5 MatchUpsertService tests verify upsert logic with hierarchy
+
+---
+
 ## 🎯 Remaining Work (In Priority Order)
-
-### Phase 2: Azure Functions Host
-**Project to create:** `MLSNext.Functions` (.NET 8 isolated worker)
-
-**HTTP Trigger endpoints:**
-```
-GET  /api/matches          — Query params: team, startDate, endDate, ageGroup, division
-GET  /api/teams
-GET  /api/divisions
-GET  /api/agegroups
-POST /api/ingestion/trigger — Manually trigger an ingestion run (testing)
-```
-
-**Timer Trigger:**
-```
-ScheduledIngestion — Timer trigger on cron: 0 0 */4 * * * (every 4 hours)
-```
-
-**Configuration to wire in `local.settings.json`:**
-```json
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "ConnectionStrings__DefaultConnection": "Server=(local);Database=MLSNext;Trusted_Connection=true;Encrypt=false;",
-    "Modular11__TournamentId": "35",
-    "Modular11__Gender": "1",
-    "Modular11__Status": "scheduled",
-    "Modular11__MatchType": "2",
-    "Modular11__AgeGroups": "13,14,15,16,17,18",
-    "Modular11__StartDate": "",
-    "Modular11__EndDate": ""
-  }
-}
-```
 
 ### Phase 3: React Frontend
 **Project to create:** `mlsnext-web/` (outside .NET solution)
@@ -172,10 +207,17 @@ ScheduledIngestion — Timer trigger on cron: 0 0 */4 * * * (every 4 hours)
 **Tech stack:** Vite + React + TypeScript
 
 **Features:**
-- Filter bar: Team, Age Group, Division dropdowns; date range picker
-- Match card list: Home vs. Away, date/time, venue, score (or TBD)
-- Responsive mobile-first layout (375px+)
-- Consume `VITE_API_BASE_URL` environment variable
+- **Program Selector** — Choose Homegrown or Academy
+- **Region/Team Filters** — Browse by geographic region or search by team name
+- **Age Group Filter** — Select one or multiple age groups
+- **Date Range** — Optional match date filtering
+- **Match Cards** — Home vs. Away teams, date/time, venue, score or TBD badge
+- **Responsive Layout** — Mobile-first design (375px+)
+- **API Integration** — Consume `VITE_API_BASE_URL` from environment
+
+**Two Entry Points (per mockups):**
+1. **Browse by Division** — ProgramSelector → RegionList → MatchList
+2. **Search by Team** — TeamSearch dropdown → MatchList
 
 **Deployment:** Azure Static Web Apps (free tier)
 
@@ -264,33 +306,65 @@ If picking up this project in a new session:
 
 ---
 
-## 🔄 Latest Session Summary (Feb 26, 2026)
+## 🔄 Latest Session Summary (Feb 27, 2026)
 
 **What was completed:**
-1. **Score Parsing Implementation**
-   - Created `ExtractScoreWithTeamAssociation()` method in ScheduleParser
-   - Scores now extracted from `<span class="score-match-table">` (visual score element, not details block)
-   - Implemented flexible format handling: `:`, `-`, `to`, `vs` separators
-   - Score format: `"HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"` (e.g., "1 City SC Utah to 1 Phoenix Premier FC")
 
-2. **Test Suite Fixes**
-   - Updated all ScheduleParser test fixtures to include score span elements
-   - Made `Modular11Client.FetchPageAsync()` virtual to allow proper Moq mocking
-   - Fixed 3 failing integration tests (IngestionOrchestratorIntegrationTests)
-   - All 16 tests now passing ✅
+1. **API Throttling Optimization**
+   - Changed from hardcoded 200ms delay to random 1-3 second delay per request
+   - Uses `Random.Shared.Next()` for thread-safe random selection
+   - Includes debug logging for visibility on throttle duration
+   - More respectful to Modular11 API while maintaining acceptable performance
 
-3. **Live API Verification**
-   - Created `MLSNext.Verification` console app for live API testing
-   - Verified Fall 2025 data (Aug 1 - Dec 31, 2025): 25 matches successfully parsed
-   - Confirmed all fields including team-associated scores retrieving correctly
+2. **Modular11 API Capability Testing**
+   - Added `ModifiedSince` parameter support to `Modular11Client` for JSON exploration
+   - Created comprehensive test scenarios in `MLSNext.Verification` to validate API parameter support
+   - Executed API tests comparing results with and without `modified_since` parameter
+   - Key finding: API **does NOT support `modified_since` parameter** (same result count: 25 matches both ways)
+   - Conclusion: Daily full-scan approach is the correct strategy for change detection
+   - Removed unused `ModifiedSince` property from `Modular11Settings` to keep codebase clean
 
-4. **Git Commits**
-   - Commit 815c005: "feat: implement team-associated score parsing from Modular11 API"
-   - Commit ecb0bed: "chore: add output.txt files to gitignore"
+3. **GPS Coordinate Research**
+   - Examined live Modular11 HTML payloads for GPS/latitude/longitude data
+   - Searched HTML structure for coordinate attributes and data elements
+   - Conclusion: **No GPS data in Modular11 public API** (venue names only in `data-title` attributes)
+   - Design decision: Deferred geocoding to Phase 3 (can use Google Maps or Mapbox API)
+   - Placeholder: Added `Latitude`/`Longitude` fields to `Venue` entity for future use
+
+4. **Phase 2 Finalization** ✅
+   - Discovered existing `MLSNext.Functions` project (95% feature-complete)
+   - Verified all HTTP endpoints implemented and working
+   - **Updated ScheduledIngestion cron schedule:** `0 0 */4 * * *` (every 4 hours) → `0 0 0 * * *` (nightly at midnight UTC)
+   - **Updated local.settings.json:** Removed hardcoded date range restrictions (cleared StartDate/EndDate) to enable all-matches queries
+   - Successful build across all projects
+
+5. **Documentation & Status**
+   - Updated PROJECT_STATUS.md with Phase 2 completion details
+   - Documented API intelligence discoveries and design decisions
+
+**Functions Endpoints Status - Ready for Production ✅**
+- ✅ `GET /api/matches` — Full-featured query filtering (team, date range, age group, division)
+- ✅ `GET /api/teams` — Team roster endpoint
+- ✅ `GET /api/divisions` — Division list endpoint
+- ✅ `GET /api/agegroups` — Age group lookup endpoint
+- ✅ `POST /api/ingestion/trigger` — Manual trigger endpoint with execution metrics
+- ✅ Timer trigger running nightly for automated ingestion
+- ✅ Full DI container wired, error handling & logging in place
+
+**Git commits this session:**
+- Random throttle delay implementation + API testing
+- Cleanup of unsupported ModifiedSince parameter
+
+**Next Phase Ready:**
+Phase 3 (React Frontend) can now begin — all backend APIs are stable and ready to consume from frontend client.
 
 **Next Steps:**
-1. Phase 2: Create `MLSNext.Functions` Azure Functions project
-2. Implement HTTP GET/POST endpoints for match queries
-3. Implement timer-triggered scheduled ingestion (every 4 hours)
-4. Phase 3: Create React frontend
-5. Phase 4: Azure infrastructure setup
+1. Phase 3: Create React frontend (`mlsnext-web/` project)
+   - Vite + React + TypeScript stack
+   - Filter UI (Team, Age Group, Division, Date Range)
+   - Match card display with responsive layout
+   - Consume `https://<function-app-url>/api/matches`
+2. Phase 4: Azure infrastructure deployment
+   - Deploy Functions App to Azure (Consumption Plan)
+   - Create Azure SQL Database
+   - Deploy React to Azure Static Web Apps
