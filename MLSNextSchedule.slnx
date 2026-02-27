@@ -3,4 +3,5 @@
   <Project Path="MLSNext.Ingestion/MLSNext.Ingestion.csproj" />
   <Project Path="MLSNext.Functions/MLSNext.Functions.csproj" />
   <Project Path="MLSNext.Tests/MLSNext.Tests.csproj" />
+  <Project Path="MLSNext.Verification/MLSNext.Verification.csproj" />
 </Solution>
