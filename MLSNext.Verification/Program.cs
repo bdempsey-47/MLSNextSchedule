@@ -2,9 +2,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MLSNext.Data;
 using MLSNext.Ingestion.Models;
 using MLSNext.Ingestion.Services;
 
@@ -34,19 +36,26 @@ var settings = new Modular11Settings
     EndDate = modular11Config["EndDate"]
 };
 
-Console.WriteLine("=== MLSNext Schedule Data Verification ===\n");
+// Extract connection string
+var connectionString = config.GetConnectionString("DefaultConnection");
+
+Console.WriteLine("=== MLSNext Schedule Data Verification & Import ===\n");
 Console.WriteLine($"API Configuration:");
 Console.WriteLine($"  Tournament ID: {settings.TournamentId}");
 Console.WriteLine($"  Gender: {settings.Gender}");
 Console.WriteLine($"  Age Groups: {string.Join(", ", settings.AgeGroups)}");
 Console.WriteLine($"  Status: {settings.Status}");
 Console.WriteLine($"  Match Type: {settings.MatchType}");
-Console.WriteLine("\n" + new string('=', 60) + "\n");
+Console.WriteLine($"\nDatabase: {connectionString}\n");
+Console.WriteLine(new string('=', 60) + "\n");
 
 // Set up dependency injection
 var services = new ServiceCollection();
 services.AddHttpClient<Modular11Client>();
 services.AddScoped<ScheduleParser>();
+services.AddScoped<MatchUpsertService>();
+services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
 services.AddSingleton(settings);
 
 // Configure logging to see debug output
@@ -59,6 +68,7 @@ services.AddLogging(builder =>
 var serviceProvider = services.BuildServiceProvider();
 var client = serviceProvider.GetRequiredService<Modular11Client>();
 var parser = serviceProvider.GetRequiredService<ScheduleParser>();
+var upsertService = serviceProvider.GetRequiredService<MatchUpsertService>();
 
 try
 {
@@ -85,13 +95,6 @@ try
     }
     
     Console.WriteLine($"✅ Successfully retrieved HTML ({html.Length} bytes)\n");
-    
-    // Display raw HTML for debugging
-    Console.WriteLine("Raw HTML Response:");
-    Console.WriteLine(new string('-', 60));
-    Console.WriteLine(html);
-    Console.WriteLine(new string('-', 60));
-    Console.WriteLine();
     
     Console.WriteLine("Parsing matches from HTML...\n");
     var tournamentId = int.TryParse(settings.TournamentId, out var id) ? id : 35;
@@ -124,7 +127,12 @@ try
     }
     
     Console.WriteLine(new string('=', 60));
-    Console.WriteLine($"\n✅ Data verification complete. {matches.Count} match(es) successfully retrieved and parsed.");
+    Console.WriteLine($"\n📝 Saving {matches.Count} match(es) to database...\n");
+    
+    // Upsert matches into database
+    await upsertService.UpsertMatchesAsync(matches, CancellationToken.None);
+    
+    Console.WriteLine($"\n✅ Database import complete:");
 }
 catch (Exception ex)
 {
