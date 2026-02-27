@@ -11,8 +11,9 @@
 - **Solution:** `MLSNextSchedule.sln`
 - **Class Libraries:**
   - `MLSNext.Data` — EF Core entities, DbContext, migrations
-  - `MLSNext.Ingestion` — HTML parsing, API client, database upsert logic
-
+  - `MLSNext.Ingestion` — HTML parsing, API client, database upsert logic  - `MLSNext.Tests` — Unit & integration test suite (16/16 passing ✅)
+- **Console Applications:**
+  - `MLSNext.Verification` — Live API data verification tool for integration testing
 ### 2. Database Layer (`MLSNext.Data`)
 **Entities created:**
 - `Match` — Natural key: `MatchId` (from Modular11), includes all required fields
@@ -45,8 +46,11 @@
 #### `ScheduleParser`
 - Uses AngleSharp for HTML parsing
 - **Targets only `visible-xs` containers** to avoid desktop/mobile duplication
-- Extracts 10 required fields per match (Match ID, Date, Teams, Age, Gender, Competition, Division, Venue, Score)
-- Returns `ParsedMatch` DTOs
+- **NEW:** Implements team-associated score parsing from `<span class="score-match-table">` elements
+- **Score format:** `"HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"` (e.g., `"1 City SC Utah to 1 Phoenix Premier FC"`)
+- Flexible score parsing: handles separators like `:`, `-`, `to`, `vs`
+- Extracts 10 required fields per match: Match ID, Date, Teams, Age, Gender, Competition, Division, Venue, **Score**
+- Returns `ParsedMatch` DTOs with all fields populated
 
 #### `MatchUpsertService`
 - Implements lookup-or-create pattern for reference tables (Teams, Venues, Divisions, etc.)
@@ -64,12 +68,22 @@
 ### 4. Build Status
 ✅ **All projects compile successfully with no errors or warnings**
 
+### 5. Testing & Verification
+- **Unit Tests:** 8/8 ScheduleParserTests passing ✅
+- **Integration Tests:** 8/8 (5 MatchUpsertService + 3 IngestionOrchestrator) passing ✅
+- **Total:** 16/16 tests passing ✅
+- **MLSNext.Verification Console App:** Successfully retrieves and parses live Modular11 API data
+  - Tested with Fall 2025 date range (Aug 1 - Dec 31, 2025)
+  - Successfully parsed 25 real matches with all fields including team-associated scores
+  - Example output: Match 18 — City SC Utah 1 vs Phoenix Premier FC 1
+
 ---
 
 ## 📂 Current Project Structure
 ```
 MLSNextSchedule/
 ├── ChatGPT_TechnicalGuidelines.md     # Original requirements document
+├── PROJECT_STATUS.md                  # This file
 ├── MLSNextSchedule.slnx               # Solution file
 ├── MLSNext.Data/
 │   ├── AppDbContext.cs                # EF Core DbContext
@@ -91,12 +105,25 @@ MLSNextSchedule/
 │   ├── Models/
 │   │   └── ParsedMatch.cs             # DTO for parsed match data
 │   ├── Services/
-│   │   ├── Modular11Client.cs         # HTTP client + settings
-│   │   ├── ScheduleParser.cs          # HTML parser
+│   │   ├── Modular11Client.cs         # HTTP client + settings (virtual FetchPageAsync)
+│   │   ├── ScheduleParser.cs          # HTML parser with score extraction
 │   │   ├── MatchUpsertService.cs      # Database upsert logic
 │   │   └── IngestionOrchestrator.cs   # Orchestration + pagination
 │   └── MLSNext.Ingestion.csproj
-└── PROJECT_STATUS.md                  # This file
+├── MLSNext.Tests/
+│   ├── Unit/
+│   │   └── ScheduleParserTests.cs     # 8 tests (all passing)
+│   ├── Integration/
+│   │   ├── MatchUpsertServiceIntegrationTests.cs  # 5 tests (all passing)
+│   │   └── IngestionOrchestratorIntegrationTests.cs  # 3 tests (all passing)
+│   ├── Fixtures/
+│   │   └── ScheduleParserFixtures.cs
+│   └── MLSNext.Tests.csproj
+├── MLSNext.Verification/
+│   ├── Program.cs                    # Console app for live API testing
+│   ├── local.settings.json           # Configuration (Fall 2025 dates)
+│   └── MLSNext.Verification.csproj
+└── .gitignore                        # Updated to exclude output*.txt files
 ```
 
 ---
@@ -209,13 +236,21 @@ dotnet ef database update --project MLSNext.Data
 
 ## 📋 Verification Checklist Before Next Phase
 
+**Data Layer & Parsing:**
 - [x] MLSNext.Data compiles without errors
 - [x] MLSNext.Ingestion compiles without errors
 - [x] All entity relationships defined correctly
 - [x] Migrations generated successfully
 - [x] Parser targets mobile markup only (`visible-xs`)
+- [x] Parser correctly extracts scores with team association
 - [x] Orchestrator implements pagination correctly
 - [x] Upsert service handles duplicates gracefully
+
+**Testing:**
+- [x] All 16 unit & integration tests passing (8 + 5 + 3)
+- [x] Live API verification successful with Fall 2025 data (25 matches parsed)
+- [x] Score parsing working correctly with team association
+- [x] Moq virtual method setup fixed (Modular11Client.FetchPageAsync)
 
 ---
 
@@ -226,3 +261,36 @@ If picking up this project in a new session:
 2. Check `ChatGPT_TechnicalGuidelines.md` for detailed API specs
 3. All business logic is in `MLSNext.Ingestion` — start there if debugging parsing or upsert issues
 4. All schema is in `MLSNext.Data/Entities/` — start there if database questions arise
+
+---
+
+## 🔄 Latest Session Summary (Feb 26, 2026)
+
+**What was completed:**
+1. **Score Parsing Implementation**
+   - Created `ExtractScoreWithTeamAssociation()` method in ScheduleParser
+   - Scores now extracted from `<span class="score-match-table">` (visual score element, not details block)
+   - Implemented flexible format handling: `:`, `-`, `to`, `vs` separators
+   - Score format: `"HOME_GOALS HOME_TEAM to AWAY_GOALS AWAY_TEAM"` (e.g., "1 City SC Utah to 1 Phoenix Premier FC")
+
+2. **Test Suite Fixes**
+   - Updated all ScheduleParser test fixtures to include score span elements
+   - Made `Modular11Client.FetchPageAsync()` virtual to allow proper Moq mocking
+   - Fixed 3 failing integration tests (IngestionOrchestratorIntegrationTests)
+   - All 16 tests now passing ✅
+
+3. **Live API Verification**
+   - Created `MLSNext.Verification` console app for live API testing
+   - Verified Fall 2025 data (Aug 1 - Dec 31, 2025): 25 matches successfully parsed
+   - Confirmed all fields including team-associated scores retrieving correctly
+
+4. **Git Commits**
+   - Commit 815c005: "feat: implement team-associated score parsing from Modular11 API"
+   - Commit ecb0bed: "chore: add output.txt files to gitignore"
+
+**Next Steps:**
+1. Phase 2: Create `MLSNext.Functions` Azure Functions project
+2. Implement HTTP GET/POST endpoints for match queries
+3. Implement timer-triggered scheduled ingestion (every 4 hours)
+4. Phase 3: Create React frontend
+5. Phase 4: Azure infrastructure setup
