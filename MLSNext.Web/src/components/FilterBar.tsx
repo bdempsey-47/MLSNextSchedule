@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
 import { Program, Region, AgeGroup, Team } from '../types'
 import { mockMatches } from '../mockData'
+import resetIcon from '../../images/reset_icon.png'
 import './FilterBar.css'
 
 interface FilterBarProps {
   program: Program
+  season: string
+  region: string
+  initialTeam?: string
+  initialAgeGroups?: string[]
   onFiltersChange: (region: string, team: string, ageGroups: string[]) => void
 }
 
-export default function FilterBar({ program, onFiltersChange }: FilterBarProps) {
-  const [selectedRegion, setSelectedRegion] = useState('')
-  const [teamSearch, setTeamSearch] = useState('')
-  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>([])
+export default function FilterBar({ program, season, region, initialTeam = '', initialAgeGroups = [], onFiltersChange }: FilterBarProps) {
+  const [teamSearch, setTeamSearch] = useState(initialTeam)
+  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(initialAgeGroups)
   const [showSuggestions, setShowSuggestions] = useState(false)
   
   const [teams, setTeams] = useState<Team[]>([])
+  const [teamsLoading, setTeamsLoading] = useState(false)
   const [divisions, setDivisions] = useState<any[]>([])
   const [regions, setRegions] = useState<any[]>([])
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
@@ -25,37 +30,19 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
     return prog === 'homegrown' ? 'Homegrown' : 'Academy'
   }
 
-  // Fetch filter options from API
+  // Fetch age groups and divisions once on mount (not program/season dependent)
   useEffect(() => {
-    const fetchFilterOptions = async () => {
+    const fetchStaticOptions = async () => {
       const apiBase = import.meta.env.VITE_API_BASE_URL
       
       try {
         if (!apiBase) {
-          // Fallback to mock data if no API configured
-          setTeams(Array.from(new Set(
-            mockMatches.flatMap(m => [m.homeTeam, m.awayTeam])
-          )).sort((a, b) => a.name.localeCompare(b.name)))
-          
           setAgeGroups(Array.from(new Set(
             mockMatches.map(m => m.ageGroup)
           )).sort((a, b) => a.name.localeCompare(b.name)))
-          
           setDivisions([])
-          setRegions([])
           setLoading(false)
           return
-        }
-
-        // Fetch teams from API
-        const teamsRes = await fetch(`${apiBase}/teams`)
-        if (teamsRes.ok) {
-          const teamsData = await teamsRes.json()
-          const transformedTeams = teamsData.map((t: any) => ({
-            id: t.Id || t.id,
-            name: t.Name || t.name
-          })).sort((a: Team, b: Team) => a.name.localeCompare(b.name))
-          setTeams(transformedTeams)
         }
 
         // Fetch divisions from API
@@ -81,12 +68,7 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
           setAgeGroups(transformedAgeGroups)
         }
       } catch (err) {
-        console.error('Error fetching filter options:', err)
-        // Fallback to mock data on error
-        setTeams(Array.from(new Set(
-          mockMatches.flatMap(m => [m.homeTeam, m.awayTeam])
-        )).sort((a, b) => a.name.localeCompare(b.name)))
-        
+        console.error('Error fetching static filter options:', err)
         setAgeGroups(Array.from(new Set(
           mockMatches.map(m => m.ageGroup)
         )).sort((a, b) => a.name.localeCompare(b.name)))
@@ -95,8 +77,56 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
       }
     }
 
-    fetchFilterOptions()
+    fetchStaticOptions()
   }, [])
+
+  // Re-fetch teams whenever program, season, or region changes — list must reflect current context
+  useEffect(() => {
+    const controller = new AbortController()
+
+    // Clear stale list immediately so old suggestions never flash while the new fetch is in flight
+    setTeams([])
+    setTeamsLoading(true)
+
+    const fetchTeams = async () => {
+      const apiBase = import.meta.env.VITE_API_BASE_URL
+      if (!apiBase) {
+        setTeams(Array.from(new Set(
+          mockMatches.flatMap(m => [m.homeTeam, m.awayTeam])
+        )).sort((a, b) => a.name.localeCompare(b.name)))
+        setTeamsLoading(false)
+        return
+      }
+      try {
+        const params = new URLSearchParams()
+        if (program) params.set('program', program)
+        if (season)  params.set('season', season)
+        if (region)  params.set('region', region)
+        console.log(`🔍 fetchTeams → program=${program} season=${season} region=${region || '(all)'}`)
+        const teamsRes = await fetch(`${apiBase}/teams?${params.toString()}`, { signal: controller.signal })
+        if (teamsRes.ok) {
+          const teamsData = await teamsRes.json()
+          const mapped = teamsData.map((t: any) => ({
+            id: t.Id || t.id,
+            name: t.Name || t.name
+          })).sort((a: Team, b: Team) => a.name.localeCompare(b.name))
+          console.log(`✅ fetchTeams → ${mapped.length} teams loaded`)
+          setTeams(mapped)
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error('Error fetching teams:', err)
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setTeamsLoading(false)
+        }
+      }
+    }
+
+    fetchTeams()
+    return () => controller.abort()
+  }, [program, season, region])
 
   // Fetch regions when program changes
   useEffect(() => {
@@ -120,9 +150,6 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
           
           console.log(`📍 Regions for ${program}:`, transformedRegions)
           setRegions(transformedRegions)
-          
-          // Reset region selection when program changes
-          setSelectedRegion('')
         }
       } catch (err) {
         console.error('Error fetching regions:', err)
@@ -133,9 +160,10 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
     fetchRegions()
   }, [program])
 
+  // Notify parent when team or age group filters change; region is controlled by parent
   useEffect(() => {
-    onFiltersChange(selectedRegion, teamSearch, selectedAgeGroups)
-  }, [selectedRegion, teamSearch, selectedAgeGroups])
+    onFiltersChange(region, teamSearch, selectedAgeGroups)
+  }, [teamSearch, selectedAgeGroups])
 
   const handleAgeGroupToggle = (ageGroup: string) => {
     setSelectedAgeGroups(prev =>
@@ -157,14 +185,23 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
     setShowSuggestions(false)
   }
 
+  const handleReset = () => {
+    setTeamSearch('')
+    setSelectedAgeGroups([])
+    onFiltersChange('', '', [])
+  }
+
+  // Are any filters currently active?
+  const hasActiveFilters = region !== '' || teamSearch !== '' || selectedAgeGroups.length > 0
+
   return (
     <div className="filter-bar">
       <div className="filter-section">
         <label htmlFor="region-select">Region</label>
         <select
           id="region-select"
-          value={selectedRegion}
-          onChange={(e) => setSelectedRegion(e.target.value)}
+          value={region}
+          onChange={(e) => onFiltersChange(e.target.value, teamSearch, selectedAgeGroups)}
           className="filter-select"
         >
           <option value="">All Regions</option>
@@ -182,7 +219,7 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
           <input
             id="team-search"
             type="text"
-            placeholder={loading ? "Loading teams..." : "Team name..."}
+            placeholder={loading || teamsLoading ? "Loading teams..." : "Team name..."}
             value={teamSearch}
             onChange={(e) => {
               setTeamSearch(e.target.value)
@@ -193,7 +230,7 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
             className="filter-input"
             disabled={loading}
           />
-          {showSuggestions && filteredSuggestions.length > 0 && (
+          {showSuggestions && !teamsLoading && filteredSuggestions.length > 0 && (
             <div className="autocomplete-suggestions">
               {filteredSuggestions.map((team) => (
                 <div
@@ -223,6 +260,19 @@ export default function FilterBar({ program, onFiltersChange }: FilterBarProps) 
             </label>
           ))}
         </div>
+      </div>
+
+      <div className="filter-section filter-reset-section">
+        <label>&nbsp;</label>
+        <button
+          className={`reset-button ${hasActiveFilters ? 'reset-button--active' : ''}`}
+          onClick={handleReset}
+          title="Reset all filters"
+          disabled={!hasActiveFilters}
+        >
+          <img src={resetIcon} alt="Reset filters" className="reset-icon" />
+          Reset
+        </button>
       </div>
     </div>
   )

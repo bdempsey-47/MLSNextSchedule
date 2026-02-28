@@ -23,13 +23,13 @@ public class GetMatches
     {
         try
         {
-            var query = string.IsNullOrEmpty(req.Query["team"]) ? string.Empty : req.Query["team"].ToString();
-            var season = string.IsNullOrEmpty(req.Query["season"]) ? string.Empty : req.Query["season"].ToString();
-            var startDateStr = string.IsNullOrEmpty(req.Query["startDate"]) ? string.Empty : req.Query["startDate"].ToString();
-            var endDateStr = string.IsNullOrEmpty(req.Query["endDate"]) ? string.Empty : req.Query["endDate"].ToString();
-            var ageGroup = string.IsNullOrEmpty(req.Query["ageGroup"]) ? string.Empty : req.Query["ageGroup"].ToString();
-            var division = string.IsNullOrEmpty(req.Query["division"]) ? string.Empty : req.Query["division"].ToString();
-            var program = string.IsNullOrEmpty(req.Query["program"]) ? string.Empty : req.Query["program"].ToString();
+            var query = req.Query["team"] ?? string.Empty;
+            var season = req.Query["season"] ?? string.Empty;
+            var startDateStr = req.Query["startDate"] ?? string.Empty;
+            var endDateStr = req.Query["endDate"] ?? string.Empty;
+            var ageGroup = req.Query["ageGroup"] ?? string.Empty;
+            var division = req.Query["division"] ?? string.Empty;
+            var program = req.Query["program"] ?? string.Empty;
 
             _logger.LogInformation("GetMatches called with: season={Season}, program={Program}, startDate={StartDate}, endDate={EndDate}", 
                 season ?? "(none)", program ?? "(none)", startDateStr ?? "(none)", endDateStr ?? "(none)");

@@ -8,21 +8,40 @@ import { Match, Program, Season } from './types'
 import { mockMatches } from './mockData'
 
 function App() {
-  const [selectedProgram, setSelectedProgram] = useState<Program>('homegrown')
-  const [selectedSeason, setSelectedSeason] = useState<Season>('fall2025')
-  const [selectedRegion, setSelectedRegion] = useState<string>('')
-  const [selectedTeam, setSelectedTeam] = useState<string>('')
-  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>([])
+  // Parse URL query params so bookmarked/shared links restore filter state
+  const urlParams = new URLSearchParams(window.location.search)
+
+  const [selectedProgram, setSelectedProgram] = useState<Program>(
+    (urlParams.get('program') as Program) || 'homegrown'
+  )
+  const [selectedSeason, setSelectedSeason] = useState<Season>(
+    (urlParams.get('season') as Season) || 'fall2025'
+  )
+  const [selectedRegion, setSelectedRegion] = useState<string>(urlParams.get('region') || '')
+  const [selectedTeam, setSelectedTeam] = useState<string>(urlParams.get('team') || '')
+  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(urlParams.getAll('ageGroup'))
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
 
-  // Load initial matches on component mount
+  // Load matches whenever program or season changes, preserving current filter state
   useEffect(() => {
-    fetchMatches('', '', [], selectedSeason)
-  }, [selectedSeason])
+    fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups, selectedSeason)
+  }, [selectedSeason, selectedProgram])
+
+  // Keep URL in sync with filter state so the page can be bookmarked or shared
+  useEffect(() => {
+    const params = new URLSearchParams()
+    params.set('program', selectedProgram)
+    params.set('season', selectedSeason)
+    if (selectedRegion) params.set('region', selectedRegion)
+    if (selectedTeam) params.set('team', selectedTeam)
+    selectedAgeGroups.forEach(ag => params.append('ageGroup', ag))
+    history.replaceState(null, '', `?${params.toString()}`)
+  }, [selectedProgram, selectedSeason, selectedRegion, selectedTeam, selectedAgeGroups])
 
   const handleProgramChange = (program: Program) => {
+    if (program === selectedProgram) return
     setSelectedProgram(program)
     setSelectedRegion('')
     setSelectedTeam('')
@@ -30,6 +49,7 @@ function App() {
   }
 
   const handleSeasonChange = (season: Season) => {
+    if (season === selectedSeason) return
     setSelectedSeason(season)
     setMatches([])
   }
@@ -205,6 +225,10 @@ function App() {
         
         <FilterBar 
           program={selectedProgram}
+          season={selectedSeason}
+          region={selectedRegion}
+          initialTeam={selectedTeam}
+          initialAgeGroups={selectedAgeGroups}
           onFiltersChange={handleFilterChange}
         />
         

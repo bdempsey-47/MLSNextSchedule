@@ -105,3 +105,45 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+.filter-reset-section {
+  justify-content: flex-end;
+}
+
+.reset-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  color: #999;
+  font-size: 0.95rem;
+  cursor: not-allowed;
+  opacity: 0.5;
+  transition: all 0.2s;
+  align-self: flex-end;
+}
+
+.reset-button--active {
+  color: #667eea;
+  border-color: #667eea;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.reset-button--active:hover {
+  background: #667eea;
+  color: white;
+}
+
+.reset-button--active:hover .reset-icon {
+  filter: brightness(0) invert(1);
+}
+
+.reset-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
