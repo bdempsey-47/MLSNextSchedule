@@ -29,6 +29,9 @@ public class GetDivisions
                 .ToListAsync();
 
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            response.Headers.Add("Access-Control-Allow-Origin", "*");
+            response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
+            response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
             await response.WriteAsJsonAsync(divisions);
             return response;
         }
@@ -36,6 +39,9 @@ public class GetDivisions
         {
             _logger.LogError($"Error in GetDivisions: {ex.Message}");
             var errorResponse = req.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+            errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+            errorResponse.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
+            errorResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
             await errorResponse.WriteAsJsonAsync(new { error = ex.Message });
             return errorResponse;
         }

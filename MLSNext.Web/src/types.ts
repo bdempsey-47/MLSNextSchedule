@@ -1,4 +1,5 @@
 export type Program = 'homegrown' | 'academy'
+export type Season = 'fall2025' | 'spring2026' | ''
 
 export interface Match {
   matchId: string
@@ -9,6 +10,7 @@ export interface Match {
   ageGroup: AgeGroup
   region: Region
   competition: Competition
+  division?: Division
   score?: string
   gender: string
 }
@@ -42,9 +44,9 @@ export interface Competition {
 
 export interface Division {
   id: number
-  leagueId: number
+  leagueId?: number
   name: string
-  tournamentId: number
+  tournamentId?: number
 }
 
 export interface FilterOptions {

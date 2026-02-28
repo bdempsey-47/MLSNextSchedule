@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MLSNext.Data;
 using MLSNext.Ingestion.Services;
+using MLSNext.Functions.Triggers;
 
 var host = new HostBuilder()
     .ConfigureServices(services =>
@@ -44,10 +45,19 @@ var host = new HostBuilder()
         services.AddScoped<MatchUpsertService>();
         services.AddScoped<IngestionOrchestrator>();
 
+        // Explicitly register function classes
+        services.AddScoped<GetMatches>();
+        services.AddScoped<GetTeams>();
+        services.AddScoped<GetDivisions>();
+        services.AddScoped<GetRegions>();
+        services.AddScoped<GetAgeGroups>();
+        services.AddScoped<TriggerIngestion>();
+        services.AddScoped<ScheduledIngestion>();
+
         // Add HTTP client factory
         services.AddHttpClient<Modular11Client>();
     })
-    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureFunctionsWorkerDefaults((Action<IFunctionsWorkerApplicationBuilder>)(builder => { }))
     .Build();
 
 host.Run();

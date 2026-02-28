@@ -1,5 +1,7 @@
 namespace MLSNext.Data.Entities;
 
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// Represents a division within a league (e.g., Homegrown, Academy).
 /// Maps to Modular11 tournament IDs.
@@ -12,6 +14,8 @@ public class Division
     public int TournamentId { get; set; }      // 12 (Homegrown) or 35 (Academy)
 
     // Navigation
+    [JsonIgnore]
     public League League { get; set; } = null!;
+    [JsonIgnore]
     public ICollection<Region> Regions { get; set; } = new List<Region>();
 }

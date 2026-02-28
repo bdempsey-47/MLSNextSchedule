@@ -1,5 +1,7 @@
 namespace MLSNext.Data.Entities;
 
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// Represents a soccer league (e.g., MLS Next).
 /// Allows for future expansion to other leagues.
@@ -10,5 +12,6 @@ public class League
     public required string Name { get; set; }
 
     // Navigation
+    [JsonIgnore]
     public ICollection<Division> Divisions { get; set; } = new List<Division>();
 }

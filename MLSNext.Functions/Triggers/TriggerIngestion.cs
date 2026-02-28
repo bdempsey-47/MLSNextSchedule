@@ -29,6 +29,9 @@ public class TriggerIngestion
             var duration = DateTime.UtcNow - startTime;
 
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            response.Headers.Add("Access-Control-Allow-Origin", "*");
+            response.Headers.Add("Access-Control-Allow-Methods", "POST, OPTIONS");
+            response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
             await response.WriteAsJsonAsync(new
             {
                 success = true,
@@ -42,6 +45,9 @@ public class TriggerIngestion
         {
             _logger.LogError($"Error in TriggerIngestion: {ex.Message}");
             var errorResponse = req.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+            errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+            errorResponse.Headers.Add("Access-Control-Allow-Methods", "POST, OPTIONS");
+            errorResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
             await errorResponse.WriteAsJsonAsync(new { error = ex.Message });
             return errorResponse;
         }
