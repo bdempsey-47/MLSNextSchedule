@@ -62,6 +62,14 @@ function App() {
     fetchMatches(region, team, ageGroups, selectedSeason)
   }
 
+  const handleBadgeClick = (type: 'region' | 'ageGroup', value: string) => {
+    if (type === 'region') {
+      handleFilterChange(value, selectedTeam, selectedAgeGroups)
+    } else if (type === 'ageGroup') {
+      handleFilterChange(selectedRegion, selectedTeam, [value])
+    }
+  }
+
   // Transform API response from PascalCase to camelCase
   const transformApiMatch = (apiData: any): Match => ({
     matchId: apiData.MatchId || apiData.matchId,
@@ -239,8 +247,8 @@ function App() {
           program={selectedProgram}
           season={selectedSeason}
           region={selectedRegion}
+          selectedAgeGroups={selectedAgeGroups}
           initialTeam={selectedTeam}
-          initialAgeGroups={selectedAgeGroups}
           onFiltersChange={handleFilterChange}
         />
 
@@ -278,6 +286,7 @@ function App() {
           <MatchList
             matches={matches}
             program={selectedProgram}
+            onBadgeClick={handleBadgeClick}
           />
         )}
       </main>

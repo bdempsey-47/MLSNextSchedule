@@ -27,22 +27,22 @@
 }
 
 .season-button:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   background: var(--color-surface);
   transform: none;
 }
 
 .season-button.active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(200, 16, 46, 0.3);
+  box-shadow: 0 2px 8px rgba(10, 22, 40, 0.25);
 }
 
 .season-button.active:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-light);
 }
 
 @media (max-width: 600px) {

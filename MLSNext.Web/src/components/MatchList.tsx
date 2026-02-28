@@ -5,9 +5,10 @@ import './MatchList.css'
 interface MatchListProps {
   matches: Match[]
   program: Program
+  onBadgeClick?: (type: 'region' | 'ageGroup', value: string) => void
 }
 
-export default function MatchList({ matches, program }: MatchListProps) {
+export default function MatchList({ matches, program, onBadgeClick }: MatchListProps) {
   const sortedMatches = [...matches].sort((a, b) =>
     new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime()
   )
@@ -22,7 +23,7 @@ export default function MatchList({ matches, program }: MatchListProps) {
       </div>
       <div className="match-grid">
         {sortedMatches.map(match => (
-          <MatchCard key={match.matchId} match={match} program={program} />
+          <MatchCard key={match.matchId} match={match} program={program} onBadgeClick={onBadgeClick} />
         ))}
       </div>
     </div>

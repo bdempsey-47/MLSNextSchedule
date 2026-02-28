@@ -8,14 +8,13 @@ interface FilterBarProps {
   program: Program
   season: string
   region: string
+  selectedAgeGroups: string[]
   initialTeam?: string
-  initialAgeGroups?: string[]
   onFiltersChange: (region: string, team: string, ageGroups: string[]) => void
 }
 
-export default function FilterBar({ program, season, region, initialTeam = '', initialAgeGroups = [], onFiltersChange }: FilterBarProps) {
+export default function FilterBar({ program, season, region, selectedAgeGroups, initialTeam = '', onFiltersChange }: FilterBarProps) {
   const [teamSearch, setTeamSearch] = useState(initialTeam)
-  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(initialAgeGroups)
   const [showSuggestions, setShowSuggestions] = useState(false)
   
   const [teams, setTeams] = useState<Team[]>([])
@@ -160,17 +159,16 @@ export default function FilterBar({ program, season, region, initialTeam = '', i
     fetchRegions()
   }, [program])
 
-  // Notify parent when team or age group filters change; region is controlled by parent
+  // Notify parent when team filter changes; region and ageGroups are controlled by parent
   useEffect(() => {
     onFiltersChange(region, teamSearch, selectedAgeGroups)
-  }, [teamSearch, selectedAgeGroups])
+  }, [teamSearch])
 
   const handleAgeGroupToggle = (ageGroup: string) => {
-    setSelectedAgeGroups(prev =>
-      prev.includes(ageGroup)
-        ? prev.filter(ag => ag !== ageGroup)
-        : [...prev, ageGroup]
-    )
+    const next = selectedAgeGroups.includes(ageGroup)
+      ? selectedAgeGroups.filter(ag => ag !== ageGroup)
+      : [...selectedAgeGroups, ageGroup]
+    onFiltersChange(region, teamSearch, next)
   }
 
   // Filter team suggestions based on current input
@@ -187,7 +185,6 @@ export default function FilterBar({ program, season, region, initialTeam = '', i
 
   const handleReset = () => {
     setTeamSearch('')
-    setSelectedAgeGroups([])
     onFiltersChange('', '', [])
   }
 
