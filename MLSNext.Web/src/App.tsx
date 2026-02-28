@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Shield, AlertCircle, Loader2, SearchX } from 'lucide-react'
 import './App.css'
 import ProgramSelector from './components/ProgramSelector'
 import SeasonSelector from './components/SeasonSelector'
@@ -205,25 +206,36 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Soccer Schedules</h1>
-        <p className="subtitle">MLS Next</p>
-        <button className="demo-button" onClick={handleLoadDemoData}>
-          📊 Load Demo Data
-        </button>
+        <div className="app-header-inner">
+          <div className="app-brand">
+            <div className="app-brand-icon">
+              <Shield strokeWidth={2.5} />
+            </div>
+            <div className="app-brand-text">
+              <h1>MLS Next</h1>
+              <span className="subtitle">Youth Soccer Schedules</span>
+            </div>
+          </div>
+          <button className="demo-button" onClick={handleLoadDemoData}>
+            Load Demo Data
+          </button>
+        </div>
       </header>
-      
+
       <main className="app-main">
-        <ProgramSelector 
-          selected={selectedProgram} 
-          onChange={handleProgramChange}
-        />
-        
-        <SeasonSelector 
-          selected={selectedSeason}
-          onChange={handleSeasonChange}
-        />
-        
-        <FilterBar 
+        <div className="controls-bar">
+          <ProgramSelector
+            selected={selectedProgram}
+            onChange={handleProgramChange}
+          />
+          <div className="controls-divider" />
+          <SeasonSelector
+            selected={selectedSeason}
+            onChange={handleSeasonChange}
+          />
+        </div>
+
+        <FilterBar
           program={selectedProgram}
           season={selectedSeason}
           region={selectedRegion}
@@ -231,18 +243,39 @@ function App() {
           initialAgeGroups={selectedAgeGroups}
           onFiltersChange={handleFilterChange}
         />
-        
-        {error && <div className={`error-message ${error.includes('mock') ? 'info' : 'error'}`}>{error}</div>}
-        {loading && <div className="loading">Loading matches...</div>}
+
+        {error && (
+          <div className={`error-message ${error.includes('mock') ? 'info' : 'error'}`}>
+            <AlertCircle size={16} />
+            {error}
+          </div>
+        )}
+
+        {loading && (
+          <div className="loading-state">
+            <div className="loading-spinner" />
+            <p>Loading matches…</p>
+          </div>
+        )}
+
         {!loading && matches.length === 0 && !error && (
-          <div className="no-matches">Select filters to view matches</div>
+          <div className="no-matches">
+            <SearchX size={48} />
+            <p>Select filters to view matches</p>
+            <span className="no-matches-hint">Choose a program and season above to get started</span>
+          </div>
         )}
+
         {!loading && matches.length === 0 && error && (
-          <div className="no-matches">No matches found. Try adjusting your filters.</div>
+          <div className="no-matches">
+            <SearchX size={48} />
+            <p>No matches found</p>
+            <span className="no-matches-hint">Try adjusting your filters</span>
+          </div>
         )}
-        
+
         {matches.length > 0 && (
-          <MatchList 
+          <MatchList
             matches={matches}
             program={selectedProgram}
           />

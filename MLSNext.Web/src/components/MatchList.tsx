@@ -14,12 +14,15 @@ export default function MatchList({ matches, program }: MatchListProps) {
 
   return (
     <div className="match-list">
-      <h2 className="match-list-title">
-        {matches.length} Match{matches.length !== 1 ? 'es' : ''}
-      </h2>
+      <div className="match-list-header">
+        <span className="match-count">{matches.length}</span>
+        <span className="match-count-label">
+          Match{matches.length !== 1 ? 'es' : ''}
+        </span>
+      </div>
       <div className="match-grid">
         {sortedMatches.map(match => (
-          <MatchCard key={match.matchId} match={match} />
+          <MatchCard key={match.matchId} match={match} program={program} />
         ))}
       </div>
     </div>

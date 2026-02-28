@@ -14,7 +14,7 @@ export default function SeasonSelector({ selected, onChange }: SeasonSelectorPro
 
   return (
     <div className="season-selector">
-      <label>Season:</label>
+      <span className="selector-label">Season</span>
       <div className="season-buttons">
         {seasons.map(season => (
           <button
@@ -29,3 +29,4 @@ export default function SeasonSelector({ selected, onChange }: SeasonSelectorPro
     </div>
   )
 }
+

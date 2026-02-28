@@ -1,21 +1,37 @@
 .match-list {
-  margin-top: 20px;
+  margin-top: 4px;
 }
 
-.match-list-title {
-  color: white;
-  margin-bottom: 20px;
-  font-size: 1.3rem;
+.match-list-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.match-count {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.match-count-label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
 }
 
 .match-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
 }
 
 @media (max-width: 768px) {
   .match-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
