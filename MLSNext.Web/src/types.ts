@@ -18,6 +18,7 @@ export interface Match {
 export interface Team {
   id: number
   name: string
+  logoUrl?: string
 }
 
 export interface Venue {

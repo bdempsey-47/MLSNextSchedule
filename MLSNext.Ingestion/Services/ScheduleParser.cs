@@ -154,12 +154,17 @@ public class ScheduleParser
         // Extract score from the score-match-table span (NOT from mobile-block-match-info)
         var score = ExtractScoreWithTeamAssociation(block, homeTeam, awayTeam);
 
+        // Extract team logo URLs from club-photo background-image style attributes
+        var logoUrls = ExtractLogoUrls(block);
+
         return new ParsedMatch
         {
             MatchId = matchId,
             MatchDate = matchDate,
             HomeTeamName = homeTeam,
             AwayTeamName = awayTeam,
+            HomeTeamLogoUrl = logoUrls.homeLogoUrl,
+            AwayTeamLogoUrl = logoUrls.awayLogoUrl,
             AgeGroup = ageGroup,
             Gender = gender ?? "Unknown",
             Competition = competition ?? "Unknown",
@@ -168,6 +173,44 @@ public class ScheduleParser
             VenueName = venue ?? "TBD",
             Score = score
         };
+    }
+
+    /// <summary>
+    /// Extract team logo URLs from the two club-photo divs in the match block.
+    /// Each club-photo div has a style="background-image: url('...')" attribute.
+    /// The first club-photo is the home team logo, the second is the away team.
+    /// </summary>
+    private (string? homeLogoUrl, string? awayLogoUrl) ExtractLogoUrls(IElement block)
+    {
+        try
+        {
+            var clubPhotos = block.QuerySelectorAll(".club-photo");
+            var homeLogoUrl = clubPhotos.Length > 0 ? ParseBackgroundImageUrl(clubPhotos[0].GetAttribute("style")) : null;
+            var awayLogoUrl = clubPhotos.Length > 1 ? ParseBackgroundImageUrl(clubPhotos[1].GetAttribute("style")) : null;
+            return (homeLogoUrl, awayLogoUrl);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Error extracting logo URLs");
+            return (null, null);
+        }
+    }
+
+    /// <summary>
+    /// Parse a URL from a CSS background-image style value.
+    /// Input: "background-image: url('https://...png'); background-size: contain; ..."
+    /// Output: "https://...png"
+    /// </summary>
+    private static string? ParseBackgroundImageUrl(string? style)
+    {
+        if (string.IsNullOrEmpty(style)) return null;
+        var urlStart = style.IndexOf("url('", StringComparison.OrdinalIgnoreCase);
+        if (urlStart < 0) return null;
+        urlStart += 5; // skip past url('
+        var urlEnd = style.IndexOf("')", urlStart, StringComparison.OrdinalIgnoreCase);
+        if (urlEnd < 0) return null;
+        var url = style.Substring(urlStart, urlEnd - urlStart).Trim();
+        return string.IsNullOrEmpty(url) ? null : url;
     }
 
     /// <summary>

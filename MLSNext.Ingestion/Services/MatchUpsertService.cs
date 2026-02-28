@@ -43,16 +43,19 @@ public class MatchUpsertService
 
                 if (existingMatch != null)
                 {
-                    // Update existing match
+                    // Update existing match score and team logos
                     existingMatch.Score = parsedMatch.Score;
                     existingMatch.UpdatedAt = DateTime.UtcNow;
+                    // Refresh logos in case they were added/changed since initial ingestion
+                    await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
+                    await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
                     updatedMatches++;
                 }
                 else
                 {
                     // Create new match with lookup-or-create for reference entities
-                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, ct);
-                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, ct);
+                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
+                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
                     var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, ct);
                     var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
@@ -99,7 +102,7 @@ public class MatchUpsertService
             newMatches, updatedMatches, duplicateMatches);
     }
 
-    private async Task<Team> LookupOrCreateTeamAsync(string name, CancellationToken ct)
+    private async Task<Team> LookupOrCreateTeamAsync(string name, string? logoUrl, CancellationToken ct)
     {
         var team = await _dbContext.Teams
             .Where(t => t.Name == name)
@@ -107,10 +110,17 @@ public class MatchUpsertService
 
         if (team == null)
         {
-            team = new Team { Name = name };
+            team = new Team { Name = name, LogoUrl = logoUrl };
             await _dbContext.Teams.AddAsync(team, ct);
             await _dbContext.SaveChangesAsync(ct);
             _logger.LogDebug("Created new team: {TeamName}", name);
+        }
+        else if (logoUrl != null && team.LogoUrl != logoUrl)
+        {
+            // Update logo URL if we have a newer/different one
+            team.LogoUrl = logoUrl;
+            await _dbContext.SaveChangesAsync(ct);
+            _logger.LogDebug("Updated logo for team: {TeamName}", name);
         }
 
         return team;

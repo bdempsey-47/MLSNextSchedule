@@ -75,11 +75,13 @@ function App() {
     matchId: apiData.MatchId || apiData.matchId,
     homeTeam: {
       id: apiData.HomeTeam?.Id || apiData.homeTeam?.id,
-      name: apiData.HomeTeam?.Name || apiData.homeTeam?.name
+      name: apiData.HomeTeam?.Name || apiData.homeTeam?.name,
+      logoUrl: apiData.HomeTeam?.LogoUrl || apiData.homeTeam?.logoUrl || undefined
     },
     awayTeam: {
       id: apiData.AwayTeam?.Id || apiData.awayTeam?.id,
-      name: apiData.AwayTeam?.Name || apiData.awayTeam?.name
+      name: apiData.AwayTeam?.Name || apiData.awayTeam?.name,
+      logoUrl: apiData.AwayTeam?.LogoUrl || apiData.awayTeam?.logoUrl || undefined
     },
     matchDateUtc: apiData.MatchDateUtc || apiData.matchDateUtc,
     venue: {

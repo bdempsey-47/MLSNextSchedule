@@ -9,6 +9,8 @@ public class ParsedMatch
     public required DateTime MatchDate { get; set; }
     public required string HomeTeamName { get; set; }
     public required string AwayTeamName { get; set; }
+    public string? HomeTeamLogoUrl { get; set; }
+    public string? AwayTeamLogoUrl { get; set; }
     public required string AgeGroup { get; set; }
     public required string Gender { get; set; }
     public required string Competition { get; set; }

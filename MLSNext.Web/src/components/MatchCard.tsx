@@ -54,7 +54,12 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
 
       <div className="match-teams">
         <div className="team home-team">
-          <div className="team-crest">{getInitials(match.homeTeam.name)}</div>
+          <div className="team-crest">
+            {match.homeTeam.logoUrl
+              ? <img src={match.homeTeam.logoUrl} alt={match.homeTeam.name} className="team-logo" />
+              : getInitials(match.homeTeam.name)
+            }
+          </div>
           <span className="team-name">{match.homeTeam.name}</span>
         </div>
 
@@ -70,7 +75,12 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
         </div>
 
         <div className="team away-team">
-          <div className="team-crest">{getInitials(match.awayTeam.name)}</div>
+          <div className="team-crest">
+            {match.awayTeam.logoUrl
+              ? <img src={match.awayTeam.logoUrl} alt={match.awayTeam.name} className="team-logo" />
+              : getInitials(match.awayTeam.name)
+            }
+          </div>
           <span className="team-name">{match.awayTeam.name}</span>
         </div>
       </div>
