@@ -871,3 +871,29 @@ Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null`
 4. Configure `VITE_API_BASE_URL` environment variable to live Function App URL
 5. Remove or raise `MaxMatchesPerTournament` cap before production ingestion
 6. Smoke test all endpoints against production data
+
+
+---
+
+## 🔄 Session 7 Addendum (Mar 1, 2026)
+
+### Match Card Polish ✅
+
+**Changes completed in this addendum:**
+
+1. **GPS Venue Link Disclaimer** ✅
+   - Updated the `title` tooltip on all venue `<a>` links to read: *"Search '...' on Google Maps (approximate — may not show exact field location)"*
+   - No visual change; the hover tooltip now sets expectations that the pin may land on the wrong field
+   - File: `MLSNext.Web/src/components/MatchCard.tsx`
+
+2. **Removed Grey Circles Behind Team Logos** ✅
+   - When a real logo image is present, the `.team-crest` round bubble (grey background + border) is now transparent
+   - New CSS modifier class `.team-crest--logo` sets `background: transparent; border-color: transparent`
+   - Teams without a logo still show the grey initials bubble (unchanged)
+   - Files: `MLSNext.Web/src/components/MatchCard.tsx`, `MLSNext.Web/src/components/MatchCard.css`
+
+3. **Team Logos Clickable (same as team name)** ✅
+   - Both home and away `.team-crest` divs now carry `onClick` → `onBadgeClick('team', teamName)` when the `onBadgeClick` prop is present
+   - Hover feedback: `opacity: 0.75` + `scale(1.08)` via `.team-crest-clickable` CSS class
+   - Applies to both logo images and initials bubbles — clicking either fires the team filter
+   - Files: `MLSNext.Web/src/components/MatchCard.tsx`, `MLSNext.Web/src/components/MatchCard.css`

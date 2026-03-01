@@ -89,7 +89,11 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
 
       <div className="match-teams">
         <div className="team home-team">
-          <div className="team-crest">
+          <div
+            className={`team-crest${match.homeTeam.logoUrl ? ' team-crest--logo' : ''}${onBadgeClick ? ' team-crest-clickable' : ''}`}
+            onClick={() => onBadgeClick?.('team', match.homeTeam.name)}
+            title={onBadgeClick ? `Filter by ${match.homeTeam.name}` : undefined}
+          >
             {match.homeTeam.logoUrl
               ? <img src={match.homeTeam.logoUrl} alt={match.homeTeam.name} className="team-logo" />
               : getInitials(match.homeTeam.name)
@@ -116,7 +120,11 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
         </div>
 
         <div className="team away-team">
-          <div className="team-crest">
+          <div
+            className={`team-crest${match.awayTeam.logoUrl ? ' team-crest--logo' : ''}${onBadgeClick ? ' team-crest-clickable' : ''}`}
+            onClick={() => onBadgeClick?.('team', match.awayTeam.name)}
+            title={onBadgeClick ? `Filter by ${match.awayTeam.name}` : undefined}
+          >
             {match.awayTeam.logoUrl
               ? <img src={match.awayTeam.logoUrl} alt={match.awayTeam.name} className="team-logo" />
               : getInitials(match.awayTeam.name)
@@ -141,7 +149,7 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(match.venue.name)}`}
               target="_blank"
               rel="noopener noreferrer"
-              title={`Search "${match.venue.name}" on Google Maps`}
+              title={`Search "${match.venue.name}" on Google Maps (approximate — may not show exact field location)`}
             >
               {match.venue.name}
             </a>

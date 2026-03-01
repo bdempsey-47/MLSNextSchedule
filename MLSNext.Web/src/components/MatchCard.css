@@ -119,6 +119,23 @@
   padding: 4px;
 }
 
+/* When a real logo is present, drop the grey bubble */
+.team-crest--logo {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Clickable crest — cursor + hover feedback */
+.team-crest-clickable {
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.team-crest-clickable:hover {
+  opacity: 0.75;
+  transform: scale(1.08);
+}
+
 .team-name {
   font-size: 0.82rem;
   font-weight: 700;
