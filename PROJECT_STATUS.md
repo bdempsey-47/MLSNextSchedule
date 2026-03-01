@@ -1,7 +1,7 @@
 ﻿# MLS NEXT Schedule Ingestion — Project Status & Handoff
 
 **Last Updated:** March 1, 2026  
-**Status:** Multi-Select Filters + Clickable Team Names — Frontend Enhancements In Progress ✅
+**Status:** Filter Bar UX Overhaul + Venue Maps + Add-to-Calendar — Session 7 Complete ✅
 
 ---
 
@@ -793,6 +793,76 @@ Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null`
 2. **Google Maps venue integration** — Geocode venue names and add Maps link to match cards
 3. **Mobile filter layout optimization** — Reduce vertical space on small screens
 4. **Standings page** — New route showing win/loss/draw records and points tables
+
+**Next Session — Azure Deployment (Phase 4):**
+1. Create Azure SQL Database and apply EF Core migrations
+2. Deploy `MLSNext.Functions` to Azure Function App (Consumption Plan)
+3. Deploy `MLSNext.Web` to Azure Static Web Apps (free tier)
+4. Configure `VITE_API_BASE_URL` environment variable to live Function App URL
+5. Remove or raise `MaxMatchesPerTournament` cap before production ingestion
+6. Smoke test all endpoints against production data
+
+---
+
+## 🔄 Latest Session Summary (Mar 1, 2026 - Session 7)
+
+### Phase 3 — Filter Bar UX Overhaul + Venue Maps + Add-to-Calendar ✅
+
+**Git commit:** `0d02053`
+
+**Work Completed This Session:**
+
+1. **Team Clear (×) Button — Permanent Fix** ✅
+   - Previous approach used `position: absolute` which caused the button to drift as the container resized or team name lengths changed
+   - Refactored `.team-search-container` to `display: flex`; the `<input>` gets `flex: 1` and the × button is a `flex-shrink: 0` sibling
+   - Button is now permanently glued to the right edge of the textbox at any window width
+   - Added `overflow: visible` to container so the autocomplete dropdown is never clipped
+
+2. **fetchTeams Bug Fix** ✅
+   - `fetchTeams()` was referencing bare `program` and `season` variables left over from the single-select era; these were `undefined` at runtime, causing a silent `ReferenceError` that emptied the teams list on every fresh mount
+   - Fixed to iterate `programs[]` and `seasons[]` arrays using `forEach` + `params.append()`, correctly sending repeatable URL params
+
+3. **Filter Bar — Compact Inline Layout** ✅
+   - Replaced multi-column CSS grid with `flex-direction: column`; each row is now `label + control` side-by-side
+   - Label width fixed at `58px` so every row's control starts at exactly the same x position
+   - `padding-left: 10px` explicitly set on `<select>` and `<input>` to override browser-default offset differences
+   - Labels renamed: "Search by Team" → **Team**, "Age Groups" → **Age**
+   - Reset button changed to icon-only (no "Reset" text), `position: absolute` at bottom-right of the filter card; icon inverts to white on hover
+
+4. **Clickable Venue → Google Maps** ✅
+   - Venue names that are not "TBD" are rendered as `<a>` links
+   - URL: `https://www.google.com/maps/search/?api=1&query=<venue name>` — opens a general Google Maps search in a new tab
+   - "TBD" remains plain text; link is visually identical at rest, shifts to primary colour + underline on hover
+
+5. **Add to Calendar (.ics download)** ✅
+   - Date row on each match card converted from a `<div>` to a `<button>` with `class="detail detail-calendar"`
+   - Clicking generates an RFC 5545-compliant `.ics` blob in memory and triggers a browser download
+   - OS opens the file with the default calendar app (Outlook, Apple Calendar, Windows Calendar, etc.)
+   - ICS fields: `SUMMARY` (Home vs Away), `DTSTART`/`DTEND` (UTC, 90-min assumed duration), `LOCATION` (venue or blank if TBD), `DESCRIPTION` (age group + gender + region), `UID` (match-{matchId}@mlsnextschedule — prevents calendar duplicates on re-import)
+   - Button styled with `all: unset` to match existing detail rows; hover adds primary colour + underline
+
+**Files Modified This Session:**
+- `MLSNext.Web/src/components/FilterBar.css` — compact layout, flex × button, reset button position
+- `MLSNext.Web/src/components/FilterBar.tsx` — fetchTeams bug fix, label renames, × button as flex sibling
+- `MLSNext.Web/src/components/MatchCard.tsx` — Google Maps venue link, add-to-calendar ICS helper
+- `MLSNext.Web/src/components/MatchCard.css` — `.venue-link` and `.detail-calendar` styles
+- `MLSNext.Web/src/components/MatchList.tsx` — per-card program detection
+- `MLSNext.Web/src/components/ProgramSelector.tsx` — multi-select array interface
+- `MLSNext.Web/src/components/SeasonSelector.tsx` — multi-select array interface
+- `MLSNext.Functions/Triggers/GetMatches.cs` — multi-param program/season support
+- `MLSNext.Functions/Triggers/GetTeams.cs` — same multi-param pattern
+- `PROJECT_STATUS.md` — this update
+
+**Current State:**
+- ✅ All 100 sample matches visible with team logos, venue Maps links, and calendar buttons
+- ✅ Filter bar compact and pixel-aligned; × button stable at all window sizes
+- ✅ All changes committed (`0d02053`) and pushed to `origin/main`
+
+**Next Session — Immediate Priorities:**
+1. **Consistent match card height** — Cards with longer team names cause the grey footer area to grow taller than cards with short names, making the grid look uneven. Root cause: the `.match-teams` grid row expands when a team name wraps to two lines, pushing `.match-footer` down and making that card taller than its neighbours. Fix options: enforce `min-height` on `.match-card`, clamp team names to one line with `white-space: nowrap; overflow: hidden; text-overflow: ellipsis`, or use `align-items: stretch` on the card grid so all cards in a row share the same height.
+2. **Google Maps upgrade** — Consider upgrading from a general search link to a Geocoding API lookup for a precise pin (Phase 3 stretch goal)
+3. **Mobile filter layout optimisation** — Further reduce vertical space on small screens
+4. **Standings page** — New route showing win/loss/draw records and points tables per program, season, region, and age group
 
 **Next Session — Azure Deployment (Phase 4):**
 1. Create Azure SQL Database and apply EF Core migrations
