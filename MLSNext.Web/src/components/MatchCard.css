@@ -233,6 +233,8 @@
      3 rows × ~17px + 2 gaps × 6px + 12px top/bottom padding = ~87px */
   min-height: 90px;
   box-sizing: border-box;
+  /* push footer to card bottom in a flex-column card */
+  margin-top: auto;
 }
 
 .detail {
