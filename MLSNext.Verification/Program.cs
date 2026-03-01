@@ -10,136 +10,102 @@ using MLSNext.Data;
 using MLSNext.Ingestion.Models;
 using MLSNext.Ingestion.Services;
 
-// Load configuration from local.settings.json
-var configPath = Path.Combine(Directory.GetCurrentDirectory(), "local.settings.json");
+// Load configuration
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("local.settings.json", optional: false, reloadOnChange: false)
     .AddEnvironmentVariables()
     .Build();
 
-// Extract Modular11 settings
-var modular11Config = config.GetSection("Modular11");
-var ageGroupsStr = modular11Config["AgeGroups"] ?? "";
-var ageGroups = ageGroupsStr.Split(',', StringSplitOptions.RemoveEmptyEntries)
-    .Select(s => s.Trim())
-    .ToList();
+var connectionString = config.GetConnectionString("DefaultConnection");
+const int MaxMatchesPerTournament = 25;
+Console.WriteLine($"=== MLSNext Full Ingestion Runner ===\nDB: {connectionString}\nLimit: {MaxMatchesPerTournament} records per tournament\n");
 
-var settings = new Modular11Settings
+// Clear database before ingestion
+Console.WriteLine("Clearing database...");
 {
-    TournamentId = modular11Config["TournamentId"] ?? "35",
-    Gender = modular11Config["Gender"] ?? "1",
-    Status = modular11Config["Status"] ?? "scheduled",
-    MatchType = modular11Config["MatchType"] ?? "2",
-    AgeGroups = ageGroups,
-    StartDate = modular11Config["StartDate"],
-    EndDate = modular11Config["EndDate"]
+    var services = new ServiceCollection();
+    services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+    var sp = services.BuildServiceProvider();
+    var db = sp.GetRequiredService<AppDbContext>();
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Matches");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM RawIngestionLogs");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Regions");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Divisions");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Leagues");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Teams");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Venues");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM Competitions");
+    await db.Database.ExecuteSqlRawAsync("DELETE FROM AgeGroups");
+    Console.WriteLine("Database cleared.\n");
+    await sp.DisposeAsync();
+}
+
+// Run ingestion for each tournament
+var tournaments = new[]
+{
+    new { TournamentId = "35", Label = "Academy",    StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
+    new { TournamentId = "12", Label = "Homegrown",  StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
+    new { TournamentId = "35", Label = "Academy S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
+    new { TournamentId = "12", Label = "Homegrown S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
 };
 
-// Extract connection string
-var connectionString = config.GetConnectionString("DefaultConnection");
-
-Console.WriteLine("=== MLSNext Schedule Data Verification & Import ===\n");
-Console.WriteLine($"API Configuration:");
-Console.WriteLine($"  Tournament ID: {settings.TournamentId}");
-Console.WriteLine($"  Gender: {settings.Gender}");
-Console.WriteLine($"  Age Groups: {string.Join(", ", settings.AgeGroups)}");
-Console.WriteLine($"  Status: {settings.Status}");
-Console.WriteLine($"  Match Type: {settings.MatchType}");
-Console.WriteLine($"\nDatabase: {connectionString}\n");
-Console.WriteLine(new string('=', 60) + "\n");
-
-// Set up dependency injection
-var services = new ServiceCollection();
-services.AddHttpClient<Modular11Client>();
-services.AddScoped<ScheduleParser>();
-services.AddScoped<MatchUpsertService>();
-services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
-services.AddSingleton(settings);
-
-// Configure logging to see debug output
-services.AddLogging(builder =>
+foreach (var t in tournaments)
 {
-    builder.AddConsole();
-    builder.SetMinimumLevel(LogLevel.Debug);
-});
-
-var serviceProvider = services.BuildServiceProvider();
-var client = serviceProvider.GetRequiredService<Modular11Client>();
-var parser = serviceProvider.GetRequiredService<ScheduleParser>();
-var upsertService = serviceProvider.GetRequiredService<MatchUpsertService>();
-
-try
-{
-    Console.WriteLine("Fetching data from Modular11 API (Page 1)...\n");
-    
-    // Build URL for debugging
-    var ageGroupStr = string.Join("&", settings.AgeGroups.Select(ag => $"age[]={ag}"));
-    var dateParams = "";
-    if (!string.IsNullOrEmpty(settings.StartDate))
-        dateParams += $"&start_date={settings.StartDate}";
-    if (!string.IsNullOrEmpty(settings.EndDate))
-        dateParams += $"&end_date={settings.EndDate}";
-    
-    var debugUrl = $"https://www.modular11.com/public_schedule/league/get_matches?tournament={settings.TournamentId}&gender={settings.Gender}&status={settings.Status}&match_type={settings.MatchType}&open_page=1&{ageGroupStr}{dateParams}";
-    
-    Console.WriteLine($"Request URL: {debugUrl}\n");
-    
-    var html = await client.FetchPageAsync(pageNumber: 1, ct: CancellationToken.None);
-    
-    if (string.IsNullOrEmpty(html))
-    {
-        Console.WriteLine("❌ No data returned from API");
-        return;
-    }
-    
-    Console.WriteLine($"✅ Successfully retrieved HTML ({html.Length} bytes)\n");
-    
-    Console.WriteLine("Parsing matches from HTML...\n");
-    var tournamentId = int.TryParse(settings.TournamentId, out var id) ? id : 35;
-    var matches = parser.ParseMatches(html, tournamentId);
-    
-    if (!matches.Any())
-    {
-        Console.WriteLine("❌ No matches found in parsed data");
-        return;
-    }
-    
-    Console.WriteLine($"✅ Found {matches.Count} match(es)\n");
-    Console.WriteLine(new string('=', 60) + "\n");
-    
-    // Display each match with all details
-    foreach ((var match, int index) in matches.Select((m, i) => (m, i + 1)))
-    {
-        Console.WriteLine($"MATCH {index}:");
-        Console.WriteLine($"  Match ID:     {match.MatchId}");
-        Console.WriteLine($"  Date (UTC):   {match.MatchDate:yyyy-MM-dd HH:mm:ss}");
-        Console.WriteLine($"  Home Team:    {match.HomeTeamName}");
-        Console.WriteLine($"  Away Team:    {match.AwayTeamName}");
-        Console.WriteLine($"  Venue:        {match.VenueName}");
-        Console.WriteLine($"  Division:     {match.Division}");
-        Console.WriteLine($"  Age Group:    {match.AgeGroup}");
-        Console.WriteLine($"  Competition:  {match.Competition}");
-        Console.WriteLine($"  Gender:       {match.Gender}");
-        Console.WriteLine($"  Score:        {match.Score}");
-        Console.WriteLine();
-    }
-    
     Console.WriteLine(new string('=', 60));
-    Console.WriteLine($"\n📝 Saving {matches.Count} match(es) to database...\n");
-    
-    // Upsert matches into database
-    await upsertService.UpsertMatchesAsync(matches, CancellationToken.None);
-    
-    Console.WriteLine($"\n✅ Database import complete:");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"❌ Error during data verification:");
-    Console.WriteLine($"   {ex.GetType().Name}: {ex.Message}");
-    if (ex.InnerException != null)
+    Console.WriteLine($"Running: {t.Label} (tournament={t.TournamentId}, {t.StartDate} → {t.EndDate})");
+    Console.WriteLine(new string('=', 60));
+
+    var settings = new Modular11Settings
     {
-        Console.WriteLine($"   Inner: {ex.InnerException.Message}");
+        TournamentId = t.TournamentId,
+        Gender = "1",
+        Status = "scheduled",
+        MatchType = "2",
+        AgeGroups = new List<string> { "13", "14", "15", "16", "17", "18" },
+        StartDate = t.StartDate,
+        EndDate = t.EndDate
+    };
+
+    var services = new ServiceCollection();
+    services.AddHttpClient<Modular11Client>();
+    services.AddScoped<ScheduleParser>();
+    services.AddScoped<MatchUpsertService>();
+    services.AddScoped<IngestionOrchestrator>();
+    services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+    services.AddSingleton(settings);
+    services.AddLogging(b => { b.AddConsole(); b.SetMinimumLevel(LogLevel.Information); });
+
+    var sp = services.BuildServiceProvider();
+    var orchestrator = sp.GetRequiredService<IngestionOrchestrator>();
+
+    try
+    {
+        await orchestrator.RunAsync(CancellationToken.None, MaxMatchesPerTournament);
+        Console.WriteLine($"✅ {t.Label} ingestion complete.\n");
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ {t.Label} failed: {ex.Message}\n");
+    }
+
+    await sp.DisposeAsync();
+    // Brief pause between tournament runs to avoid hammering the API
+    await Task.Delay(2000);
 }
+
+Console.WriteLine("\n=== All ingestion runs complete ===");
+
+// Show final counts
+{
+    var services = new ServiceCollection();
+    services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+    var sp = services.BuildServiceProvider();
+    var db = sp.GetRequiredService<AppDbContext>();
+    var matchCount = await db.Matches.CountAsync();
+    var teamCount  = await db.Teams.CountAsync();
+    var teamsWithLogos = await db.Teams.Where(t => t.LogoUrl != null).CountAsync();
+    Console.WriteLine($"\nMatches: {matchCount}  |  Teams: {teamCount}  |  With logos: {teamsWithLogos}");
+    await sp.DisposeAsync();
+}
+

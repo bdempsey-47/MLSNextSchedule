@@ -37,7 +37,9 @@ public class IngestionOrchestrator
     /// Run the complete ingestion job.
     /// Handles pagination, parsing, and database upsert.
     /// </summary>
-    public async Task RunAsync(CancellationToken ct = default)
+    /// <param name="ct">Cancellation token.</param>
+    /// <param name="maxMatches">Optional cap on total matches to ingest. Null = no limit.</param>
+    public async Task RunAsync(CancellationToken ct = default, int? maxMatches = null)
     {
         var startTime = DateTime.UtcNow;
         var totalMatches = 0;
@@ -98,11 +100,27 @@ public class IngestionOrchestrator
                     }
                 }
 
+                // Trim to respect MaxMatches cap
+                if (maxMatches.HasValue)
+                {
+                    var remaining = maxMatches.Value - totalMatches;
+                    if (newMatches.Count > remaining)
+                        newMatches = newMatches.Take(remaining).ToList();
+                }
+
                 // Upsert to database
                 if (newMatches.Count > 0)
                 {
                     await _upsertService.UpsertMatchesAsync(newMatches, ct);
                     totalMatches += newMatches.Count;
+                    _logger.LogInformation("Total matches ingested so far: {Total}", totalMatches);
+                }
+
+                // Stop if we've hit the cap
+                if (maxMatches.HasValue && totalMatches >= maxMatches.Value)
+                {
+                    _logger.LogInformation("Reached MaxMatches cap of {Max}. Stopping.", maxMatches.Value);
+                    break;
                 }
 
                 pageNumber++;
