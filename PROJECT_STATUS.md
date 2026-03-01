@@ -1,7 +1,7 @@
 ﻿# MLS NEXT Schedule Ingestion — Project Status & Handoff
 
 **Last Updated:** February 28, 2026  
-**Status:** UI Filtering & Bookmarking Complete — Full Stack Running & Tested ✅
+**Status:** Team Logos + Capped Dev Ingestion — 100 Sample Records Live ✅
 
 ---
 
@@ -566,3 +566,71 @@ LocalDB (MLSNext)
 3. Deploy `MLSNext.Web` to Azure Static Web Apps (free tier)
 4. Configure `VITE_API_BASE_URL` environment variable to live Function App URL
 5. Smoke test all endpoints against production data
+
+---
+
+## 🔄 Latest Session Summary (Feb 28, 2026 - Session 5)
+
+### Phase 3 — Team Logos + Dev Ingestion Tooling ✅
+
+**Git commits:** `2f524ce` (logos), `e61dd6d` (ingestion cap + runner)
+
+**Work Completed This Session:**
+
+1. **Team Logo Support — Full Stack** ✅
+   - `MLSNext.Data` — Added `LogoUrl` (nvarchar 500, nullable) column to `Teams` table
+   - EF migration `20260228234737_AddTeamLogoUrl` created and applied to LocalDB
+   - `ScheduleParser` — `ExtractLogoUrls(block)` reads `.club-photo` background-image CSS for home (index 0) and away (index 1) team crests; `ParseBackgroundImageUrl()` strips `url('...')` wrapper
+   - `ParsedMatch` — `HomeTeamLogoUrl` and `AwayTeamLogoUrl` nullable string fields added
+   - `MatchUpsertService` — `LookupOrCreateTeamAsync(name, logoUrl)` creates team with logo on first insert; updates logo if it changes on re-ingest
+   - `types.ts` — `Team` interface extended with `logoUrl?: string`
+   - `App.tsx` — `transformApiMatch()` maps `LogoUrl`/`logoUrl` from API response to team objects
+   - `MatchCard.tsx` — Renders `<img src={team.logoUrl} className="team-logo" />` when available, initials bubble fallback otherwise
+   - `MatchCard.css` — `.team-crest` enlarged 36px → 44px, `overflow: hidden`; `.team-logo` fills crest with `object-fit: contain` and 4px padding
+
+2. **UI Polish** ✅
+   - Removed duplicate CSS rules causing season button visibility issues
+   - Fixed card hover jitter (removed `translateY` transform)
+   - Fixed footer background gap (flex container `flex: 1`)
+   - Season/card accent bar colour changed from red to navy
+   - Team crest bubbles top-aligned in match card grid (`align-items: start`); score self-aligned to centre
+   - Age group and region badges wired as clickable filters (set filter state on click)
+
+3. **Capped Ingestion Runner** ✅
+   - `IngestionOrchestrator.RunAsync` — New optional `int? maxMatches` parameter; trims each page batch to the remaining cap and breaks immediately when reached
+   - `MLSNext.Verification/Program.cs` — Fully rewritten as a multi-tournament runner:
+     - Clears all DB tables (FK-safe order) before ingestion
+     - Runs 4 combinations: Academy Fall 2025, Homegrown Fall 2025, Academy Spring 2026, Homegrown Spring 2026
+     - Each run capped at `MaxMatchesPerTournament = 25`
+     - Prints final `Matches | Teams | With logos` summary
+   - To remove the limit for production: set `MaxMatchesPerTournament` to `null` or delete the parameter
+
+4. **Database Re-ingested** ✅
+   - Fresh run via `dotnet run` in `MLSNext.Verification`
+   - Result: **100 matches, 104 teams, 104 with logos (100%)** ✅
+   - All 4 tournament/season combinations populated
+
+**Current State:**
+- ✅ All 100 sample matches visible in the UI with team logos rendering
+- ✅ API serving `http://localhost:7071`
+- ✅ Frontend serving `http://localhost:5173`
+- ✅ All changes committed and pushed (`e61dd6d`)
+
+**Dev Workflow for Re-ingestion:**
+```powershell
+# From repo root — clears DB and re-ingests 25 per tournament
+cd MLSNext.Verification
+dotnet run
+# Output: Matches: 100 | Teams: 104 | With logos: 104
+```
+
+**To ingest full data (go-live):**
+Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null` to `RunAsync`. The `maxMatches` parameter is optional and defaults to unlimited.
+
+**Next Session — Azure Deployment (Phase 4):**
+1. Create Azure SQL Database and apply EF Core migrations
+2. Deploy `MLSNext.Functions` to Azure Function App (Consumption Plan)
+3. Deploy `MLSNext.Web` to Azure Static Web Apps (free tier)
+4. Configure `VITE_API_BASE_URL` environment variable to live Function App URL
+5. Remove or raise `MaxMatchesPerTournament` cap before production ingestion
+6. Smoke test all endpoints against production data
