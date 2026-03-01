@@ -631,6 +631,8 @@ Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null`
 1. **Clickable team names** — Clicking a team name in a match card updates the team filter (same pattern as clickable age group / region badges)
 2. **Cross-program team view** — Allow selecting both Homegrown + Academy simultaneously for a given team name or region (currently program is a single-select toggle; needs multi-select or "All Programs" mode)
 3. **Google Maps venue integration** — Geocode venue names and surface a Maps link (or embedded map) on each match card; consider Google Maps Geocoding API or Static Maps API
+4. **Mobile filter layout tightening** — Reduce vertical space used by the filter bar on small screens; consider collapsible filter panel, horizontal chip row, or a compact icon-button row that expands on tap
+5. **Standings page** — New route/view showing win/loss/draw records and points table per program, season, region, and age group; requires aggregating match results from the existing Matches data
 
 **Next Session — Azure Deployment (Phase 4):**
 1. Create Azure SQL Database and apply EF Core migrations
