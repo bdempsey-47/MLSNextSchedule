@@ -1,7 +1,7 @@
 ﻿# MLS NEXT Schedule Ingestion — Project Status & Handoff
 
-**Last Updated:** February 28, 2026  
-**Status:** Team Logos + Capped Dev Ingestion — 100 Sample Records Live ✅
+**Last Updated:** March 1, 2026  
+**Status:** Multi-Select Filters + Clickable Team Names — Frontend Enhancements In Progress ✅
 
 ---
 
@@ -249,6 +249,30 @@ League (MLSNext)
 
 ## 🚀 Quick Start Commands
 
+### Run Locally (Full Stack)
+
+Open two terminals from the repo root:
+
+```powershell
+# Terminal 1 — Backend API (localhost:7071)
+cd MLSNext.Functions
+func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion
+
+# Terminal 2 — Frontend (localhost:5173)
+cd MLSNext.Web
+npm run dev
+```
+
+> **Why `--functions` list?** The `ScheduledIngestion` timer trigger requires Azure Storage (Azurite)
+> running locally on port 10000. Without it the host logs errors and may fail to bind HTTP triggers.
+> Passing an explicit function list skips the timer trigger for local dev.
+>
+> **CORS:** `MLSNext.Functions/local.settings.json` includes a `Host.CORS` entry pointing at
+> `http://localhost:5173`. Without this the browser blocks all API calls and the UI falls back to
+> mock data. This setting is already committed — no action needed.
+
+### Build
+
 ```powershell
 # Build entire solution
 dotnet build
@@ -264,6 +288,15 @@ dotnet ef migrations add <MigrationName> --project MLSNext.Data
 dotnet ef database update --project MLSNext.Data
 ```
 
+### Re-ingest Sample Data
+
+```powershell
+# Clears DB and loads 25 matches per tournament (4 tournament/season combos = 100 total)
+cd MLSNext.Verification
+dotnet run
+# Output: Matches: 100 | Teams: 104 | With logos: 104
+```
+
 ---
 
 ## ⚠️ Important Notes for Handoff
@@ -273,6 +306,8 @@ dotnet ef database update --project MLSNext.Data
 3. **No secrets in code** — All sensitive config (API keys, connection strings) go to Azure App Settings
 4. **Modular11 API is undocumented** — HTML parsing is the only option; response format may change
 5. **Rate limiting not enforced** — Polite throttling at 200ms per request is built in
+6. **Timer trigger requires Azurite** — `ScheduledIngestion` crashes without Azure Storage running locally; always start with `func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion`
+7. **CORS must be configured in local.settings.json** — The `Host.CORS` setting pointing to `http://localhost:5173` is required; without it the browser silently falls back to mock data
 
 ---
 
@@ -633,6 +668,131 @@ Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null`
 3. **Google Maps venue integration** — Geocode venue names and surface a Maps link (or embedded map) on each match card; consider Google Maps Geocoding API or Static Maps API
 4. **Mobile filter layout tightening** — Reduce vertical space used by the filter bar on small screens; consider collapsible filter panel, horizontal chip row, or a compact icon-button row that expands on tap
 5. **Standings page** — New route/view showing win/loss/draw records and points table per program, season, region, and age group; requires aggregating match results from the existing Matches data
+
+**Next Session — Azure Deployment (Phase 4):**
+1. Create Azure SQL Database and apply EF Core migrations
+2. Deploy `MLSNext.Functions` to Azure Function App (Consumption Plan)
+3. Deploy `MLSNext.Web` to Azure Static Web Apps (free tier)
+4. Configure `VITE_API_BASE_URL` environment variable to live Function App URL
+5. Remove or raise `MaxMatchesPerTournament` cap before production ingestion
+6. Smoke test all endpoints against production data
+
+---
+
+## 🔄 Latest Session Summary (Mar 1, 2026 - Session 6)
+
+### Phase 3 — Multi-Select Filters + Clickable Team Names ✅ (In Progress ⏳)
+
+**Work Completed This Session:**
+
+1. **Clickable Team Names** ✅
+   - [MatchCard.tsx](MLSNext.Web/src/components/MatchCard.tsx) — Added `onClick` handlers to both home and away team name elements
+   - [App.tsx](MLSNext.Web/src/App.tsx) — Added `handleTeamClick(teamName)` function that updates `selectedTeam` state
+   - [MatchList.tsx](MLSNext.Web/src/components/MatchList.tsx) — Passed `onTeamClick` prop through to MatchCard components
+   - [MatchCard.css](MLSNext.Web/src/components/MatchCard.css) — Added cursor pointer and hover underline styles to team names
+   - **Result:** Clicking any team name in any match card filters the view to that team ✅
+
+2. **Multi-Select Program Selector (Independent Toggles)** ✅
+   - **Previous behavior:** Single toggle button switching between Homegrown (🏆) and Academy (⚽)
+   - **New behavior:** Two independent checkbox-style toggles that can both be selected simultaneously
+   - [ProgramSelector.tsx](MLSNext.Web/src/components/ProgramSelector.tsx) — Refactored to accept `selectedPrograms: string[]` and `onChange: (programs: string[]) => void`
+   - [App.tsx](MLSNext.Web/src/App.tsx) — Changed `selectedProgram: string` to `selectedPrograms: string[]` with toggle logic
+   - [FilterBar.tsx](MLSNext.Web/src/components/FilterBar.tsx) — Updated to handle programs array
+   - [GetMatches.cs](MLSNext.Web/src/Triggers/GetMatches.cs) — Added `HttpUtility.ParseQueryString` support for multiple `program` query parameters
+   - [GetTeams.cs](MLSNext.Web/src/Triggers/GetTeams.cs) — Same multi-param support
+   - **Result:** Users can select Homegrown only, Academy only, or both simultaneously ✅
+
+3. **Multi-Select Season Selector (Independent Toggles)** ✅
+   - **Previous behavior:** Single toggle button switching between Fall and Spring
+   - **New behavior:** Two independent checkbox-style toggles that can both be selected simultaneously
+   - [SeasonSelector.tsx](MLSNext.Web/src/components/SeasonSelector.tsx) — Refactored to accept `selectedSeasons: string[]` and `onChange: (seasons: string[]) => void`
+   - [App.tsx](MLSNext.Web/src/App.tsx) — Changed `selectedSeason: string` to `selectedSeasons: string[]` with toggle logic
+   - [FilterBar.tsx](MLSNext.Web/src/components/FilterBar.tsx) — Updated to handle seasons array
+   - [GetMatches.cs](MLSNext.Web/src/Triggers/GetMatches.cs) — Added `ParseSeasons(List<string>)` method that creates date range union
+     - Fall 2025: July 1 - December 31, 2025
+     - Spring 2026: January 1 - June 30, 2026
+     - Both selected: July 1, 2025 - June 30, 2026 (continuous range)
+   - [GetTeams.cs](MLSNext.Web/src/Triggers/GetTeams.cs) — Same season union logic
+   - **Result:** Users can select Fall only, Spring only, or both seasons simultaneously ✅
+
+4. **Backend Multi-Parameter Support** ✅
+   - Updated both `GetMatches.cs` and `GetTeams.cs` to use `System.Web.HttpUtility.ParseQueryString()`
+   - Extracts all values for repeatable query parameters: `?program=Homegrown&program=Academy&season=Fall&season=Spring`
+   - **Query logic:** Multiple programs = OR condition, multiple seasons = date range union
+   - **Result:** Frontend can send arrays via URL params, backend correctly processes them ✅
+
+5. **Empty Selection Validation** ✅
+   - **Bug:** When all programs deselected, UI showed all matches instead of none
+   - **Fix:** Added early return in [App.tsx](MLSNext.Web/src/App.tsx) `fetchMatches` function:
+     ```typescript
+     if (selectedPrograms.length === 0 || selectedSeasons.length === 0) {
+       setMatches([]);
+       setIsLoading(false);
+       return;
+     }
+     ```
+   - **Result:** Deselecting all programs or all seasons now correctly shows "No matches found" ✅
+
+6. **Team Filter Clear Button** ⏳ (In Progress)
+   - [FilterBar.tsx](MLSNext.Web/src/components/FilterBar.tsx) — Added clear button (×) to team search input
+   - [FilterBar.css](MLSNext.Web/src/components/FilterBar.css) — Positioned button absolutely with `right: 6px`, size `20px×20px`
+   - **Issue:** Button position appears unstable during window resize or when selecting teams with different name lengths
+   - **User feedback:** "The × floats around as I resize the window, or select teams with different name lengths"
+   - **Attempted fixes:** Adjusted right offset from 8px → 1px → 6px, reduced size from 24px → 20px
+   - **Current state:** Functional but CSS positioning needs different approach — user requested button be truly "inside" the textbox bound to right edge
+   - **Next step:** Refactor CSS strategy (possibly flexbox wrapper or different DOM structure) ⏳
+
+**Current State:**
+- ✅ All 100 sample matches visible in the UI with team logos rendering
+- ✅ Backend API serving `http://localhost:7071` with multi-select support
+- ✅ Frontend serving `http://localhost:5173` with enhanced filters
+- ✅ Clickable team names, age groups, and regions all working
+- ✅ Multi-select program and season toggles fully functional
+- ⏳ Team filter clear button functional but CSS positioning unstable
+
+**Files Modified This Session:**
+- `MLSNext.Web/src/components/MatchCard.tsx` — Team name click handlers
+- `MLSNext.Web/src/components/MatchCard.css` — Team name hover styles
+- `MLSNext.Web/src/components/MatchList.tsx` — Pass-through onTeamClick prop
+- `MLSNext.Web/src/components/ProgramSelector.tsx` — Multi-select array interface
+- `MLSNext.Web/src/components/SeasonSelector.tsx` — Multi-select array interface
+- `MLSNext.Web/src/components/FilterBar.tsx` — Team clear button, array handling
+- `MLSNext.Web/src/components/FilterBar.css` — Clear button styling
+- `MLSNext.Web/src/App.tsx` — Arrays for programs/seasons, empty validation, team click handler
+- `MLSNext.Functions/Triggers/GetMatches.cs` — Multi-param support, ParseSeasons date range union
+- `MLSNext.Functions/Triggers/GetTeams.cs` — Same multi-param pattern
+- `MLSNext.Functions/local.settings.json` — CORS configuration for localhost:5173
+- `PROJECT_STATUS.md` — Updated with local run instructions and CORS notes (Session 5)
+
+**Technical Notes:**
+
+**Multi-Select Pattern:**
+- State: `selectedPrograms: string[]` and `selectedSeasons: string[]`
+- Toggle logic: Click active button removes it from array, click inactive button adds it
+- URL encoding: `?program=Homegrown&program=Academy` (repeatable query parameters)
+- Backend parsing: `HttpUtility.ParseQueryString()` extracts all values into `string[]`
+- Date range union: Fall + Spring = continuous July-June range (not two separate ranges)
+
+**CORS Configuration:**
+- Required for local development: browser blocks API calls from localhost:5173 to localhost:7071 without CORS headers
+- Configuration in `MLSNext.Functions/local.settings.json`:
+  ```json
+  {
+    "Host": {
+      "CORS": "http://localhost:5173"
+    }
+  }
+  ```
+- Timer trigger workaround: Use `func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion` to exclude `ScheduledIngestion` (requires Azurite on port 10000)
+
+**Known Issues:**
+1. **Team clear button positioning** — Button "floats" during window resize or team name length changes; needs CSS refactor (see item 6 above)
+
+**Next Session — Immediate Priorities:**
+1. **Fix team clear button positioning** — Try different CSS approach (flexbox wrapper, pseudo-element, or different DOM structure) to eliminate float behavior
+2. **Google Maps venue integration** — Geocode venue names and add Maps link to match cards
+3. **Mobile filter layout optimization** — Reduce vertical space on small screens
+4. **Standings page** — New route showing win/loss/draw records and points tables
 
 **Next Session — Azure Deployment (Phase 4):**
 1. Create Azure SQL Database and apply EF Core migrations

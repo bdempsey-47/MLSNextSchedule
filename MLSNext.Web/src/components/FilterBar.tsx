@@ -5,17 +5,23 @@ import resetIcon from '../../images/reset_icon.png'
 import './FilterBar.css'
 
 interface FilterBarProps {
-  program: Program
-  season: string
+  programs: Program[]
+  seasons: string[]
   region: string
   selectedAgeGroups: string[]
   initialTeam?: string
   onFiltersChange: (region: string, team: string, ageGroups: string[]) => void
 }
 
-export default function FilterBar({ program, season, region, selectedAgeGroups, initialTeam = '', onFiltersChange }: FilterBarProps) {
+export default function FilterBar({ programs, seasons, region, selectedAgeGroups, initialTeam = '', onFiltersChange }: FilterBarProps) {
   const [teamSearch, setTeamSearch] = useState(initialTeam)
   const [showSuggestions, setShowSuggestions] = useState(false)
+
+  // Keep the text input in sync when parent sets the team externally
+  // (e.g. clicking a team name on a match card)
+  useEffect(() => {
+    setTeamSearch(initialTeam)
+  }, [initialTeam])
   
   const [teams, setTeams] = useState<Team[]>([])
   const [teamsLoading, setTeamsLoading] = useState(false)
@@ -24,9 +30,9 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Map program to division name for filtering
-  const getDivisionNameForProgram = (prog: Program): string => {
-    return prog === 'homegrown' ? 'Homegrown' : 'Academy'
+  // Map programs to division names for filtering
+  const getDivisionNamesForPrograms = (progs: Program[]): string[] => {
+    return progs.map(p => p === 'homegrown' ? 'Homegrown' : 'Academy')
   }
 
   // Fetch age groups and divisions once on mount (not program/season dependent)
@@ -98,10 +104,10 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
       }
       try {
         const params = new URLSearchParams()
-        if (program) params.set('program', program)
-        if (season)  params.set('season', season)
+        programs.forEach(p => params.append('program', p === 'homegrown' ? 'Homegrown' : 'Academy'))
+        seasons.forEach(s => params.append('season', s))
         if (region)  params.set('region', region)
-        console.log(`🔍 fetchTeams → program=${program} season=${season} region=${region || '(all)'}`)
+        console.log(`🔍 fetchTeams → programs=${programs.join('+')} seasons=${seasons.join('+')} region=${region || '(all)'}`)
         const teamsRes = await fetch(`${apiBase}/teams?${params.toString()}`, { signal: controller.signal })
         if (teamsRes.ok) {
           const teamsData = await teamsRes.json()
@@ -125,9 +131,9 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
 
     fetchTeams()
     return () => controller.abort()
-  }, [program, season, region])
+  }, [programs, seasons, region])
 
-  // Fetch regions when program changes
+  // Fetch regions when programs change
   useEffect(() => {
     const fetchRegions = async () => {
       const apiBase = import.meta.env.VITE_API_BASE_URL
@@ -138,18 +144,26 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
       }
 
       try {
-        const divisionName = getDivisionNameForProgram(program)
-        const regionsRes = await fetch(`${apiBase}/regions?division=${encodeURIComponent(divisionName)}`)
-        if (regionsRes.ok) {
-          const regionsData = await regionsRes.json()
-          const transformedRegions = regionsData.map((r: any) => ({
-            id: r.Id || r.id,
-            name: r.Name || r.name
-          })).sort((a: any, b: any) => a.name.localeCompare(b.name))
-          
-          console.log(`📍 Regions for ${program}:`, transformedRegions)
-          setRegions(transformedRegions)
+        // If both programs selected, fetch regions for both; otherwise fetch for the selected one(s)
+        const divisionNames = getDivisionNamesForPrograms(programs)
+        const allRegions = new Set<any>()
+        
+        for (const divisionName of divisionNames) {
+          const regionsRes = await fetch(`${apiBase}/regions?division=${encodeURIComponent(divisionName)}`)
+          if (regionsRes.ok) {
+            const regionsData = await regionsRes.json()
+            regionsData.forEach((r: any) => {
+              allRegions.add(JSON.stringify({ id: r.Id || r.id, name: r.Name || r.name }))
+            })
+          }
         }
+        
+        const transformedRegions = Array.from(allRegions)
+          .map(str => JSON.parse(str as string))
+          .sort((a: any, b: any) => a.name.localeCompare(b.name))
+        
+        console.log(`📍 Regions for ${programs.join('+')}:`, transformedRegions)
+        setRegions(transformedRegions)
       } catch (err) {
         console.error('Error fetching regions:', err)
         setRegions([])
@@ -157,7 +171,7 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
     }
 
     fetchRegions()
-  }, [program])
+  }, [programs])
 
   // Notify parent when team filter changes; region and ageGroups are controlled by parent
   useEffect(() => {
@@ -211,7 +225,7 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
       </div>
 
       <div className="filter-section">
-        <label htmlFor="team-search">Search by Team</label>
+        <label htmlFor="team-search">Team</label>
         <div className="team-search-container">
           <input
             id="team-search"
@@ -227,6 +241,16 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
             className="filter-input"
             disabled={loading}
           />
+          {teamSearch && (
+            <button
+              className="team-clear-button"
+              onClick={() => setTeamSearch('')}
+              title="Clear team filter"
+              type="button"
+            >
+              ×
+            </button>
+          )}
           {showSuggestions && !teamsLoading && filteredSuggestions.length > 0 && (
             <div className="autocomplete-suggestions">
               {filteredSuggestions.map((team) => (
@@ -244,7 +268,7 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
       </div>
 
       <div className="filter-section">
-        <label>Age Groups</label>
+        <label>Age</label>
         <div className="age-group-checkboxes">
           {ageGroups.map(ageGroup => (
             <label key={ageGroup.id} className="checkbox-label">
@@ -259,18 +283,14 @@ export default function FilterBar({ program, season, region, selectedAgeGroups, 
         </div>
       </div>
 
-      <div className="filter-section filter-reset-section">
-        <label>&nbsp;</label>
-        <button
-          className={`reset-button ${hasActiveFilters ? 'reset-button--active' : ''}`}
-          onClick={handleReset}
-          title="Reset all filters"
-          disabled={!hasActiveFilters}
-        >
-          <img src={resetIcon} alt="Reset filters" className="reset-icon" />
-          Reset
-        </button>
-      </div>
+      <button
+        className={`reset-button ${hasActiveFilters ? 'reset-button--active' : ''}`}
+        onClick={handleReset}
+        title="Reset all filters"
+        disabled={!hasActiveFilters}
+      >
+        <img src={resetIcon} alt="Reset filters" className="reset-icon" />
+      </button>
     </div>
   )
 }

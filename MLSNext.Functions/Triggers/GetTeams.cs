@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using MLSNext.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Web;
 
 namespace MLSNext.Functions.Triggers;
 
@@ -23,25 +24,33 @@ public class GetTeams
     {
         try
         {
-            var program = req.Query["program"] ?? string.Empty;
-            var season  = req.Query["season"]  ?? string.Empty;
-            var region  = req.Query["region"]  ?? string.Empty;
+            var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
+            var programs = queryParams.GetValues("program")?.ToList() ?? new List<string>();
+            var seasons  = queryParams.GetValues("season")?.ToList() ?? new List<string>();
+            var region   = queryParams["region"]  ?? string.Empty;
 
             var matchQuery = _context.Matches
                 .Include(m => m.Region).ThenInclude(r => r.Division)
                 .AsQueryable();
 
-            // Filter by program
-            if (!string.IsNullOrEmpty(program))
+            // Filter by programs
+            if (programs.Any())
             {
-                if (program.ToLower() == "homegrown")
-                    matchQuery = matchQuery.Where(m => m.Region.Division.TournamentId == 12);
-                else if (program.ToLower() == "academy")
-                    matchQuery = matchQuery.Where(m => m.Region.Division.TournamentId == 35);
+                var tournamentIds = new List<int>();
+                foreach (var program in programs)
+                {
+                    if (program.ToLower() == "homegrown")
+                        tournamentIds.Add(12);
+                    else if (program.ToLower() == "academy")
+                        tournamentIds.Add(35);
+                }
+                
+                if (tournamentIds.Any())
+                    matchQuery = matchQuery.Where(m => tournamentIds.Contains(m.Region.Division.TournamentId));
             }
 
-            // Filter by season
-            var (seasonStart, seasonEnd) = ParseSeason(season);
+            // Filter by seasons
+            var (seasonStart, seasonEnd) = ParseSeasons(seasons);
             if (seasonStart.HasValue)
                 matchQuery = matchQuery.Where(m => m.MatchDateUtc >= seasonStart.Value);
             if (seasonEnd.HasValue)
@@ -62,8 +71,8 @@ public class GetTeams
                 .Select(t => new { t.Id, t.Name })
                 .ToListAsync();
 
-            _logger.LogInformation("GetTeams returning {Count} teams (program={Program}, season={Season}, region={Region})",
-                teams.Count, program, season, string.IsNullOrEmpty(region) ? "(all)" : region);
+            _logger.LogInformation("GetTeams returning {Count} teams (programs={Programs}, seasons={Seasons}, region={Region})",
+                teams.Count, string.Join(",", programs), string.Join(",", seasons), string.IsNullOrEmpty(region) ? "(all)" : region);
 
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
             response.Headers.Add("Access-Control-Allow-Origin", "*");
@@ -84,13 +93,29 @@ public class GetTeams
         }
     }
 
-    private (DateTime? StartDate, DateTime? EndDate) ParseSeason(string? season)
+    private (DateTime? StartDate, DateTime? EndDate) ParseSeasons(List<string> seasons)
     {
-        return season?.ToLower() switch
+        if (seasons == null || !seasons.Any())
+            return (null, null);
+
+        DateTime? minStart = null;
+        DateTime? maxEnd = null;
+
+        foreach (var season in seasons)
         {
-            "fall2025"   => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
-            "spring2026" => (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
-            _ => (null, null)
-        };
+            var (start, end) = season.ToLower() switch
+            {
+                "fall2025"   => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
+                "spring2026" => (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
+                _ => ((DateTime?)null, (DateTime?)null)
+            };
+
+            if (start.HasValue && (!minStart.HasValue || start.Value < minStart.Value))
+                minStart = start;
+            if (end.HasValue && (!maxEnd.HasValue || end.Value > maxEnd.Value))
+                maxEnd = end;
+        }
+
+        return (minStart, maxEnd);
     }
 }

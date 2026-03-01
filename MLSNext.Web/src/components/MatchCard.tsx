@@ -5,7 +5,7 @@ import './MatchCard.css'
 interface MatchCardProps {
   match: Match
   program?: Program
-  onBadgeClick?: (type: 'region' | 'ageGroup', value: string) => void
+  onBadgeClick?: (type: 'region' | 'ageGroup' | 'team', value: string) => void
 }
 
 const formatDate = (dateString: string) => {
@@ -17,6 +17,41 @@ const formatDate = (dateString: string) => {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+// Formats a Date to ICS UTC datetime string: YYYYMMDDTHHMMSSZ
+const toIcsDate = (date: Date) =>
+  date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+
+const addToCalendar = (match: Match) => {
+  const start = new Date(match.matchDateUtc)
+  const end = new Date(start.getTime() + 90 * 60 * 1000) // assume 90-min match
+  const title = `${match.homeTeam.name} vs ${match.awayTeam.name}`
+  const description = `${match.ageGroup.name} ${match.gender} — ${match.region?.name ?? ''}`
+  const location = match.venue.name !== 'TBD' ? match.venue.name : ''
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//MLS Next Schedule//EN',
+    'BEGIN:VEVENT',
+    `UID:match-${match.matchId}@mlsnextschedule`,
+    `DTSTART:${toIcsDate(start)}`,
+    `DTEND:${toIcsDate(end)}`,
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${location}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `match-${match.matchId}.ics`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 const getInitials = (name: string) =>
@@ -60,7 +95,13 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
               : getInitials(match.homeTeam.name)
             }
           </div>
-          <span className="team-name">{match.homeTeam.name}</span>
+          <span
+            className={`team-name${onBadgeClick ? ' team-name-clickable' : ''}`}
+            onClick={() => onBadgeClick?.('team', match.homeTeam.name)}
+            title={onBadgeClick ? `Filter by ${match.homeTeam.name}` : undefined}
+          >
+            {match.homeTeam.name}
+          </span>
         </div>
 
         <div className={`match-score ${isScored ? 'scored' : 'tbd'}`}>
@@ -81,19 +122,42 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
               : getInitials(match.awayTeam.name)
             }
           </div>
-          <span className="team-name">{match.awayTeam.name}</span>
+          <span
+            className={`team-name${onBadgeClick ? ' team-name-clickable' : ''}`}
+            onClick={() => onBadgeClick?.('team', match.awayTeam.name)}
+            title={onBadgeClick ? `Filter by ${match.awayTeam.name}` : undefined}
+          >
+            {match.awayTeam.name}
+          </span>
         </div>
       </div>
 
       <div className="match-footer">
         <div className="detail">
           <MapPin size={13} />
-          <span className="detail-text">{match.venue.name}</span>
+          {match.venue.name && match.venue.name !== 'TBD' ? (
+            <a
+              className="detail-text venue-link"
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(match.venue.name)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Search "${match.venue.name}" on Google Maps`}
+            >
+              {match.venue.name}
+            </a>
+          ) : (
+            <span className="detail-text">{match.venue.name}</span>
+          )}
         </div>
-        <div className="detail">
+        <button
+          className="detail detail-calendar"
+          onClick={() => addToCalendar(match)}
+          title="Add to calendar"
+          type="button"
+        >
           <Clock size={13} />
           <span className="detail-text">{formatDate(match.matchDateUtc)}</span>
-        </div>
+        </button>
         {match.competition?.name && (
           <div className="detail">
             <Trophy size={13} />

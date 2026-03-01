@@ -12,12 +12,14 @@ function App() {
   // Parse URL query params so bookmarked/shared links restore filter state
   const urlParams = new URLSearchParams(window.location.search)
 
-  const [selectedProgram, setSelectedProgram] = useState<Program>(
-    (urlParams.get('program') as Program) || 'homegrown'
-  )
-  const [selectedSeason, setSelectedSeason] = useState<Season>(
-    (urlParams.get('season') as Season) || 'fall2025'
-  )
+  const [selectedPrograms, setSelectedPrograms] = useState<Program[]>(() => {
+    const programs = urlParams.getAll('program') as Program[]
+    return programs.length > 0 ? programs : ['homegrown']
+  })
+  const [selectedSeasons, setSelectedSeasons] = useState<Season[]>(() => {
+    const seasons = urlParams.getAll('season') as Season[]
+    return seasons.length > 0 ? seasons : ['fall2025']
+  })
   const [selectedRegion, setSelectedRegion] = useState<string>(urlParams.get('region') || '')
   const [selectedTeam, setSelectedTeam] = useState<string>(urlParams.get('team') || '')
   const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(urlParams.getAll('ageGroup'))
@@ -27,31 +29,29 @@ function App() {
 
   // Load matches whenever program or season changes, preserving current filter state
   useEffect(() => {
-    fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups, selectedSeason)
-  }, [selectedSeason, selectedProgram])
+    fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups)
+  }, [selectedSeasons, selectedPrograms])
 
   // Keep URL in sync with filter state so the page can be bookmarked or shared
   useEffect(() => {
     const params = new URLSearchParams()
-    params.set('program', selectedProgram)
-    params.set('season', selectedSeason)
+    selectedPrograms.forEach(p => params.append('program', p))
+    selectedSeasons.forEach(s => params.append('season', s))
     if (selectedRegion) params.set('region', selectedRegion)
     if (selectedTeam) params.set('team', selectedTeam)
     selectedAgeGroups.forEach(ag => params.append('ageGroup', ag))
     history.replaceState(null, '', `?${params.toString()}`)
-  }, [selectedProgram, selectedSeason, selectedRegion, selectedTeam, selectedAgeGroups])
+  }, [selectedPrograms, selectedSeasons, selectedRegion, selectedTeam, selectedAgeGroups])
 
-  const handleProgramChange = (program: Program) => {
-    if (program === selectedProgram) return
-    setSelectedProgram(program)
+  const handleProgramChange = (programs: Program[]) => {
+    setSelectedPrograms(programs)
     setSelectedRegion('')
     setSelectedTeam('')
     setMatches([])
   }
 
-  const handleSeasonChange = (season: Season) => {
-    if (season === selectedSeason) return
-    setSelectedSeason(season)
+  const handleSeasonChange = (seasons: Season[]) => {
+    setSelectedSeasons(seasons)
     setMatches([])
   }
 
@@ -59,14 +59,16 @@ function App() {
     setSelectedRegion(region)
     setSelectedTeam(team)
     setSelectedAgeGroups(ageGroups)
-    fetchMatches(region, team, ageGroups, selectedSeason)
+    fetchMatches(region, team, ageGroups)
   }
 
-  const handleBadgeClick = (type: 'region' | 'ageGroup', value: string) => {
+  const handleBadgeClick = (type: 'region' | 'ageGroup' | 'team', value: string) => {
     if (type === 'region') {
       handleFilterChange(value, selectedTeam, selectedAgeGroups)
     } else if (type === 'ageGroup') {
       handleFilterChange(selectedRegion, selectedTeam, [value])
+    } else if (type === 'team') {
+      handleFilterChange(selectedRegion, value, selectedAgeGroups)
     }
   }
 
@@ -117,16 +119,23 @@ function App() {
     return match.division.tournamentId === 12 ? 'homegrown' : 'academy'
   }
 
-  const fetchMatches = async (region: string, team: string, ageGroups: string[], season?: Season) => {
-    const activeSeason = season || selectedSeason
+  const fetchMatches = async (region: string, team: string, ageGroups: string[]) => {
+    // If no programs or seasons selected, show no matches
+    if (selectedPrograms.length === 0 || selectedSeasons.length === 0) {
+      setMatches([])
+      setLoading(false)
+      setError('')
+      return
+    }
+    
     try {
       setLoading(true)
       setError('')
       
       const apiBase = import.meta.env.VITE_API_BASE_URL
       console.log('🔍 API Base from env:', apiBase)
-      console.log('🎯 Program filter:', selectedProgram)
-      console.log('📅 Season filter:', activeSeason)
+      console.log('🎯 Program filters:', selectedPrograms)
+      console.log('📅 Season filters:', selectedSeasons)
       
       if (!apiBase) {
         console.warn('API URL not configured, using mock data')
@@ -155,8 +164,8 @@ function App() {
       
       const params = new URLSearchParams()
       
-      if (activeSeason) params.append('season', activeSeason)
-      if (selectedProgram) params.append('program', selectedProgram)
+      selectedSeasons.forEach(s => params.append('season', s))
+      selectedPrograms.forEach(p => params.append('program', p))
       if (team) params.append('team', team)
       if (region) params.append('division', region)
       ageGroups.forEach(ag => params.append('ageGroup', ag))
@@ -235,19 +244,19 @@ function App() {
       <main className="app-main">
         <div className="controls-bar">
           <ProgramSelector
-            selected={selectedProgram}
+            selected={selectedPrograms}
             onChange={handleProgramChange}
           />
           <div className="controls-divider" />
           <SeasonSelector
-            selected={selectedSeason}
+            selected={selectedSeasons}
             onChange={handleSeasonChange}
           />
         </div>
 
         <FilterBar
-          program={selectedProgram}
-          season={selectedSeason}
+          programs={selectedPrograms}
+          seasons={selectedSeasons}
           region={selectedRegion}
           selectedAgeGroups={selectedAgeGroups}
           initialTeam={selectedTeam}
@@ -287,7 +296,7 @@ function App() {
         {matches.length > 0 && (
           <MatchList
             matches={matches}
-            program={selectedProgram}
+            programs={selectedPrograms}
             onBadgeClick={handleBadgeClick}
           />
         )}

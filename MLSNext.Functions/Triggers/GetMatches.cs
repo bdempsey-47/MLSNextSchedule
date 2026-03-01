@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using MLSNext.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Web;
 
 namespace MLSNext.Functions.Triggers;
 
@@ -23,16 +24,21 @@ public class GetMatches
     {
         try
         {
-            var query = req.Query["team"] ?? string.Empty;
-            var season = req.Query["season"] ?? string.Empty;
-            var startDateStr = req.Query["startDate"] ?? string.Empty;
-            var endDateStr = req.Query["endDate"] ?? string.Empty;
-            var ageGroup = req.Query["ageGroup"] ?? string.Empty;
-            var division = req.Query["division"] ?? string.Empty;
-            var program = req.Query["program"] ?? string.Empty;
+            // Parse query parameters - use HttpUtility to handle multiple values
+            var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
+            
+            var query = queryParams["team"] ?? string.Empty;
+            var seasons = queryParams.GetValues("season")?.ToList() ?? new List<string>();
+            var startDateStr = queryParams["startDate"] ?? string.Empty;
+            var endDateStr = queryParams["endDate"] ?? string.Empty;
+            var ageGroup = queryParams["ageGroup"] ?? string.Empty;
+            var division = queryParams["division"] ?? string.Empty;
+            
+            // Support multiple program values: ?program=homegrown&program=academy
+            var programs = queryParams.GetValues("program")?.ToList() ?? new List<string>();
 
-            _logger.LogInformation("GetMatches called with: season={Season}, program={Program}, startDate={StartDate}, endDate={EndDate}", 
-                season ?? "(none)", program ?? "(none)", startDateStr ?? "(none)", endDateStr ?? "(none)");
+            _logger.LogInformation("GetMatches called with: seasons={Seasons}, programs={Programs}, startDate={StartDate}, endDate={EndDate}", 
+                string.Join(",", seasons), string.Join(",", programs), startDateStr ?? "(none)", endDateStr ?? "(none)");
 
             var matches = _context.Matches
                 .Include(m => m.HomeTeam)
@@ -44,23 +50,28 @@ public class GetMatches
                 .Include(m => m.Competition)
                 .AsQueryable();
 
-            // Filter by program (homegrown=12, academy=35)
-            if (!string.IsNullOrEmpty(program))
+            // Filter by programs (homegrown=12, academy=35)
+            if (programs.Any())
             {
-                if (program.ToLower() == "homegrown")
+                var tournamentIds = new List<int>();
+                foreach (var program in programs)
                 {
-                    _logger.LogInformation("Filtering by program: Homegrown (TournamentId=12)");
-                    matches = matches.Where(m => m.Region.Division.TournamentId == 12);
+                    if (program.ToLower() == "homegrown")
+                        tournamentIds.Add(12);
+                    else if (program.ToLower() == "academy")
+                        tournamentIds.Add(35);
                 }
-                else if (program.ToLower() == "academy")
+                
+                if (tournamentIds.Any())
                 {
-                    _logger.LogInformation("Filtering by program: Academy (TournamentId=35)");
-                    matches = matches.Where(m => m.Region.Division.TournamentId == 35);
+                    _logger.LogInformation("Filtering by programs: {Programs} (TournamentIds={Ids})", 
+                        string.Join(", ", programs), string.Join(", ", tournamentIds));
+                    matches = matches.Where(m => tournamentIds.Contains(m.Region.Division.TournamentId));
                 }
             }
 
-            // Map season to date range
-            var (seasonStartDate, seasonEndDate) = ParseSeason(season);
+            // Map seasons to combined date range
+            var (seasonStartDate, seasonEndDate) = ParseSeasons(seasons);
 
             // Filter by team
             if (!string.IsNullOrEmpty(query))
@@ -133,15 +144,32 @@ public class GetMatches
     }
 
     /// <summary>
-    /// Parse season parameter to date range.
+    /// Parse multiple season parameters to combined date range.
+    /// If both fall2025 and spring2026 are selected, returns the union (Jul 2025 - Jun 2026).
     /// </summary>
-    private (DateTime? StartDate, DateTime? EndDate) ParseSeason(string? season)
+    private (DateTime? StartDate, DateTime? EndDate) ParseSeasons(List<string> seasons)
     {
-        return season?.ToLower() switch
+        if (seasons == null || !seasons.Any())
+            return (null, null);
+
+        DateTime? minStart = null;
+        DateTime? maxEnd = null;
+
+        foreach (var season in seasons)
         {
-            "fall2025" => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
-            "spring2026" => (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
-            _ => (null, null)
-        };
+            var (start, end) = season.ToLower() switch
+            {
+                "fall2025" => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
+                "spring2026" => (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
+                _ => ((DateTime?)null, (DateTime?)null)
+            };
+
+            if (start.HasValue && (!minStart.HasValue || start.Value < minStart.Value))
+                minStart = start;
+            if (end.HasValue && (!maxEnd.HasValue || end.Value > maxEnd.Value))
+                maxEnd = end;
+        }
+
+        return (minStart, maxEnd);
     }
 }

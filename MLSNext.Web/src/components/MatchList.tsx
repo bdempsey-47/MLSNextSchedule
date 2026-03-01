@@ -4,11 +4,11 @@ import './MatchList.css'
 
 interface MatchListProps {
   matches: Match[]
-  program: Program
-  onBadgeClick?: (type: 'region' | 'ageGroup', value: string) => void
+  programs: Program[]
+  onBadgeClick?: (type: 'region' | 'ageGroup' | 'team', value: string) => void
 }
 
-export default function MatchList({ matches, program, onBadgeClick }: MatchListProps) {
+export default function MatchList({ matches, programs, onBadgeClick }: MatchListProps) {
   const sortedMatches = [...matches].sort((a, b) =>
     new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime()
   )
@@ -22,9 +22,13 @@ export default function MatchList({ matches, program, onBadgeClick }: MatchListP
         </span>
       </div>
       <div className="match-grid">
-        {sortedMatches.map(match => (
-          <MatchCard key={match.matchId} match={match} program={program} onBadgeClick={onBadgeClick} />
-        ))}
+        {sortedMatches.map(match => {
+          // Determine which program this match belongs to (homegrown=12, academy=35)
+          const matchProgram = match.division?.tournamentId === 12 ? 'homegrown' : 'academy'
+          return (
+            <MatchCard key={match.matchId} match={match} program={matchProgram} onBadgeClick={onBadgeClick} />
+          )
+        })}
       </div>
     </div>
   )

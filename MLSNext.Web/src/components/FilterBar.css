@@ -1,19 +1,21 @@
 .filter-bar {
   background: var(--color-surface);
-  padding: 20px;
+  padding: 16px 20px 52px; /* bottom padding reserves space for the abs-positioned reset btn */
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   margin-bottom: 24px;
   box-shadow: var(--shadow-sm);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
 }
 
 .filter-section {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
 .filter-section label {
@@ -22,11 +24,17 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.4px;
+  width: 58px;           /* fixed — guarantees every row's control starts at the same x */
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .filter-select,
 .filter-input {
-  padding: 9px 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  padding-left: 10px;    /* explicit — overrides any browser-default select padding */
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
@@ -36,8 +44,62 @@
   font-family: inherit;
 }
 
+/* Container acts as the visual textbox; input + clear button are flex siblings */
 .team-search-container {
+  flex: 1;
+  min-width: 0;
   position: relative;
+  display: flex;
+  align-items: center;
+  overflow: visible;     /* allow the dropdown to spill below the container */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.team-search-container:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(10, 22, 40, 0.1);
+}
+
+/* Input is borderless — it inherits the container's visual border */
+.team-search-container .filter-input {
+  flex: 1;
+  min-width: 0;          /* prevents flex overflow */
+  border: none;
+  background: transparent;
+  box-shadow: none !important;
+  padding-right: 4px;    /* gap before the × button */
+}
+
+.team-search-container .filter-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+/* × button is a flex sibling — glued to the right edge, never floats */
+.team-clear-button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 8px 0 4px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.team-clear-button:hover {
+  color: var(--color-text);
+  background-color: var(--color-bg);
 }
 
 .autocomplete-suggestions {
@@ -80,9 +142,12 @@
 }
 
 .age-group-checkboxes {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  align-items: center;
 }
 
 .checkbox-label {
@@ -103,38 +168,33 @@
 }
 
 @media (max-width: 768px) {
-  .filter-bar {
-    grid-template-columns: 1fr;
-  }
-  
-  .age-group-checkboxes {
-    grid-template-columns: repeat(3, 1fr);
+  .filter-section label {
+    min-width: 48px;
   }
 }
 
-.filter-reset-section {
-  justify-content: flex-end;
-}
-
+/* Icon-only reset button — anchored to bottom-left of the filter box */
 .reset-button {
+  position: absolute;
+  bottom: 14px;
+  right: 20px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text-muted);
-  font-size: 0.875rem;
   font-family: inherit;
   cursor: not-allowed;
   opacity: 0.5;
   transition: all 0.2s;
-  align-self: flex-end;
 }
 
 .reset-button--active {
-  color: var(--color-primary);
   border-color: var(--color-primary);
   opacity: 1;
   cursor: pointer;
@@ -142,7 +202,10 @@
 
 .reset-button--active:hover {
   background: var(--color-primary);
-  color: white;
+}
+
+.reset-button--active:hover .reset-icon {
+  filter: brightness(0) invert(1);
 }
 
 .reset-icon {
