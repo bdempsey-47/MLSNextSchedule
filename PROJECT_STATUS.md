@@ -897,3 +897,27 @@ Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null`
    - Hover feedback: `opacity: 0.75` + `scale(1.08)` via `.team-crest-clickable` CSS class
    - Applies to both logo images and initials bubbles — clicking either fires the team filter
    - Files: `MLSNext.Web/src/components/MatchCard.tsx`, `MLSNext.Web/src/components/MatchCard.css`
+
+
+---
+
+## 🔄 Session 7 Addendum 2 (Mar 1, 2026)
+
+### Match Card Layout Final Polish ✅
+
+**Git commits:** `7668e35`, `406a452`
+
+1. **Consistent footer height** ✅
+   - `.match-footer` given `min-height: 90px` (sized for 3 rows × ~17px + gaps + padding)
+   - `box-sizing: border-box` ensures padding is included in that measurement
+   - All cards in a row now share the same grey footer area regardless of team name length
+
+2. **Footer pinned to card bottom** ✅
+   - Added `margin-top: auto` to `.match-footer`
+   - Since `.match-card` is `display: flex; flex-direction: column`, auto margin absorbs all remaining vertical space above the footer, pinning it flush to the card bottom
+   - Cards with short content no longer show a gap between the white body and the grey footer
+
+3. **Calendar row font size fixed** ✅
+   - `all: unset` on `.detail-calendar` was stripping the inherited `font-size` and `color` set by `.detail`
+   - Added explicit `font-size: 0.815rem; line-height: 1.3; color: var(--color-text-secondary)` after `all: unset`
+   - Date row now matches the same size as the venue and competition rows
