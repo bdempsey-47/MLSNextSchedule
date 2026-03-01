@@ -627,6 +627,11 @@ dotnet run
 **To ingest full data (go-live):**
 Change `const int MaxMatchesPerTournament = 25` to a higher value or pass `null` to `RunAsync`. The `maxMatches` parameter is optional and defaults to unlimited.
 
+**Next Session — Frontend Enhancements (Phase 3 continued):**
+1. **Clickable team names** — Clicking a team name in a match card updates the team filter (same pattern as clickable age group / region badges)
+2. **Cross-program team view** — Allow selecting both Homegrown + Academy simultaneously for a given team name or region (currently program is a single-select toggle; needs multi-select or "All Programs" mode)
+3. **Google Maps venue integration** — Geocode venue names and surface a Maps link (or embedded map) on each match card; consider Google Maps Geocoding API or Static Maps API
+
 **Next Session — Azure Deployment (Phase 4):**
 1. Create Azure SQL Database and apply EF Core migrations
 2. Deploy `MLSNext.Functions` to Azure Function App (Consumption Plan)
