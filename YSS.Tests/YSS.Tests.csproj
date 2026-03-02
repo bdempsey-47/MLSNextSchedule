@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MLSNext.Data\MLSNext.Data.csproj" />
-    <ProjectReference Include="..\MLSNext.Ingestion\MLSNext.Ingestion.csproj" />
+    <ProjectReference Include="..\YSS.Data\YSS.Data.csproj" />
+    <ProjectReference Include="..\YSS.Ingestion\YSS.Ingestion.csproj" />
   </ItemGroup>
 </Project>

@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MLSNext.Ingestion\MLSNext.Ingestion.csproj" />
-    <ProjectReference Include="..\MLSNext.Data\MLSNext.Data.csproj" />
+    <ProjectReference Include="..\YSS.Ingestion\YSS.Ingestion.csproj" />
+    <ProjectReference Include="..\YSS.Data\YSS.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
