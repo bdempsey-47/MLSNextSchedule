@@ -2,11 +2,11 @@ using FluentAssertions;
 using Moq;
 using Moq.Protected;
 using Xunit;
-using MLSNext.Ingestion.Services;
+using YSS.Ingestion.Services;
 using Microsoft.Extensions.Logging;
 using static Moq.It;
 
-namespace MLSNext.Tests.Unit;
+namespace YSS.Tests.Unit;
 
 public class Modular11ClientTests
 {

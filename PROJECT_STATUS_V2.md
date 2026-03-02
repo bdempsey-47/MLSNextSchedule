@@ -1,4 +1,4 @@
-# MLS NEXT Schedule Ingestion — Project Status
+# Youth Soccer Schedules (YSS) — Project Status
 
 **Last Updated:** March 2, 2026  
 **Status:** Phase 3 Complete, Phase 4 Ready to Begin
@@ -72,14 +72,14 @@ Frontend (React)              Backend (Azure Functions)      Database (SQL)
 
 **Terminal 1 — Backend API:**
 ```powershell
-cd MLSNext.Functions
+cd YSS.Functions
 func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion
 # Runs on http://localhost:7071
 ```
 
 **Terminal 2 — Frontend:**
 ```powershell
-cd MLSNext.Web
+cd YSS.Web
 npm run dev
 # Runs on http://localhost:5173
 ```
@@ -87,7 +87,7 @@ npm run dev
 ### Re-ingest Sample Data
 
 ```powershell
-cd MLSNext.Verification
+cd YSS.Verification
 dotnet run
 # Output: Matches: 100 | Teams: 104 | With logos: 104
 # Clears tables (except Leagues) and re-ingests from Modular11 API
@@ -97,8 +97,8 @@ dotnet run
 
 ```powershell
 dotnet build                    # Build entire solution
-dotnet test MLSNext.Tests       # Run all 36 tests
-dotnet ef migrations add <Name> --project MLSNext.Data  # New migration
+dotnet test YSS.Tests       # Run all 36 tests
+dotnet ef migrations add <Name> --project YSS.Data  # New migration
 dotnet ef database update       # Apply migrations to LocalDB
 ```
 
@@ -114,7 +114,7 @@ dotnet ef database update       # Apply migrations to LocalDB
   - Store connection string in Function App settings
 
 - [ ] **Deploy Azure Function App** (Consumption Plan)
-  - Publish `MLSNext.Functions` project
+  - Publish `YSS.Functions` project
   - Configure App Settings:
     - `DefaultConnection` → Azure SQL connection string
     - `Modular11__TournamentId`, `Modular11__*` → API settings
@@ -140,7 +140,7 @@ dotnet ef database update       # Apply migrations to LocalDB
 
 ### Local Settings
 
-**`MLSNext.Functions/local.settings.json`:**
+**`YSS.Functions/local.settings.json`:**
 ```json
 {
   "Host": {
@@ -157,7 +157,7 @@ dotnet ef database update       # Apply migrations to LocalDB
 ### Database Connection
 
 **LocalDB (Development):**
-- Connection string: `Server=(localdb)\\mssqlLocalDb;Database=MLSNext;Trusted_Connection=true;`
+- Connection string: `Server=(localdb)\\mssqlLocalDb;Database=YSS;Trusted_Connection=true;`
 - Start LocalDB: `sqllocaldb start mssqlLocalDb`
 - Stop LocalDB: `sqllocaldb stop mssqlLocalDb`
 

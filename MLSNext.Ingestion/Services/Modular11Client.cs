@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace MLSNext.Ingestion.Services;
+namespace YSS.Ingestion.Services;
 
 /// <summary>
 /// HTTP client for fetching schedule data from the Modular11 API.

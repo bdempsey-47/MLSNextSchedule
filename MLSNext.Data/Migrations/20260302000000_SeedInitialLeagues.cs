@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace MLSNext.Data.Migrations
+namespace YSS.Data.Migrations
 {
     /// <inheritdoc />
     public partial class SeedInitialLeagues : Migration

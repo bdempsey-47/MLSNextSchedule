@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MLSNext.Data;
-using MLSNext.Data.Entities;
-using MLSNext.Ingestion.Models;
+using YSS.Data;
+using YSS.Data.Entities;
+using YSS.Ingestion.Models;
 
-namespace MLSNext.Ingestion.Services;
+namespace YSS.Ingestion.Services;
 
 /// <summary>
 /// Handles database operations for upserting matches and their related entities.

@@ -1,9 +1,9 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using MLSNext.Ingestion.Services;
+using YSS.Ingestion.Services;
 
-namespace MLSNext.Functions.Triggers;
+namespace YSS.Functions.Triggers;
 
 public class TriggerIngestion
 {

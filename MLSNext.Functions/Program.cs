@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MLSNext.Data;
-using MLSNext.Ingestion.Services;
-using MLSNext.Functions.Triggers;
+using YSS.Data;
+using YSS.Ingestion.Services;
+using YSS.Functions.Triggers;
 
 var host = new HostBuilder()
     .ConfigureServices(services =>

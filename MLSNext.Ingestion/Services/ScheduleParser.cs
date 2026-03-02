@@ -1,9 +1,9 @@
 using AngleSharp;
 using AngleSharp.Dom;
 using Microsoft.Extensions.Logging;
-using MLSNext.Ingestion.Models;
+using YSS.Ingestion.Models;
 
-namespace MLSNext.Ingestion.Services;
+namespace YSS.Ingestion.Services;
 
 /// <summary>
 /// Parses HTML fragments from Modular11 to extract match data.

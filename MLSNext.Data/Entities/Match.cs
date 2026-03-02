@@ -1,4 +1,4 @@
-namespace MLSNext.Data.Entities;
+namespace YSS.Data.Entities;
 
 public class Match
 {

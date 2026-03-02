@@ -1,6 +1,6 @@
-using MLSNext.Ingestion.Models;
+using YSS.Ingestion.Models;
 
-namespace MLSNext.Tests.Fixtures;
+namespace YSS.Tests.Fixtures;
 
 /// <summary>
 /// Provides reusable test data for unit and integration tests.

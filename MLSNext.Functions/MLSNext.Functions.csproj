@@ -5,6 +5,8 @@
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>YSS.Functions</AssemblyName>
+    <RootNamespace>YSS.Functions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

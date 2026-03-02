@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MLSNext.Data;
-using MLSNext.Data.Entities;
+using YSS.Data;
+using YSS.Data.Entities;
 
-namespace MLSNext.Ingestion.Services;
+namespace YSS.Ingestion.Services;
 
 /// <summary>
 /// Orchestrates the entire ingestion process:

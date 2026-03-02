@@ -4,6 +4,8 @@
     <IsTestProject>true</IsTestProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>YSS.Tests</AssemblyName>
+    <RootNamespace>YSS.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

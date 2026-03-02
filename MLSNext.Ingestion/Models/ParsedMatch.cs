@@ -1,4 +1,4 @@
-namespace MLSNext.Ingestion.Models;
+namespace YSS.Ingestion.Models;
 
 /// <summary>
 /// DTO representing a parsed match from the Modular11 API response HTML.

@@ -1,13 +1,13 @@
 using FluentAssertions;
 using Moq;
 using Xunit;
-using MLSNext.Data;
-using MLSNext.Ingestion.Models;
-using MLSNext.Ingestion.Services;
+using YSS.Data;
+using YSS.Ingestion.Models;
+using YSS.Ingestion.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MLSNext.Tests.Integration;
+namespace YSS.Tests.Integration;
 
 public class MatchUpsertServiceIntegrationTests
 {
@@ -25,7 +25,7 @@ public class MatchUpsertServiceIntegrationTests
         _dbContext.Database.EnsureCreated();
 
         // Seed initial league for tests
-        var league = new MLSNext.Data.Entities.League { Name = "MLS Next" };
+        var league = new YSS.Data.Entities.League { Name = "MLS Next" };
         _dbContext.Leagues.Add(league);
         _dbContext.SaveChanges();
 

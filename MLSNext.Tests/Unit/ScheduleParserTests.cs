@@ -2,10 +2,10 @@ using FluentAssertions;
 using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
-using MLSNext.Ingestion.Services;
-using MLSNext.Tests.Fixtures;
+using YSS.Ingestion.Services;
+using YSS.Tests.Fixtures;
 
-namespace MLSNext.Tests.Unit;
+namespace YSS.Tests.Unit;
 
 public class ScheduleParserTests
 {

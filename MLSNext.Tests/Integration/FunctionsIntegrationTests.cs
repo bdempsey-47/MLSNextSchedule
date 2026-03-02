@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using MLSNext.Data;
-using MLSNext.Data.Entities;
+using YSS.Data;
+using YSS.Data.Entities;
 
-namespace MLSNext.Tests.Integration;
+namespace YSS.Tests.Integration;
 
 /// <summary>
 /// Integration tests for Azure Functions endpoints.

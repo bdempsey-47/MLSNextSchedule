@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using MLSNext.Data.Entities;
+using YSS.Data.Entities;
 
-namespace MLSNext.Data;
+namespace YSS.Data;
 
 public class AppDbContext : DbContext
 {

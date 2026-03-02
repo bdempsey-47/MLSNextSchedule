@@ -1,4 +1,4 @@
-namespace MLSNext.Data.Entities;
+namespace YSS.Data.Entities;
 
 using System.Text.Json.Serialization;
 

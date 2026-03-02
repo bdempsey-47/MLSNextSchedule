@@ -1,11 +1,11 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using MLSNext.Data;
+using YSS.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Web;
 
-namespace MLSNext.Functions.Triggers;
+namespace YSS.Functions.Triggers;
 
 public class GetTeams
 {
