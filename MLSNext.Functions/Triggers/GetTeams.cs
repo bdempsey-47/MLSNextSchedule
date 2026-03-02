@@ -25,13 +25,18 @@ public class GetTeams
         try
         {
             var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
+            var league   = queryParams["league"]  ?? string.Empty;
             var programs = queryParams.GetValues("program")?.ToList() ?? new List<string>();
             var seasons  = queryParams.GetValues("season")?.ToList() ?? new List<string>();
             var region   = queryParams["region"]  ?? string.Empty;
 
             var matchQuery = _context.Matches
-                .Include(m => m.Region).ThenInclude(r => r.Division)
+                .Include(m => m.Region).ThenInclude(r => r.Division).ThenInclude(d => d.League)
                 .AsQueryable();
+
+            // Filter by league
+            if (!string.IsNullOrEmpty(league))
+                matchQuery = matchQuery.Where(m => m.Region.Division.League.Name == league);
 
             // Filter by programs
             if (programs.Any())

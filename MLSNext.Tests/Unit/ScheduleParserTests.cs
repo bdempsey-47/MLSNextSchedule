@@ -96,7 +96,7 @@ public class ScheduleParserTests
         matches[0].TournamentId.Should().Be(12);     // Parser preserves tournament ID
         matches[0].Competition.Should().Be("AD");
         matches[0].VenueName.Should().Be("Central Park");
-        matches[0].Score.Should().Be("2 Dragons FC to 1 Phoenix United");
+        matches[0].Score.Should().Be("2-1");
     }
 
     [Fact]
@@ -269,8 +269,8 @@ public class ScheduleParserTests
     }
 
     [Theory]
-    [InlineData("2-1", "2 Dragons FC to 1 Phoenix United")]
-    [InlineData("0-0", "0 Dragons FC to 0 Phoenix United")]
+    [InlineData("2-1", "2-1")]
+    [InlineData("0-0", "0-0")]
     [InlineData("TBD", "TBD")]
     public void ParseMatches_WithVariousScores_ParsesCorrectly(string scoreInput, string expectedScore)
     {

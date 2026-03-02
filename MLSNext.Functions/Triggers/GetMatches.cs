@@ -27,6 +27,7 @@ public class GetMatches
             // Parse query parameters - use HttpUtility to handle multiple values
             var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
             
+            var league = queryParams["league"] ?? string.Empty;
             var query = queryParams["team"] ?? string.Empty;
             var seasons = queryParams.GetValues("season")?.ToList() ?? new List<string>();
             var startDateStr = queryParams["startDate"] ?? string.Empty;
@@ -37,8 +38,8 @@ public class GetMatches
             // Support multiple program values: ?program=homegrown&program=academy
             var programs = queryParams.GetValues("program")?.ToList() ?? new List<string>();
 
-            _logger.LogInformation("GetMatches called with: seasons={Seasons}, programs={Programs}, startDate={StartDate}, endDate={EndDate}", 
-                string.Join(",", seasons), string.Join(",", programs), startDateStr ?? "(none)", endDateStr ?? "(none)");
+            _logger.LogInformation("GetMatches called with: league={League}, seasons={Seasons}, programs={Programs}, startDate={StartDate}, endDate={EndDate}", 
+                league ?? "(all)", string.Join(",", seasons), string.Join(",", programs), startDateStr ?? "(none)", endDateStr ?? "(none)");
 
             var matches = _context.Matches
                 .Include(m => m.HomeTeam)
@@ -47,8 +48,16 @@ public class GetMatches
                 .Include(m => m.AgeGroup)
                 .Include(m => m.Region)
                 .ThenInclude(r => r.Division)
+                .ThenInclude(d => d.League)
                 .Include(m => m.Competition)
                 .AsQueryable();
+
+            // Filter by league
+            if (!string.IsNullOrEmpty(league))
+            {
+                _logger.LogInformation("Filtering by league: {League}", league);
+                matches = matches.Where(m => m.Region.Division.League.Name == league);
+            }
 
             // Filter by programs (homegrown=12, academy=35)
             if (programs.Any())

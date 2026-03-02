@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Shield, AlertCircle, Loader2, SearchX } from 'lucide-react'
+import { AlertCircle, Loader2, SearchX } from 'lucide-react'
 import './App.css'
+import LeagueSelector from './components/LeagueSelector'
 import ProgramSelector from './components/ProgramSelector'
 import SeasonSelector from './components/SeasonSelector'
 import MatchList from './components/MatchList'
@@ -216,33 +217,18 @@ function App() {
     }
   }
 
-  const handleLoadDemoData = () => {
-    setMatches(mockMatches)
-    setError('')
-    setLoading(false)
-  }
-
   return (
     <div className="app">
       <header className="app-header">
         <div className="app-header-inner">
-          <div className="app-brand">
-            <div className="app-brand-icon">
-              <Shield strokeWidth={2.5} />
-            </div>
-            <div className="app-brand-text">
-              <h1>MLS Next</h1>
-              <span className="subtitle">Youth Soccer Schedules</span>
-            </div>
-          </div>
-          <button className="demo-button" onClick={handleLoadDemoData}>
-            Load Demo Data
-          </button>
+          <h1>Youth Soccer Schedules</h1>
         </div>
       </header>
 
       <main className="app-main">
         <div className="controls-bar">
+          <LeagueSelector />
+          <div className="controls-divider" />
           <ProgramSelector
             selected={selectedPrograms}
             onChange={handleProgramChange}

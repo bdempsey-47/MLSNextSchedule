@@ -24,6 +24,11 @@ public class MatchUpsertServiceIntegrationTests
         _dbContext = new AppDbContext(options);
         _dbContext.Database.EnsureCreated();
 
+        // Seed initial league for tests
+        var league = new MLSNext.Data.Entities.League { Name = "MLS Next" };
+        _dbContext.Leagues.Add(league);
+        _dbContext.SaveChanges();
+
         var loggerMock = new Mock<ILogger<MatchUpsertService>>();
         _upsertService = new MatchUpsertService(_dbContext, loggerMock.Object);
     }
@@ -77,7 +82,7 @@ public class MatchUpsertServiceIntegrationTests
             Score = "TBD"
         };
 
-        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { initialMatch });
+        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { initialMatch }, "MLS Next");
 
         var updatedMatch = new ParsedMatch
         {
@@ -95,7 +100,7 @@ public class MatchUpsertServiceIntegrationTests
         };
 
         // Act
-        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { updatedMatch });
+        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { updatedMatch }, "MLS Next");
 
         // Assert
         var dbMatch = await _dbContext.Matches.FirstOrDefaultAsync(m => m.MatchId == "m-existing-001");
@@ -140,7 +145,7 @@ public class MatchUpsertServiceIntegrationTests
         };
 
         // Act
-        await _upsertService.UpsertMatchesAsync(matches);
+        await _upsertService.UpsertMatchesAsync(matches, "MLS Next");
 
         // Assert
         var dbMatches = _dbContext.Matches.ToList();
@@ -169,7 +174,7 @@ public class MatchUpsertServiceIntegrationTests
         };
 
         // Act
-        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { match });
+        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { match }, "MLS Next");
 
         // Assert
         _dbContext.Teams.Should().Contain(t => t.Name == "Unique Team 1");
@@ -199,7 +204,7 @@ public class MatchUpsertServiceIntegrationTests
             Score = "TBD"
         };
 
-        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { match1 });
+        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { match1 }, "MLS Next");
         var initialTeamCount = _dbContext.Teams.Count();
 
         // Act - Insert second match with same team and venue
@@ -218,7 +223,7 @@ public class MatchUpsertServiceIntegrationTests
             Score = "TBD"
         };
 
-        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { match2 });
+        await _upsertService.UpsertMatchesAsync(new List<ParsedMatch> { match2 }, "MLS Next");
 
         // Assert - Team and venue should be reused, not duplicated
         _dbContext.Teams.Count().Should().Be(initialTeamCount + 1); // Only 1 new team added

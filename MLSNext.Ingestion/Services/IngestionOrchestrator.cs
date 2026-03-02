@@ -39,7 +39,8 @@ public class IngestionOrchestrator
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <param name="maxMatches">Optional cap on total matches to ingest. Null = no limit.</param>
-    public async Task RunAsync(CancellationToken ct = default, int? maxMatches = null)
+    /// <param name="leagueName">Name of the league to ingest (e.g., 'MLS Next', 'ECNL', 'EDP'). Defaults to 'MLS Next'.</param>
+    public async Task RunAsync(CancellationToken ct = default, int? maxMatches = null, string leagueName = "MLS Next")
     {
         var startTime = DateTime.UtcNow;
         var totalMatches = 0;
@@ -111,7 +112,7 @@ public class IngestionOrchestrator
                 // Upsert to database
                 if (newMatches.Count > 0)
                 {
-                    await _upsertService.UpsertMatchesAsync(newMatches, ct);
+                    await _upsertService.UpsertMatchesAsync(newMatches, leagueName, ct);
                     totalMatches += newMatches.Count;
                     _logger.LogInformation("Total matches ingested so far: {Total}", totalMatches);
                 }

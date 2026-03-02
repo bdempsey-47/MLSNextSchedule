@@ -1,0 +1,59 @@
+/* LeagueSelector — static league display inside the controls-bar */
+.league-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.selector-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.league-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.league-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: default;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(10, 22, 40, 0.25);
+}
+
+.league-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(10, 22, 40, 0.25);
+}
+
+.league-btn:disabled {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .league-selector {
+    width: 100%;
+  }
+  .league-buttons {
+    flex-direction: row;
+  }
+}

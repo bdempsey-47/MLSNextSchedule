@@ -24,7 +24,10 @@ public class MatchUpsertService
     /// <summary>
     /// Upsert a collection of parsed matches into the database.
     /// </summary>
-    public async Task UpsertMatchesAsync(List<ParsedMatch> parsedMatches, CancellationToken ct = default)
+    /// <param name="parsedMatches">Collection of matches to upsert</param>
+    /// <param name="leagueName">Name of the league (e.g., 'MLS Next', 'ECNL', 'EDP')</param>
+    /// <param name="ct">Cancellation token</param>
+    public async Task UpsertMatchesAsync(List<ParsedMatch> parsedMatches, string leagueName = "MLS Next", CancellationToken ct = default)
     {
         _logger.LogInformation("Upserting {Count} matches", parsedMatches.Count);
 
@@ -57,7 +60,7 @@ public class MatchUpsertService
                     var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
                     var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
-                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, ct);
+                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, ct);
                     var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
                     var competition = await LookupOrCreateCompetitionAsync(parsedMatch.Competition, ct);
                     var ageGroup = await LookupOrCreateAgeGroupAsync(parsedMatch.AgeGroup, ct);
@@ -143,7 +146,7 @@ public class MatchUpsertService
         return venue;
     }
 
-    private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, CancellationToken ct)
+    private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, string leagueName, CancellationToken ct)
     {
         // Map tournament ID to division name: 12=Homegrown, 35=Academy
         var divisionName = tournamentId switch
@@ -159,17 +162,14 @@ public class MatchUpsertService
 
         if (division == null)
         {
-            // Ensure MLS Next league exists
+            // Look up the specified league
             var league = await _dbContext.Leagues
-                .Where(l => l.Name == "MLSNext")
+                .Where(l => l.Name == leagueName)
                 .FirstOrDefaultAsync(ct);
             
             if (league == null)
             {
-                league = new League { Name = "MLSNext" };
-                await _dbContext.Leagues.AddAsync(league, ct);
-                await _dbContext.SaveChangesAsync(ct);
-                _logger.LogInformation("Created MLSNext league");
+                throw new InvalidOperationException($"League '{leagueName}' not found. Ensure the league is seeded in the database.");
             }
 
             division = new Division 
@@ -180,7 +180,7 @@ public class MatchUpsertService
             };
             await _dbContext.Divisions.AddAsync(division, ct);
             await _dbContext.SaveChangesAsync(ct);
-            _logger.LogInformation("Created {DivisionName} division for tournament {TournamentId}", divisionName, tournamentId);
+            _logger.LogInformation("Created {DivisionName} division for tournament {TournamentId} in league {LeagueName}", divisionName, tournamentId, leagueName);
         }
 
         return division;

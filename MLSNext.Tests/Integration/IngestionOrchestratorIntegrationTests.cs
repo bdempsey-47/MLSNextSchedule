@@ -27,6 +27,11 @@ public class IngestionOrchestratorIntegrationTests
         _dbContext = new AppDbContext(options);
         _dbContext.Database.EnsureCreated();
 
+        // Seed initial league for tests
+        var league = new MLSNext.Data.Entities.League { Name = "MLS Next" };
+        _dbContext.Leagues.Add(league);
+        _dbContext.SaveChanges();
+
         _clientMock = new Mock<Modular11Client>(
             new HttpClient(),
             new Mock<ILogger<Modular11Client>>().Object,
@@ -105,7 +110,7 @@ public class IngestionOrchestratorIntegrationTests
             .ReturnsAsync("<html>No data available</html>"); // Pagination end
 
         // Act
-        await _orchestrator.RunAsync();
+        await _orchestrator.RunAsync(CancellationToken.None, null, "MLS Next");
 
         // Assert
         _dbContext.Matches.Should().HaveCount(1);
@@ -215,7 +220,7 @@ public class IngestionOrchestratorIntegrationTests
             .ReturnsAsync("<html>No data available</html>"); // End pagination
 
         // Act
-        await _orchestrator.RunAsync();
+        await _orchestrator.RunAsync(CancellationToken.None, null, "MLS Next");
 
         // Assert
         _dbContext.Matches.Should().HaveCountGreaterThanOrEqualTo(2);
@@ -321,7 +326,7 @@ public class IngestionOrchestratorIntegrationTests
             .ReturnsAsync("<html>No data available</html>");
 
         // Act
-        await _orchestrator.RunAsync();
+        await _orchestrator.RunAsync(CancellationToken.None, null, "MLS Next");
 
         // Assert
         _dbContext.Matches.Should().HaveCount(1);

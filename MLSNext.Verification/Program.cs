@@ -32,12 +32,12 @@ Console.WriteLine("Clearing database...");
     await db.Database.ExecuteSqlRawAsync("DELETE FROM RawIngestionLogs");
     await db.Database.ExecuteSqlRawAsync("DELETE FROM Regions");
     await db.Database.ExecuteSqlRawAsync("DELETE FROM Divisions");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Leagues");
+    // Don't delete Leagues — keep the seeded league records
     await db.Database.ExecuteSqlRawAsync("DELETE FROM Teams");
     await db.Database.ExecuteSqlRawAsync("DELETE FROM Venues");
     await db.Database.ExecuteSqlRawAsync("DELETE FROM Competitions");
     await db.Database.ExecuteSqlRawAsync("DELETE FROM AgeGroups");
-    Console.WriteLine("Database cleared.\n");
+    Console.WriteLine("Database cleared (Leagues table preserved)\n");
     await sp.DisposeAsync();
 }
 
@@ -81,7 +81,7 @@ foreach (var t in tournaments)
 
     try
     {
-        await orchestrator.RunAsync(CancellationToken.None, MaxMatchesPerTournament);
+        await orchestrator.RunAsync(CancellationToken.None, MaxMatchesPerTournament, "MLS Next");
         Console.WriteLine($"✅ {t.Label} ingestion complete.\n");
     }
     catch (Exception ex)
