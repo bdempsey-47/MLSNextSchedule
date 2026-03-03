@@ -31,6 +31,19 @@ public class MatchUpsertService
     {
         _logger.LogInformation("Upserting {Count} matches", parsedMatches.Count);
 
+        // Check for duplicate IDs in the batch
+        var duplicateIds = parsedMatches
+            .GroupBy(m => m.MatchId)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key)
+            .ToList();
+
+        if (duplicateIds.Any())
+        {
+            _logger.LogWarning("Found {DuplicateCount} duplicate match IDs in the batch: {DuplicateIds}",
+                duplicateIds.Count, string.Join(", ", duplicateIds));
+        }
+
         var newMatches = 0;
         var updatedMatches = 0;
         var duplicateMatches = 0;
