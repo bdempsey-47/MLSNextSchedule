@@ -75,6 +75,9 @@ jobs:
       - name: Publish Azure Functions
         run: dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output ./output
 
+      - name: Install EF Core CLI Tool
+        run: dotnet tool install --global dotnet-ef
+
       - name: Get SQL Access Token
         id: sql-token
         run: |
