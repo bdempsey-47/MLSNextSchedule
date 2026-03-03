@@ -46,10 +46,20 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Azure Functions
     if: success()
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Login to Azure using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
 
       - name: Setup .NET ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v4
@@ -65,8 +75,20 @@ jobs:
       - name: Publish Azure Functions
         run: dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output ./output
 
+      - name: Get SQL Access Token
+        id: sql-token
+        run: |
+          TOKEN=$(az account get-access-token --resource https://database.windows.net --query accessToken -o tsv)
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Build SQL Connection String with OIDC Token
+        id: sql-conn
+        run: |
+          CONN_STR="Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;User ID=github-actions-oidc;Password=${{ steps.sql-token.outputs.token }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+          echo "connection_string=$CONN_STR" >> $GITHUB_OUTPUT
+
       - name: Apply EF Migrations to Azure SQL
-        run: dotnet ef database update --project YSS.Data --configuration Release -- "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+        run: dotnet ef database update --project YSS.Data --configuration Release -- "${{ steps.sql-conn.outputs.connection_string }}"
 
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
