@@ -90,14 +90,9 @@ jobs:
       - name: Apply EF Migrations to Azure SQL
         run: dotnet ef database update --project YSS.Data --configuration Release -- "${{ steps.sql-conn.outputs.connection_string }}"
 
-      - name: Deploy to Azure Functions
-        uses: Azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: './output'
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-          respect-pom-xml: true
-
-      - name: Azure Functions action status
-        if: failure()
-        run: exit 1
+      - name: Deploy to Azure Functions with Azure CLI
+        run: |
+          cd ./output
+          zip -r ../function-app.zip .
+          cd ..
+          az functionapp deployment source config-zip --resource-group application-prod --name ${{ env.AZURE_FUNCTIONAPP_NAME }} --src function-app.zip
