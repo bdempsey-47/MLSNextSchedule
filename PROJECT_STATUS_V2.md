@@ -1,7 +1,7 @@
 # Youth Soccer Schedules (YSS) — Project Status
 
-**Last Updated:** March 2, 2026  
-**Status:** Phase 3 Complete, Phase 4 Ready to Begin
+**Last Updated:** March 2, 2026 (Evening)  
+**Status:** Phase 3 Complete → Phase 4 In Progress (Azure Deployment)
 
 ---
 
@@ -106,26 +106,43 @@ dotnet ef database update       # Apply migrations to LocalDB
 
 ## 📋 Next Steps (Priority Order)
 
-### Phase 4 — Azure Deployment
+### Phase 4 — Azure Deployment (Continuing)
 
-- [ ] **Create Azure SQL Database**
-  - Free tier: 32GB per subscription
-  - Run migrations: `dotnet ef database update`
-  - Store connection string in Function App settings
+#### Immediate (Tomorrow Session)
 
-- [ ] **Deploy Azure Function App** (Consumption Plan)
-  - Publish `YSS.Functions` project
-  - Configure App Settings:
-    - `DefaultConnection` → Azure SQL connection string
-    - `Modular11__TournamentId`, `Modular11__*` → API settings
-  - Test all 5 endpoints
+1. **Debug GitHub Actions Deployment Failure**
+   - Review action logs: https://github.com/bdempsey-47/MLSNextSchedule/actions
+   - Common issues: EF migration not applied, connection string format, publish profile format
+   - Fix: Update workflow or Azure config as needed
 
-- [ ] **Deploy Azure Static Web Apps** (free tier)
-  - Connect GitHub repo
-  - Configure build: `npm install → npm run build`
-  - Set environment: `VITE_API_BASE_URL=https://<function-app-url>/api`
-  - Configure routing (SPA: all routes → index.html)
-  - Test filters with live data
+2. **Apply EF Migrations to Azure SQL**
+   - Option A (Manual via Query Editor):
+     - Use SQL migration scripts from `YSS.Data/Migrations/`
+     - Run in order: InitialCreate → RefactorDivisionToRegion → IncreaseScoreColumn → AddTeamLogoUrl → SeedInitialLeagues
+   - Option B (Automated in deployment):
+     - Add migration step to GitHub Actions workflow
+     - Or manually run: `dotnet ef database update --project YSS.Data` with Azure connection string
+
+3. **Deploy Azure Function App**
+   - Fix workflow and re-trigger deployment
+   - Verify endpoints responding: `https://yss-func-prod.azurewebsites.net/api/matches`, etc.
+   - Test with production data
+
+#### Secondary (After backend is working)
+
+4. **Deploy Frontend to Azure Static Web Apps**
+   - Create Static Web App resource
+   - Connect GitHub repo
+   - Configure build & environment:
+     - Build: `npm run build`
+     - Output: `dist/`
+     - Environment: `VITE_API_BASE_URL=https://yss-func-prod.azurewebsites.net/api`
+   - Test filters with live backend
+
+5. **Ingest Production Data**
+   - Run Modular11 full tournament pull (remove sample cap)
+   - Verify all matches, teams, venues loaded
+   - Test calendar export, team filters, venue maps
 
 ### Phase 3 Extensions (Stretch Goals)
 
@@ -144,15 +161,21 @@ dotnet ef database update       # Apply migrations to LocalDB
 ```json
 {
   "Host": {
-    "CORS": "http://localhost:5173"  // Required for local dev
+    "LocalHttpPort": 7071,
+    "CORS": "http://localhost:5173"  // Required for local dev - already configured
   }
 }
 ```
 
+**Azure Settings (Function App):**
+- Connection string: `DefaultConnection` → Azure SQL connection string with Managed Identity
+- Timer trigger: Midnight UTC (CRON: `0 0 0 * * *`)
+
 **Why the `--functions` list in `func start`:**
 - Timer trigger `ScheduledIngestion` requires Azurite (Azure Storage emulator) on port 10000
 - For local dev, specify only HTTP triggers to avoid startup errors
-- On Azure, timer trigger runs on schedule (midnight UTC, CRON: `0 0 0 * * *`)
+- On Azure, timer trigger runs on schedule automatically
+- Command: `func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion`
 
 ### Database Connection
 
@@ -161,14 +184,20 @@ dotnet ef database update       # Apply migrations to LocalDB
 - Start LocalDB: `sqllocaldb start mssqlLocalDb`
 - Stop LocalDB: `sqllocaldb stop mssqlLocalDb`
 
+**Azure SQL (Production):**
+- Server: `yss-sql-prod.database.windows.net`
+- Database: `yss-prod`
+- Authentication: Entra-only (Managed Identity)
+- Connection string format: `Server=yss-sql-prod.database.windows.net;Database=yss-prod;Authentication=Active Directory Managed Identity;Connection Timeout=30;`
+
 **Migrations Location:**
-- `MLSNext.Data/Migrations/` — EF Core migration files
+- `YSS.Data/Migrations/` — EF Core migration files
 - Current migrations:
-  - `20260226183429_InitialCreate`
-  - `20260227190439_RefactorDivisionToRegionHierarchy`
-  - `20260227213955_IncreaseScoreColumnSize`
-  - `20260228234737_AddTeamLogoUrl`
-  - `20260302000000_SeedInitialLeagues`
+  - `20260226183429_InitialCreate` — Base schema
+  - `20260227190439_RefactorDivisionToRegionHierarchy` — League→Division→Region→Match
+  - `20260227213955_IncreaseScoreColumnSize` — Team score columns
+  - `20260228234737_AddTeamLogoUrl` — Team logo URLs
+  - `20260302000000_SeedInitialLeagues` — League lookup data
 
 ---
 
@@ -176,37 +205,48 @@ dotnet ef database update       # Apply migrations to LocalDB
 
 ```
 MLSNextSchedule/
-├── MLSNext.Data/                 # EF Core + Entities
-│   ├── Entities/                 # League, Division, Region, Match, Team, etc.
+├── YSS.Data/                     # EF Core + Entities
+│   ├── Entities/                 # League, Division, Region, Match, Team, Venue, etc.
+│   ├── Migrations/               # 5 migrations + SeedInitialLeagues
 │   ├── AppDbContext.cs
-│   ├── Migrations/
-│   └── MLSNext.Data.csproj
-├── MLSNext.Ingestion/            # Business Logic
+│   ├── AppDbContextFactory.cs
+│   └── YSS.Data.csproj
+├── YSS.Ingestion/                # Business Logic
 │   ├── Services/                 # Modular11Client, ScheduleParser, MatchUpsertService, IngestionOrchestrator
 │   ├── Models/                   # ParsedMatch (DTO)
-│   └── MLSNext.Ingestion.csproj
-├── MLSNext.Functions/            # Azure Functions Host
+│   └── YSS.Ingestion.csproj
+├── YSS.Functions/                # Azure Functions Host
 │   ├── Triggers/                 # GetMatches, GetTeams, GetDivisions, GetRegions, GetAgeGroups, ScheduledIngestion, TriggerIngestion
 │   ├── Program.cs                # Dependency Injection
-│   └── MLSNext.Functions.csproj
-├── MLSNext.Tests/                # Unit + Integration Tests (36/36 passing)
+│   ├── host.json
+│   ├── local.settings.json       # CORS: http://localhost:5173
+│   └── YSS.Functions.csproj
+├── YSS.Tests/                    # Unit + Integration Tests (36/36 passing)
 │   ├── Unit/ScheduleParserTests.cs
+│   ├── Unit/Modular11ClientTests.cs
 │   ├── Integration/MatchUpsertServiceIntegrationTests.cs
 │   ├── Integration/IngestionOrchestratorIntegrationTests.cs
-│   └── MLSNext.Tests.csproj
-├── MLSNext.Verification/         # CLI Tool for Testing
+│   ├── Integration/FunctionsIntegrationTests.cs
+│   ├── Fixtures/TestDataFixture.cs
+│   └── YSS.Tests.csproj
+├── YSS.Verification/             # CLI Tool for Testing
 │   ├── Program.cs                # Multi-tournament ingestor
-│   └── MLSNext.Verification.csproj
-├── MLSNext.Web/                  # React Frontend
+│   └── YSS.Verification.csproj
+├── YSS.Web/                      # React Frontend
 │   ├── src/
-│   │   ├── components/           # ProgramSelector, SeasonSelector, FilterBar, MatchList, MatchCard
+│   │   ├── components/           # ProgramSelector, SeasonSelector, FilterBar, MatchList, MatchCard, LeagueSelector
 │   │   ├── App.tsx               # State management, API calls
 │   │   ├── types.ts              # TypeScript interfaces
-│   │   └── App.css, index.css
+│   │   ├── App.css, index.css
+│   │   └── images/
+│   ├── index.html
 │   ├── package.json
 │   ├── vite.config.ts
 │   ├── tsconfig.json
+│   ├── tsconfig.app.json
 │   └── README.md
+├── .github/workflows/
+│   └── deploy.yml                # GitHub Actions CI/CD (build, test, deploy)
 ├── MLSNextSchedule.slnx          # Solution file
 └── PROJECT_STATUS_V2.md          # This file
 ```
@@ -255,18 +295,18 @@ MLSNextSchedule/
 
 ```powershell
 # Run all tests
-dotnet test MLSNext.Tests
+dotnet test YSS.Tests
 
 # Run specific test class
-dotnet test MLSNext.Tests --filter "ScheduleParserTests"
+dotnet test YSS.Tests --filter "ScheduleParserTests"
 
 # Run with coverage
-dotnet test MLSNext.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
+dotnet test YSS.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
 ```
 
 **Current Status:**
-- ✅ Unit tests: 8/8 (ScheduleParser)
-- ✅ Integration tests: 13/13 (MatchUpsertService, IngestionOrchestrator)
+- ✅ Unit tests: 8/8 (ScheduleParserTests, Modular11ClientTests)
+- ✅ Integration tests: 15/15 (MatchUpsertService, IngestionOrchestrator, FunctionsIntegrationTests)
 - ✅ Total: 36/36 passing
 
 ---
@@ -284,22 +324,38 @@ dotnet test MLSNext.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
 ## 📞 Troubleshooting
 
 **Frontend won't call API:**
-- Check CORS in `MLSNext.Functions/local.settings.json` points to `http://localhost:5173`
+- Check CORS in `YSS.Functions/local.settings.json` points to `http://localhost:5173`
 - Verify function app is running on port 7071
 - Check browser console for CORS errors
+- Use `func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion` (exclude timer trigger)
 
 **LocalDB won't connect:**
 - Verify LocalDB is running: `sqllocaldb info`
-- Check connection string in `AppDbContextFactory.cs`
+- Check connection string in `YSS.Data/AppDbContextFactory.cs`
 - Restart LocalDB: `sqllocaldb stop mssqlLocalDb && sqllocaldb start mssqlLocalDb`
+
+**Azure SQL connection fails:**
+- Verify connection string in Function App settings (Configuration → Connection Strings)
+- Check Managed Identity is enabled on Function App
+- Verify database user exists: `SELECT name FROM sys.server_principals WHERE name = 'yss-func-prod'`
+- Verify public endpoint is enabled on SQL server
+- Check firewall rule: "Allow Azure services and resources" is ON
 
 **Timer trigger errors:**
 - Don't use `func start` without `--functions` list (missing Azurite)
 - Always specify HTTP function list for local dev
 
 **Tests fail after schema changes:**
-- Run migrations: `dotnet ef database update --project MLSNext.Data`
-- Clear LocalDB and re-ingest: `cd MLSNext.Verification && dotnet run`
+- Run migrations: `dotnet ef database update --project YSS.Data`
+- Clear LocalDB and re-ingest: `cd YSS.Verification && dotnet run`
+
+**GitHub Actions deployment fails:**
+- Check action logs: GitHub repo → Actions tab
+- Common issues:
+  - EF migrations not applied to Azure SQL
+  - Connection string format incorrect
+  - Publish profile malformed
+  - Function triggers not enabled on deployment
 
 ---
 
@@ -311,3 +367,87 @@ dotnet test MLSNext.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
 - ✅ Static Web Apps deployed with VITE_API_BASE_URL configured
 - ✅ Smoke tests pass: filters work, matches display with logos, calendar export works
 - ✅ Production data ingested (remove MaxMatchesPerTournament cap)
+
+---
+
+## 📝 Session 8 Summary (March 2, 2026)
+
+### Completed This Session
+
+1. **Project Rebranding (Final Phase)**
+   - Renamed all backend folders: MLSNext.* → YSS.*
+   - Renamed .csproj files to match folder names
+   - Updated solution file (MLSNextSchedule.slnx) with new paths
+   - Verified build (0 errors) and tests (36/36 passing)
+   - Git commit: ecc0e99 "Physical folder and project file renames"
+
+2. **Azure Infrastructure Provisioning**
+   - Created SQL Server: `yss-sql-prod` (Entra admin: current user)
+   - Created Database: `yss-prod` (free tier, public endpoint, firewall rules)
+   - Created Function App: `yss-func-prod` (Consumption, .NET 8, System-assigned MI)
+   - Connected Function App and SQL Server in same region
+
+3. **Security & Configuration**
+   - Enabled Managed Identity on Function App (System-assigned)
+   - Added connection string to Function App settings: `DefaultConnection`
+   - Created database user for Managed Identity: `yss-func-prod`
+   - Granted permissions: db_datareader, db_datawriter roles
+
+4. **CI/CD Pipeline Setup**
+   - Created GitHub Actions workflow: `.github/workflows/deploy.yml`
+   - Workflow triggers: Push to main + manual dispatch
+   - Pipeline: Build → Test (36/36) → Deploy to Azure
+   - Added publish profile to GitHub Secrets: `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`
+   - First deployment triggered but failed (TBD debugging next session)
+
+### Known Issues / TBD
+
+1. **Deployment Error** — "Deploy to Azure Functions" step failed
+   - Likely causes: EF migrations not applied, connection string format, publish profile
+   - Action: Review GitHub Actions logs and fix in next session
+
+2. **Database Schema** — EF migrations not yet applied to Azure SQL
+   - Action: Apply migrations manually via Query Editor or update workflow
+
+3. **Frontend Deployment** — Not yet started
+   - Blocked by backend deployment
+   - Will deploy to Azure Static Web Apps once backend is working
+
+### Testing Status
+
+- ✅ Local development: Frontend & backend both running correctly
+- ✅ API endpoints: All 6 HTTP functions responding (localhost:7071)
+- ✅ Database: Schema ready (migrations pending Azure SQL)
+- ✅ Test suite: 36/36 passing with YSS.Tests.dll assembly name
+
+### Git Commits This Session
+
+- `d79c2eb` — Merge and push GitHub Actions workflow
+- `991ed9f` — Add GitHub Actions CI/CD workflow for Azure Functions deployment
+
+### Recommendations for Next Session
+
+1. **Priority 1:** Debug GitHub Actions deployment failure
+   - Check action run logs
+   - Verify EF migrations status on Azure SQL
+   - Manually apply migrations if needed
+
+2. **Priority 2:** Verify backend is accessible from Azure
+   - Test endpoints: https://yss-func-prod.azurewebsites.net/api/matches, etc.
+   - Check connection string, database user, Managed Identity
+
+3. **Priority 3:** Ingest production data
+   - Run YSS.Verification to pull live Modular11 data
+   - Verify matches, teams, venues appear in Azure SQL
+
+4. **Priority 4:** Deploy frontend to Azure Static Web Apps
+   - Create Static Web App resource
+   - Set VITE_API_BASE_URL environment variable
+   - Connect GitHub repo and deploy
+
+### Resources
+
+- **Azure Portal:** https://portal.azure.com
+- **GitHub Actions:** https://github.com/bdempsey-47/MLSNextSchedule/actions
+- **Solution:** YSS.* namespaces, YSS.* folders, solution file updated
+- **Local Testing:** `func start --functions ...` and `npm run dev` still work perfectly
