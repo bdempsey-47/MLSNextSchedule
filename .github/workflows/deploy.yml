@@ -78,13 +78,6 @@ jobs:
       - name: Install EF Core CLI Tool
         run: dotnet tool install --global dotnet-ef
 
-      - name: Generate EF Migration Scripts
-        run: dotnet ef migrations script --project YSS.Data --configuration Release --output ./migrations.sql --idempotent
-
-      - name: Apply Migrations to Azure SQL via CLI
-        run: |
-          az sql db run --resource-group application-prod --server yss-sql-prod --name yss-prod --sql-file ./migrations.sql
-
       - name: Deploy to Azure Functions with Azure CLI
         run: |
           cd ./output
