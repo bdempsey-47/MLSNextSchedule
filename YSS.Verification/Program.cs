@@ -17,6 +17,13 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+// If an access token is provided as a CLI argument, set it as an environment variable for the factory
+if (args.Length > 0)
+{
+    Environment.SetEnvironmentVariable("AZURE_SQL_ACCESS_TOKEN", args[0]);
+    Console.WriteLine("Using Azure SQL with access token authentication");
+}
+
 var connectionString = config.GetConnectionString("DefaultConnection");
 const int MaxMatchesPerTournament = 25;
 Console.WriteLine($"=== MLSNext Full Ingestion Runner ===\nDB: {connectionString}\nLimit: {MaxMatchesPerTournament} records per tournament\n");

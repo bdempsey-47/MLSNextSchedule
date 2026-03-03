@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -9,12 +10,28 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-        // Use connection string from args if provided (for CI/CD), otherwise use local default
-        var connectionString = args.Length > 0
-            ? args[0]
-            : "Server=(localdb)\\MSSQLLocalDB;Database=YSS;Trusted_Connection=true;Encrypt=false;";
+        // Check for access token in environment variable (set by ingestion script)
+        var accessToken = Environment.GetEnvironmentVariable("AZURE_SQL_ACCESS_TOKEN");
 
-        optionsBuilder.UseSqlServer(connectionString);
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            // Token-based authentication for Azure SQL
+            var connection = new SqlConnection(
+                "Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            connection.AccessToken = accessToken;
+            optionsBuilder.UseSqlServer(connection);
+        }
+        else if (args.Length > 0)
+        {
+            // Connection string provided as argument
+            optionsBuilder.UseSqlServer(args[0]);
+        }
+        else
+        {
+            // Default to local development
+            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=YSS;Trusted_Connection=true;Encrypt=false;");
+        }
+
         return new AppDbContext(optionsBuilder.Options);
     }
 }
