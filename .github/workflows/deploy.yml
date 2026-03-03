@@ -78,20 +78,12 @@ jobs:
       - name: Install EF Core CLI Tool
         run: dotnet tool install --global dotnet-ef
 
-      - name: Get SQL Access Token
-        id: sql-token
-        run: |
-          TOKEN=$(az account get-access-token --resource https://database.windows.net --query accessToken -o tsv)
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+      - name: Generate EF Migration Scripts
+        run: dotnet ef migrations script --project YSS.Data --configuration Release --output ./migrations.sql --idempotent
 
-      - name: Build SQL Connection String with OIDC Token
-        id: sql-conn
+      - name: Apply Migrations to Azure SQL via CLI
         run: |
-          CONN_STR="Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;User ID=github-actions-oidc;Password=${{ steps.sql-token.outputs.token }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-          echo "connection_string=$CONN_STR" >> $GITHUB_OUTPUT
-
-      - name: Apply EF Migrations to Azure SQL
-        run: dotnet ef database update --project YSS.Data --configuration Release -- "${{ steps.sql-conn.outputs.connection_string }}"
+          az sql db run --resource-group application-prod --server yss-sql-prod --name yss-prod --sql-file ./migrations.sql
 
       - name: Deploy to Azure Functions with Azure CLI
         run: |
