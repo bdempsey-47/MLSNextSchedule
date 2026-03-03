@@ -65,6 +65,9 @@ jobs:
       - name: Publish Azure Functions
         run: dotnet publish ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --output ./output
 
+      - name: Apply EF Migrations to Azure SQL
+        run: dotnet ef database update --project YSS.Data --configuration Release -- "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
