@@ -551,3 +551,71 @@ dotnet test YSS.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
 1. Fix Android calendar export (.ics format)
 2. Implement compact match card collapse mode
 3. Ingest full Fall 2025 Homegrown data for performance testing
+
+---
+
+## 📝 Session 10 Summary (March 4, 2026)
+
+### Completed This Session
+
+1. **Hardened Match Upsert Logic**
+   - Enhanced `MatchUpsertService` to update ALL mutable fields on re-ingestion (not just Score)
+   - Now updates: `MatchDateUtc`, `HomeTeamId`, `AwayTeamId`, `VenueId`, `RegionId`, `CompetitionId`, `AgeGroupId`, `Gender`
+   - Existing matches now properly handle reschedules, venue changes, team reassignments
+   - Full-field upsert matches insert path logic (lookup-or-create for all reference entities)
+
+2. **Removed Database Wipe from Ingestion CLI**
+   - Deleted 50-68 line block that was clearing all data before each run
+   - Safe incremental ingestion now possible — existing data preserved, new/updated matches upserted
+   - Previously risky for production (one failed run would destroy all data)
+
+3. **Removed Match Cap and Configured Academy Spring 2026**
+   - Removed `MaxMatchesPerTournament = 25` constant
+   - Updated orchestrator call to pass `maxMatches: null` (no limit)
+   - Modified tournaments array to ingest only Academy Spring 2026 for this run
+   - Other tournaments commented out for future runs
+
+4. **Verified Code Quality**
+   - ✅ `dotnet build` — 0 errors, 4 warnings (non-critical xUnit analyzer)
+   - ✅ `dotnet test YSS.Tests` — 36/36 tests passing
+   - ✅ `git commit` — Changes saved with descriptive message
+
+### Ready for Production Ingestion
+
+The code is prepared to run `.\ingest-azure.ps1` and ingest all available Academy Spring 2026 data. The full upsert fix ensures:
+- Reschedules are reflected immediately
+- Venue changes are captured
+- Team reassignments are handled
+- Scores update as matches are played
+
+**Next step:** Run `.\ingest-azure.ps1` from a fresh PowerShell window (after Azure CLI installation)
+
+### Git Commits This Session
+
+- `a599333` — refactor: Improve match upsert to update all fields, remove DB wipe, remove match cap
+
+### Known Limitations Addressed
+
+- ✅ Removed the `MaxMatchesPerTournament` cap (was blocking full data ingestion)
+- ✅ Fixed incomplete upsert (now handles all match field updates)
+- ✅ Removed dangerous database wipe (safe incremental ingestion now)
+
+### Testing Status
+
+- ✅ Unit tests: 8/8 passing
+- ✅ Integration tests: 28/28 passing
+- ✅ Total: 36/36 tests passing
+- ✅ Build: 0 errors
+
+### Next Session
+
+Run the ingestion script in a fresh PowerShell window:
+```powershell
+cd C:\Projects\MLSNextSchedule
+.\ingest-azure.ps1
+```
+
+Monitor the output for final match/team counts. Then verify on the live frontend:
+- https://happy-smoke-0edf8100f.2.azurestaticapps.net
+- Filter by Academy, Spring 2026
+- Should see all available matches (likely 500+ vs current 25)
