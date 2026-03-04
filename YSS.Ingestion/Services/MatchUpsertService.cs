@@ -59,12 +59,25 @@ public class MatchUpsertService
 
                 if (existingMatch != null)
                 {
-                    // Update existing match score and team logos
+                    // Update all mutable fields on existing match
+                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
+                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
+                    var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
+                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, ct);
+                    var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
+                    var competition = await LookupOrCreateCompetitionAsync(parsedMatch.Competition, ct);
+                    var ageGroup = await LookupOrCreateAgeGroupAsync(parsedMatch.AgeGroup, ct);
+
+                    existingMatch.MatchDateUtc = parsedMatch.MatchDate;
+                    existingMatch.HomeTeamId = homeTeam.Id;
+                    existingMatch.AwayTeamId = awayTeam.Id;
+                    existingMatch.VenueId = venue.Id;
+                    existingMatch.RegionId = region.Id;
+                    existingMatch.CompetitionId = competition.Id;
+                    existingMatch.AgeGroupId = ageGroup.Id;
+                    existingMatch.Gender = parsedMatch.Gender;
                     existingMatch.Score = parsedMatch.Score;
                     existingMatch.UpdatedAt = DateTime.UtcNow;
-                    // Refresh logos in case they were added/changed since initial ingestion
-                    await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
-                    await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
                     updatedMatches++;
                 }
                 else

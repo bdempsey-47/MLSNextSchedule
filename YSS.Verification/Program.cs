@@ -27,9 +27,8 @@ if (args.Length > 0)
 
 var connectionString = config.GetConnectionString("DefaultConnection");
 var accessToken = Environment.GetEnvironmentVariable("AZURE_SQL_ACCESS_TOKEN");
-const int MaxMatchesPerTournament = 25;
 var dbInfo = !string.IsNullOrEmpty(accessToken) ? "Azure SQL (token auth)" : connectionString;
-Console.WriteLine($"=== MLSNext Full Ingestion Runner ===\nDB: {dbInfo}\nLimit: {MaxMatchesPerTournament} records per tournament\n");
+Console.WriteLine($"=== MLSNext Full Ingestion Runner ===\nDB: {dbInfo}\n");
 
 // Helper function to configure DbContext with token or connection string
 Action<DbContextOptionsBuilder> ConfigureDbContext = options =>
@@ -47,33 +46,14 @@ Action<DbContextOptionsBuilder> ConfigureDbContext = options =>
     }
 };
 
-// Clear database before ingestion
-Console.WriteLine("Clearing database...");
-{
-    var services = new ServiceCollection();
-    services.AddDbContext<AppDbContext>(ConfigureDbContext);
-    var sp = services.BuildServiceProvider();
-    var db = sp.GetRequiredService<AppDbContext>();
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Matches");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM RawIngestionLogs");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Regions");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Divisions");
-    // Don't delete Leagues — keep the seeded league records
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Teams");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Venues");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM Competitions");
-    await db.Database.ExecuteSqlRawAsync("DELETE FROM AgeGroups");
-    Console.WriteLine("Database cleared (Leagues table preserved)\n");
-    await sp.DisposeAsync();
-}
-
 // Run ingestion for each tournament
 var tournaments = new[]
 {
-    new { TournamentId = "35", Label = "Academy",    StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
-    new { TournamentId = "12", Label = "Homegrown",  StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
     new { TournamentId = "35", Label = "Academy S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
-    new { TournamentId = "12", Label = "Homegrown S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
+    // Other tournaments (uncomment to ingest all seasons):
+    // new { TournamentId = "35", Label = "Academy",    StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
+    // new { TournamentId = "12", Label = "Homegrown",  StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
+    // new { TournamentId = "12", Label = "Homegrown S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
 };
 
 foreach (var t in tournaments)
@@ -107,7 +87,7 @@ foreach (var t in tournaments)
 
     try
     {
-        await orchestrator.RunAsync(CancellationToken.None, MaxMatchesPerTournament, "MLS Next");
+        await orchestrator.RunAsync(CancellationToken.None, maxMatches: null, "MLS Next");
         Console.WriteLine($"✅ {t.Label} ingestion complete.\n");
     }
     catch (Exception ex)
