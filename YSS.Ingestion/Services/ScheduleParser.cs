@@ -139,7 +139,7 @@ public class ScheduleParser
         var division = GetValue(matchData, "Division");
         
         // Look for venue using multiple possible field names
-        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name");
+        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name") ?? GetValue(matchData, "Location");
 
 
         // Validate required fields
