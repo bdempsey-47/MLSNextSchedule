@@ -106,50 +106,57 @@ dotnet ef database update       # Apply migrations to LocalDB
 
 ## 📋 Next Steps (Priority Order)
 
-### Phase 4 — Azure Deployment (Continuing)
+### Phase 4 — Azure Deployment ✅ COMPLETE
 
-#### Immediate (Tomorrow Session)
+**Completed This Session:**
+- ✅ Fixed GitHub Actions .NET version mismatch (8.0 → 10.0)
+- ✅ Implemented OIDC authentication for GitHub Actions (no passwords stored)
+- ✅ Applied EF migrations to Azure SQL
+- ✅ Deployed Function App to Azure (all 5 HTTP endpoints working)
+- ✅ Deployed Frontend to Azure Static Web Apps
+- ✅ Configured CORS between Static Web App and Function App
+- ✅ Ingested sample data (100 matches, 104 teams)
+- ✅ End-to-end live testing: frontend → backend → database ✅
 
-1. **Debug GitHub Actions Deployment Failure**
-   - Review action logs: https://github.com/bdempsey-47/MLSNextSchedule/actions
-   - Common issues: EF migration not applied, connection string format, publish profile format
-   - Fix: Update workflow or Azure config as needed
+**Live URLs:**
+- Frontend: https://happy-smoke-0edf8100f.2.azurestaticapps.net
+- Backend: https://yss-func-prod-cqcnb3dfgze4b7ap.centralus-01.azurewebsites.net/api
 
-2. **Apply EF Migrations to Azure SQL**
-   - Option A (Manual via Query Editor):
-     - Use SQL migration scripts from `YSS.Data/Migrations/`
-     - Run in order: InitialCreate → RefactorDivisionToRegion → IncreaseScoreColumn → AddTeamLogoUrl → SeedInitialLeagues
-   - Option B (Automated in deployment):
-     - Add migration step to GitHub Actions workflow
-     - Or manually run: `dotnet ef database update --project YSS.Data` with Azure connection string
+---
 
-3. **Deploy Azure Function App**
-   - Fix workflow and re-trigger deployment
-   - Verify endpoints responding: `https://yss-func-prod.azurewebsites.net/api/matches`, etc.
-   - Test with production data
+### Phase 5 — Feature Refinement & Data Ingestion
 
-#### Secondary (After backend is working)
+#### Immediate (Next Session)
 
-4. **Deploy Frontend to Azure Static Web Apps**
-   - Create Static Web App resource
-   - Connect GitHub repo
-   - Configure build & environment:
-     - Build: `npm run build`
-     - Output: `dist/`
-     - Environment: `VITE_API_BASE_URL=https://yss-func-prod.azurewebsites.net/api`
-   - Test filters with live backend
+1. **Fix Calendar Export (.ics) on Android**
+   - Issue: Android shows "Unable to launch event" when clicking calendar link
+   - Root cause: Likely .ics file format or MIME type issue
+   - Action: Debug .ics generation, verify MIME type headers, test on multiple Android devices
 
-5. **Ingest Production Data**
-   - Run Modular11 full tournament pull (remove sample cap)
-   - Verify all matches, teams, venues loaded
-   - Test calendar export, team filters, venue maps
+2. **Add Collapse Mode for Match Cards**
+   - Create compact card layout: `Date | Home Team | Score | Away Team`
+   - Add toggle button to switch between expanded and compact views
+   - Test on mobile (375px+) to ensure many more matches visible
+   - Prioritize for small screens (< 600px)
 
-### Phase 3 Extensions (Stretch Goals)
+3. **Ingest Full Fall 2025 Homegrown Data**
+   - Remove `MaxMatchesPerTournament` cap in `YSS.Verification` (currently 25)
+   - Run full ingestion for Tournament ID 12 (Homegrown), Fall 2025 date range
+   - Monitor performance: query speed, page load time with 500+ matches
+   - Identify bottlenecks if any
 
-- [ ] **Match card layout consistency** — Clamp team names to single line with ellipsis
-- [ ] **Mobile filter optimization** — Reduce vertical space on small screens (< 600px)
-- [ ] **Standings page** — Win/loss records per program, season, region, age group
-- [ ] **Google Maps upgrade** — Use Geocoding API for precise venue pins (vs general search)
+#### Secondary (After core features)
+
+4. **Ingest All Production Data**
+   - Pull all tournaments: Homegrown + Academy, Fall 2025 + Spring 2026
+   - Populate with full live Modular11 data
+   - Verify performance under load
+
+5. **Additional Polish**
+   - Match card layout consistency — Clamp team names to single line with ellipsis
+   - Mobile filter optimization — Reduce vertical space on small screens (< 600px)
+   - Standings page — Win/loss records per program, season, region, age group
+   - Google Maps upgrade — Use Geocoding API for precise venue pins (vs general search)
 
 ---
 
@@ -451,3 +458,96 @@ dotnet test YSS.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
 - **GitHub Actions:** https://github.com/bdempsey-47/MLSNextSchedule/actions
 - **Solution:** YSS.* namespaces, YSS.* folders, solution file updated
 - **Local Testing:** `func start --functions ...` and `npm run dev` still work perfectly
+
+---
+
+## 📝 Session 9 Summary (March 3, 2026)
+
+### Completed This Session
+
+1. **Fixed GitHub Actions Deployment Pipeline**
+   - Updated workflow .NET version: 8.0.x → 10.0.x (matches YSS.Functions target)
+   - Implemented OIDC authentication (no passwords stored)
+   - Created app registration: `github-actions-oidc` (Client ID: 8a5e3623-9c4e-4420-8886-29ff04eb099d)
+   - Configured OIDC federated credentials for GitHub → Azure trust
+   - Granted "Website Contributor" role on resource group for safe deployments
+   - Git commits: 4693587, f0a087b, da4b38b, 9cff7ed, 492b8d4, a8e104e, f33f5cf
+
+2. **Implemented Token-Based Auth for Data Ingestion**
+   - Created `ingest-azure.ps1` PowerShell script for secure token-based auth
+   - Updated `AppDbContextFactory` to accept access tokens as environment variables
+   - Modified `YSS.Verification` to use token auth when available
+   - Eliminated need for stored SQL passwords (uses Azure CLI authentication)
+   - Git commits: 492b8d4, a8e104e
+
+3. **Applied EF Migrations to Azure SQL**
+   - Generated SQL migration scripts locally (idempotent)
+   - Manually applied all 5 migrations via Query Editor:
+     - InitialCreate, RefactorDivisionToRegion, IncreaseScoreColumn, AddTeamLogoUrl, SeedInitialLeagues
+   - Verified schema with successful ingestion
+
+4. **Ingested Sample Data to Azure SQL**
+   - Created SQL user "github-actions-oidc" with db_datareader, db_datawriter roles
+   - Inserted "MLS Next" league record (required for ingestion)
+   - Successfully ingested 100 sample matches + 104 teams
+   - Data includes: 25 Homegrown Fall 2025, 25 Homegrown Spring 2026, 25 Academy Fall 2025, 25 Academy Spring 2026
+
+5. **Deployed Frontend to Azure Static Web Apps**
+   - Created Static Web App resource: `yss-web-prod`
+   - Configured automatic deployment from GitHub main branch
+   - Fixed environment variable issue by creating `.env.production`
+   - Set VITE_API_BASE_URL to Azure Function App endpoint
+   - Git commit: Added .env.production with production API URL
+
+6. **Fixed CORS Configuration**
+   - Added Static Web App origin to Function App CORS whitelist
+   - Verified end-to-end connectivity: Frontend → Backend → Database ✅
+
+### Live Application Status
+
+- **Frontend:** https://happy-smoke-0edf8100f.2.azurestaticapps.net
+- **Backend:** https://yss-func-prod-cqcnb3dfgze4b7ap.centralus-01.azurewebsites.net/api
+- **Database:** Azure SQL (yss-prod) with 100 matches, 104 teams
+- **Tests:** 36/36 passing
+- **Build:** 0 errors
+
+### Known Issues Identified
+
+1. **Android Calendar Export** — .ics file shows "Unable to launch event" on Android devices
+   - Works on other platforms
+   - Need to investigate .ics format and MIME type headers
+
+2. **UI/UX on Mobile** — Match card layout is verbose on small screens
+   - Shows full expanded card (too much vertical space)
+   - Need compact collapse mode: Date | Home | Score | Away
+
+3. **Data Volume** — Currently using 100 sample matches
+   - Need to test performance with full Fall 2025 Homegrown tournament (~500+ matches)
+   - Identify any query performance issues at scale
+
+### Git Commits This Session
+
+- `4693587` — Fix GitHub Actions deployment: Update .NET version to 10.0.x
+- `1a9ed18` — Add automated EF migrations to GitHub Actions deployment
+- `f0a087b` — Update workflow to use OIDC authentication for Azure SQL migrations
+- `6713f31` — Add EF Core CLI tool installation to workflow
+- `9cff7ed` — Fix migration approach: use SQL scripts instead of token in connection string
+- `da4b38b` — Remove migrations from workflow, apply manually to Azure SQL
+- `492b8d4` — Implement token-based authentication for Azure SQL ingestion
+- `a8e104e` — Fix token-based auth in YSS.Verification runtime
+- `f33f5cf` — Add debug logging for duplicate match IDs in batch
+- Plus .env.production for frontend
+
+### Session Achievements
+
+- ✅ Complete Azure infrastructure (SQL, Function App, Static Web App)
+- ✅ Zero-password OIDC authentication throughout CI/CD and ingestion
+- ✅ End-to-end live application with real data
+- ✅ Function App + Frontend working together in production
+- ✅ Automated deployments from GitHub to Azure
+
+### Next Session Priorities
+
+1. Fix Android calendar export (.ics format)
+2. Implement compact match card collapse mode
+3. Ingest full Fall 2025 Homegrown data for performance testing
