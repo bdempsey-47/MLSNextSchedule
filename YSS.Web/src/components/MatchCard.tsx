@@ -30,6 +30,21 @@ const addToCalendar = (match: Match) => {
   const description = `${match.ageGroup.name} ${match.gender} — ${match.region?.name ?? ''}`
   const location = match.venue.name !== 'TBD' ? match.venue.name : ''
 
+  const isAndroid = /android/i.test(navigator.userAgent)
+
+  if (isAndroid) {
+    // Android doesn't handle .ics downloads reliably — use Google Calendar URL instead
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: title,
+      dates: `${toIcsDate(start)}/${toIcsDate(end)}`,
+      details: description,
+      location,
+    })
+    window.open(`https://calendar.google.com/calendar/render?${params}`, '_blank')
+    return
+  }
+
   const ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
