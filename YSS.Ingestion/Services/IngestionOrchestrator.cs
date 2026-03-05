@@ -47,7 +47,8 @@ public class IngestionOrchestrator
         int? maxMatches = null,
         string leagueName = "MLS Next",
         string? startDate = null,
-        string? endDate = null)
+        string? endDate = null,
+        List<string>? ageGroups = null)
     {
         var startTime = DateTime.UtcNow;
         var totalMatches = 0;
@@ -64,7 +65,7 @@ public class IngestionOrchestrator
                 _logger.LogInformation("Fetching page {PageNumber}", pageNumber);
 
                 // Fetch page
-                var htmlContent = await _client.FetchPageAsync(pageNumber, ct, startDate, endDate);
+                var htmlContent = await _client.FetchPageAsync(pageNumber, ct, startDate, endDate, ageGroups);
 
                 // Check for end-of-pagination marker
                 if (htmlContent.Contains("No data available"))

@@ -36,13 +36,14 @@ public class Modular11Client
     /// <param name="endDateOverride">Optional end date override (yyyy-MM-dd HH:mm:ss). Overrides settings when provided.</param>
     /// <returns>Raw HTML response body</returns>
     public virtual async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default,
-        string? startDateOverride = null, string? endDateOverride = null)
+        string? startDateOverride = null, string? endDateOverride = null,
+        List<string>? ageGroupsOverride = null)
     {
         var throttleMs = Random.Shared.Next(MinThrottleMilliseconds, MaxThrottleMilliseconds + 1);
         _logger.LogDebug("Throttling request for page {PageNumber} by {ThrottleMs}ms", pageNumber, throttleMs);
         await Task.Delay(throttleMs, ct);
 
-        var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride);
+        var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride, ageGroupsOverride);
         var url = $"https://www.modular11.com/public_schedule/league/get_matches?{queryParams}";
 
         _logger.LogInformation("Fetching Modular11 page {PageNumber}: {Url}", pageNumber, url);
@@ -64,7 +65,8 @@ public class Modular11Client
         }
     }
 
-    private string BuildQueryParams(int pageNumber, string? startDateOverride = null, string? endDateOverride = null)
+    private string BuildQueryParams(int pageNumber, string? startDateOverride = null, string? endDateOverride = null,
+        List<string>? ageGroupsOverride = null)
     {
         var sb = new StringBuilder();
 
@@ -75,8 +77,9 @@ public class Modular11Client
         sb.Append($"&match_type={Uri.EscapeDataString(_settings.MatchType)}");
         sb.Append($"&open_page={pageNumber}");
 
-        // Age groups (repeatable parameter)
-        foreach (var ageGroup in _settings.AgeGroups)
+        // Age groups (repeatable parameter) — override takes precedence over settings
+        var ageGroups = ageGroupsOverride ?? _settings.AgeGroups;
+        foreach (var ageGroup in ageGroups)
         {
             sb.Append($"&age[]={Uri.EscapeDataString(ageGroup)}");
         }

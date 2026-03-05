@@ -68,7 +68,7 @@ foreach (var t in tournaments)
         Gender = "1",
         Status = "scheduled",
         MatchType = "2",
-        AgeGroups = new List<string> { "13", "14", "15", "16", "17", "18" },
+        AgeGroups = new List<string> { "21", "22", "33", "14", "15", "26" },
         StartDate = t.StartDate,
         EndDate = t.EndDate
     };
