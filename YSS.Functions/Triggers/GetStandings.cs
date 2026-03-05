@@ -141,6 +141,8 @@ public class GetStandings
             homeStats.GP++;
             homeStats.GF += homeGoals.Value;
             homeStats.GA += awayGoals.Value;
+            homeStats.HomeGF += homeGoals.Value;
+            homeStats.HomeGA += awayGoals.Value;
 
             if (homeGoals > awayGoals)
                 homeStats.W++;
@@ -154,6 +156,8 @@ public class GetStandings
             awayStats.GP++;
             awayStats.GF += awayGoals.Value;
             awayStats.GA += homeGoals.Value;
+            awayStats.AwayGF += awayGoals.Value;
+            awayStats.AwayGA += homeGoals.Value;
 
             if (awayGoals > homeGoals)
                 awayStats.W++;
@@ -164,6 +168,8 @@ public class GetStandings
         }
 
         // Convert to standings rows with rank
+        // Tiebreaker order (MLS Next): PPM → wins → GD → GF → away GD → away GF → home GD → home GF
+        // Note: head-to-head (2-team ties only) is not implemented — requires custom pairwise sort
         var rows = teamStats.Values
             .Select(ts => new StandingRowDto
             {
@@ -181,11 +187,20 @@ public class GetStandings
                 PPM = ts.GP > 0 ? Math.Round((decimal)(ts.W * 3 + ts.D) / ts.GP, 3) : 0m,
                 GFM = ts.GP > 0 ? Math.Round((decimal)ts.GF / ts.GP, 2) : 0m,
                 GAM = ts.GP > 0 ? Math.Round((decimal)ts.GA / ts.GP, 2) : 0m,
-                GDM = ts.GP > 0 ? Math.Round((decimal)(ts.GF - ts.GA) / ts.GP, 2) : 0m
+                GDM = ts.GP > 0 ? Math.Round((decimal)(ts.GF - ts.GA) / ts.GP, 2) : 0m,
+                AwayGD = ts.AwayGF - ts.AwayGA,
+                AwayGF = ts.AwayGF,
+                HomeGD = ts.HomeGF - ts.HomeGA,
+                HomeGF = ts.HomeGF
             })
             .OrderByDescending(r => r.PPM)
+            .ThenByDescending(r => r.W)
             .ThenByDescending(r => r.GD)
             .ThenByDescending(r => r.GF)
+            .ThenByDescending(r => r.AwayGD)
+            .ThenByDescending(r => r.AwayGF)
+            .ThenByDescending(r => r.HomeGD)
+            .ThenByDescending(r => r.HomeGF)
             .ToList();
 
         // Add rank
@@ -233,6 +248,10 @@ public class GetStandings
         public int L { get; set; }
         public int GF { get; set; }
         public int GA { get; set; }
+        public int HomeGF { get; set; }
+        public int HomeGA { get; set; }
+        public int AwayGF { get; set; }
+        public int AwayGA { get; set; }
     }
 
     public class StandingRowDto
@@ -253,5 +272,9 @@ public class GetStandings
         public decimal GFM { get; set; }
         public decimal GAM { get; set; }
         public decimal GDM { get; set; }
+        public int AwayGD { get; set; }
+        public int AwayGF { get; set; }
+        public int HomeGD { get; set; }
+        public int HomeGF { get; set; }
     }
 }

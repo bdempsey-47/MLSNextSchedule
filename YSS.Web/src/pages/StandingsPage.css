@@ -201,8 +201,7 @@
 .standings-table .standings-team-logo {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -281,8 +280,8 @@
   }
 
   .standings-table .standings-team-logo {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
   }
 
   .standings-table .standings-team-name {

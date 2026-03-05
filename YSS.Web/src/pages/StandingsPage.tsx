@@ -114,22 +114,22 @@ function StandingsPage() {
         const data = await response.json()
         // Transform PascalCase to camelCase
         const transformed = data.map((row: any) => ({
-          rank: row.Rank || row.rank,
-          teamId: row.TeamId || row.teamId,
-          teamName: row.TeamName || row.teamName,
-          logoUrl: row.LogoUrl || row.logoUrl,
-          gp: row.GP || row.gp,
-          w: row.W || row.w,
-          d: row.D || row.d,
-          l: row.L || row.l,
-          gf: row.GF || row.gf,
-          ga: row.GA || row.ga,
-          gd: row.GD || row.gd,
-          pts: row.Pts || row.pts,
-          ppm: row.PPM || row.ppm,
-          gfm: row.GFM || row.gfm,
-          gam: row.GAM || row.gam,
-          gdm: row.GDM || row.gdm
+          rank: row.Rank ?? row.rank,
+          teamId: row.TeamId ?? row.teamId,
+          teamName: row.TeamName ?? row.teamName,
+          logoUrl: row.LogoUrl ?? row.logoUrl,
+          gp: row.GP ?? row.gp ?? 0,
+          w: row.W ?? row.w ?? 0,
+          d: row.D ?? row.d ?? 0,
+          l: row.L ?? row.l ?? 0,
+          gf: row.GF ?? row.gf ?? 0,
+          ga: row.GA ?? row.ga ?? 0,
+          gd: row.GD ?? row.gd ?? 0,
+          pts: row.Pts ?? row.pts ?? 0,
+          ppm: row.PPM ?? row.ppm ?? 0,
+          gfm: row.GFM ?? row.gfm ?? 0,
+          gam: row.GAM ?? row.gam ?? 0,
+          gdm: row.GDM ?? row.gdm ?? 0
         }))
 
         setStandings(transformed)
