@@ -31,14 +31,18 @@ public class Modular11Client
     /// Fetch a page of match data from Modular11.
     /// </summary>
     /// <param name="pageNumber">The 1-indexed page number</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <param name="startDateOverride">Optional start date override (yyyy-MM-dd HH:mm:ss). Overrides settings when provided.</param>
+    /// <param name="endDateOverride">Optional end date override (yyyy-MM-dd HH:mm:ss). Overrides settings when provided.</param>
     /// <returns>Raw HTML response body</returns>
-    public virtual async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default)
+    public virtual async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default,
+        string? startDateOverride = null, string? endDateOverride = null)
     {
         var throttleMs = Random.Shared.Next(MinThrottleMilliseconds, MaxThrottleMilliseconds + 1);
         _logger.LogDebug("Throttling request for page {PageNumber} by {ThrottleMs}ms", pageNumber, throttleMs);
         await Task.Delay(throttleMs, ct);
 
-        var queryParams = BuildQueryParams(pageNumber);
+        var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride);
         var url = $"https://www.modular11.com/public_schedule/league/get_matches?{queryParams}";
 
         _logger.LogInformation("Fetching Modular11 page {PageNumber}: {Url}", pageNumber, url);
@@ -60,7 +64,7 @@ public class Modular11Client
         }
     }
 
-    private string BuildQueryParams(int pageNumber)
+    private string BuildQueryParams(int pageNumber, string? startDateOverride = null, string? endDateOverride = null)
     {
         var sb = new StringBuilder();
 
@@ -77,16 +81,15 @@ public class Modular11Client
             sb.Append($"&age[]={Uri.EscapeDataString(ageGroup)}");
         }
 
-        // Date range (if configured)
-        if (!string.IsNullOrEmpty(_settings.StartDate))
-        {
-            sb.Append($"&start_date={Uri.EscapeDataString(_settings.StartDate)}");
-        }
+        // Date range — overrides take precedence over settings
+        var startDate = startDateOverride ?? _settings.StartDate;
+        var endDate = endDateOverride ?? _settings.EndDate;
 
-        if (!string.IsNullOrEmpty(_settings.EndDate))
-        {
-            sb.Append($"&end_date={Uri.EscapeDataString(_settings.EndDate)}");
-        }
+        if (!string.IsNullOrEmpty(startDate))
+            sb.Append($"&start_date={Uri.EscapeDataString(startDate)}");
+
+        if (!string.IsNullOrEmpty(endDate))
+            sb.Append($"&end_date={Uri.EscapeDataString(endDate)}");
 
         return sb.ToString();
     }

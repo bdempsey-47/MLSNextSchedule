@@ -15,6 +15,14 @@ public class MatchUpsertService
     private readonly AppDbContext _dbContext;
     private readonly ILogger<MatchUpsertService> _logger;
 
+    // Per-run in-memory caches — avoids repeated DB lookups for the same reference entities
+    private readonly Dictionary<string, Team> _teamCache = new();
+    private readonly Dictionary<string, Venue> _venueCache = new();
+    private readonly Dictionary<int, Division> _divisionCache = new();
+    private readonly Dictionary<(int DivisionId, string Name), Region> _regionCache = new();
+    private readonly Dictionary<string, Competition> _competitionCache = new();
+    private readonly Dictionary<string, AgeGroup> _ageGroupCache = new();
+
     public MatchUpsertService(AppDbContext dbContext, ILogger<MatchUpsertService> logger)
     {
         _dbContext = dbContext;
@@ -133,6 +141,17 @@ public class MatchUpsertService
 
     private async Task<Team> LookupOrCreateTeamAsync(string name, string? logoUrl, CancellationToken ct)
     {
+        if (_teamCache.TryGetValue(name, out var cached))
+        {
+            if (logoUrl != null && cached.LogoUrl != logoUrl)
+            {
+                cached.LogoUrl = logoUrl;
+                await _dbContext.SaveChangesAsync(ct);
+                _logger.LogDebug("Updated logo for team: {TeamName}", name);
+            }
+            return cached;
+        }
+
         var team = await _dbContext.Teams
             .Where(t => t.Name == name)
             .FirstOrDefaultAsync(ct);
@@ -146,17 +165,20 @@ public class MatchUpsertService
         }
         else if (logoUrl != null && team.LogoUrl != logoUrl)
         {
-            // Update logo URL if we have a newer/different one
             team.LogoUrl = logoUrl;
             await _dbContext.SaveChangesAsync(ct);
             _logger.LogDebug("Updated logo for team: {TeamName}", name);
         }
 
+        _teamCache[name] = team;
         return team;
     }
 
     private async Task<Venue> LookupOrCreateVenueAsync(string name, CancellationToken ct)
     {
+        if (_venueCache.TryGetValue(name, out var cached))
+            return cached;
+
         var venue = await _dbContext.Venues
             .Where(v => v.Name == name)
             .FirstOrDefaultAsync(ct);
@@ -169,11 +191,15 @@ public class MatchUpsertService
             _logger.LogDebug("Created new venue: {VenueName}", name);
         }
 
+        _venueCache[name] = venue;
         return venue;
     }
 
     private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, string leagueName, CancellationToken ct)
     {
+        if (_divisionCache.TryGetValue(tournamentId, out var cached))
+            return cached;
+
         // Map tournament ID to division name: 12=Homegrown, 35=Academy
         var divisionName = tournamentId switch
         {
@@ -192,14 +218,14 @@ public class MatchUpsertService
             var league = await _dbContext.Leagues
                 .Where(l => l.Name == leagueName)
                 .FirstOrDefaultAsync(ct);
-            
+
             if (league == null)
             {
                 throw new InvalidOperationException($"League '{leagueName}' not found. Ensure the league is seeded in the database.");
             }
 
-            division = new Division 
-            { 
+            division = new Division
+            {
                 LeagueId = league.Id,
                 Name = divisionName,
                 TournamentId = tournamentId
@@ -209,11 +235,16 @@ public class MatchUpsertService
             _logger.LogInformation("Created {DivisionName} division for tournament {TournamentId} in league {LeagueName}", divisionName, tournamentId, leagueName);
         }
 
+        _divisionCache[tournamentId] = division;
         return division;
     }
 
     private async Task<Region> LookupOrCreateRegionAsync(int divisionId, string name, CancellationToken ct)
     {
+        var key = (divisionId, name);
+        if (_regionCache.TryGetValue(key, out var cached))
+            return cached;
+
         var region = await _dbContext.Regions
             .Where(r => r.DivisionId == divisionId && r.Name == name)
             .FirstOrDefaultAsync(ct);
@@ -226,11 +257,15 @@ public class MatchUpsertService
             _logger.LogDebug("Created new region: {RegionName} in division {DivisionId}", name, divisionId);
         }
 
+        _regionCache[key] = region;
         return region;
     }
 
     private async Task<Competition> LookupOrCreateCompetitionAsync(string name, CancellationToken ct)
     {
+        if (_competitionCache.TryGetValue(name, out var cached))
+            return cached;
+
         var competition = await _dbContext.Competitions
             .Where(c => c.Name == name)
             .FirstOrDefaultAsync(ct);
@@ -243,11 +278,15 @@ public class MatchUpsertService
             _logger.LogDebug("Created new competition: {CompetitionName}", name);
         }
 
+        _competitionCache[name] = competition;
         return competition;
     }
 
     private async Task<AgeGroup> LookupOrCreateAgeGroupAsync(string name, CancellationToken ct)
     {
+        if (_ageGroupCache.TryGetValue(name, out var cached))
+            return cached;
+
         var ageGroup = await _dbContext.AgeGroups
             .Where(a => a.Name == name)
             .FirstOrDefaultAsync(ct);
@@ -260,6 +299,7 @@ public class MatchUpsertService
             _logger.LogDebug("Created new age group: {AgeGroupName}", name);
         }
 
+        _ageGroupCache[name] = ageGroup;
         return ageGroup;
     }
 }

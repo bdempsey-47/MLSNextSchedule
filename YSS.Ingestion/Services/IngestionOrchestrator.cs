@@ -40,7 +40,14 @@ public class IngestionOrchestrator
     /// <param name="ct">Cancellation token.</param>
     /// <param name="maxMatches">Optional cap on total matches to ingest. Null = no limit.</param>
     /// <param name="leagueName">Name of the league to ingest (e.g., 'MLS Next', 'ECNL', 'EDP'). Defaults to 'MLS Next'.</param>
-    public async Task RunAsync(CancellationToken ct = default, int? maxMatches = null, string leagueName = "MLS Next")
+    /// <param name="startDate">Optional start date override (yyyy-MM-dd HH:mm:ss). Overrides Modular11Settings when provided.</param>
+    /// <param name="endDate">Optional end date override (yyyy-MM-dd HH:mm:ss). Overrides Modular11Settings when provided.</param>
+    public async Task RunAsync(
+        CancellationToken ct = default,
+        int? maxMatches = null,
+        string leagueName = "MLS Next",
+        string? startDate = null,
+        string? endDate = null)
     {
         var startTime = DateTime.UtcNow;
         var totalMatches = 0;
@@ -57,7 +64,7 @@ public class IngestionOrchestrator
                 _logger.LogInformation("Fetching page {PageNumber}", pageNumber);
 
                 // Fetch page
-                var htmlContent = await _client.FetchPageAsync(pageNumber, ct);
+                var htmlContent = await _client.FetchPageAsync(pageNumber, ct, startDate, endDate);
 
                 // Check for end-of-pagination marker
                 if (htmlContent.Contains("No data available"))

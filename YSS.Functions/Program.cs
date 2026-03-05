@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using YSS.Data;
 using YSS.Ingestion.Services;
+using YSS.Functions.Models;
 using YSS.Functions.Triggers;
 
 var host = new HostBuilder()
@@ -40,6 +41,15 @@ var host = new HostBuilder()
         };
 
         services.AddSingleton(settings);
+
+        // Register active tournament seasons — add new seasons here each year
+        var seasons = new List<TournamentSeason>
+        {
+            new("35", "Academy S26",   "MLS Next", new DateTime(2026, 1, 1), new DateTime(2026, 6, 30)),
+            new("12", "Homegrown S26", "MLS Next", new DateTime(2026, 1, 1), new DateTime(2026, 6, 30)),
+        };
+        services.AddSingleton(seasons);
+
         services.AddScoped<Modular11Client>();
         services.AddScoped<ScheduleParser>();
         services.AddScoped<MatchUpsertService>();
@@ -53,6 +63,7 @@ var host = new HostBuilder()
         services.AddScoped<GetAgeGroups>();
         services.AddScoped<TriggerIngestion>();
         services.AddScoped<ScheduledIngestion>();
+        services.AddScoped<WeeklyIngestion>();
 
         // Add HTTP client factory
         services.AddHttpClient<Modular11Client>();
