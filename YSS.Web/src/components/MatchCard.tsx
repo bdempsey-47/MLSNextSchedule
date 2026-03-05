@@ -34,6 +34,8 @@ const addToCalendar = (match: Match) => {
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//MLS Next Schedule//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
     'BEGIN:VEVENT',
     `UID:match-${match.matchId}@mlsnextschedule`,
     `DTSTART:${toIcsDate(start)}`,
@@ -50,8 +52,10 @@ const addToCalendar = (match: Match) => {
   const a = document.createElement('a')
   a.href = url
   a.download = `match-${match.matchId}.ics`
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(url)
+  document.body.removeChild(a)
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 const getInitials = (name: string) =>
