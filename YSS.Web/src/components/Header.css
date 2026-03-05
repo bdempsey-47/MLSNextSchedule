@@ -1,0 +1,72 @@
+/* ─── Header ─────────────────────────────────────────────── */
+.app-header {
+  background: var(--color-primary);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.header-menu-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.header-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-menu-btn:active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-subtitle {
+  font-weight: 500;
+  opacity: 0.95;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .app-header-inner {
+    padding: 0 16px;
+  }
+
+  .header-title {
+    font-size: 1.1rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.9rem;
+  }
+}

@@ -6,56 +6,16 @@
   flex-direction: column;
 }
 
-/* ─── Header ─────────────────────────────────────────────── */
-.app-header {
-  background: var(--color-primary);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.app-header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-}
-
-.app-header-inner h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.3px;
-  margin: 0;
-}
-
-.app-brand {
-  display: none;
-}
-
-.app-brand-icon {
-  display: none;
-}
-
-.app-brand-icon svg {
-  display: none;
-}
-
-.app-brand-text h1 {
-  display: none;
-}
-
-.app-brand-text .subtitle {
-  display: none;
-}
-
 /* ─── Main Content ────────────────────────────────────────── */
 .app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ─── Schedules Page Specific ──────────────────────────────── */
+.schedules-page {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
@@ -63,7 +23,7 @@
 }
 
 /* ─── Controls Bar (Program + Season in one row) ─────────── */
-.controls-bar {
+.schedules-page .controls-bar {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -163,20 +123,16 @@
 
 /* ─── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .app-main {
+  .schedules-page {
     padding: 16px 16px 40px;
   }
 
-  .controls-bar {
+  .schedules-page .controls-bar {
     padding: 16px;
     gap: 16px;
   }
 
   .controls-divider {
     display: none;
-  }
-
-  .app-header-inner {
-    padding: 0 16px;
   }
 }
