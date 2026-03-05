@@ -15,7 +15,7 @@
 - Backend: Azure Functions in `YSS.Functions/Triggers/`
 - Database: EF Core entities in `YSS.Data/Entities/`
 - Ingestion: YSS.Verification tool with token-based auth
-- Tests: 36/36 passing (run with `dotnet test YSS.Tests`)
+- Tests: 37/37 passing (run with `dotnet test YSS.Tests`)
 - Solution file: `MLSNextSchedule.slnx` (name stays, internal structure is YSS.*)
 
 ## Authentication & Security (IMPORTANT)
@@ -107,10 +107,23 @@ Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encry
    - Target: Screens < 600px
    - File: `YSS.Web/src/components/MatchCard.tsx`
 
-3. **Data Volume** — Only 100 sample matches loaded
-   - Need: Ingest full Fall 2025 Homegrown tournament (~500+ matches)
-   - Action: Remove `MaxMatchesPerTournament` cap in `YSS.Verification/Program.cs`
-   - Test: Query performance, page load time, UI responsiveness
+3. ~~**Data Volume**~~ — Resolved. Full Academy S26 + Homegrown S26 ingested for all 6 age groups.
+
+## Team Logos Architecture
+**Current:** Hyperlinking to Modular11 CDN URLs
+- Logo URLs extracted from Modular11 HTML during ingestion (`YSS.Ingestion/Services/ScheduleParser.cs`)
+- Stored as strings in `Team.LogoUrl` field (`YSS.Data/Entities/Team.cs`)
+- API returns URLs to frontend; frontend renders via `<img>` tags
+- Benefits: No local storage overhead, CDN-served images
+- Drawback: Dependency on Modular11's CDN availability
+
+**Future Consideration:** Copy and store logos on our own servers
+- Goal: Remove external dependency on Modular11 CDN
+- Implementation approach:
+  1. Extend ingestion to download images from Modular11 URLs
+  2. Upload to Azure Blob Storage
+  3. Update `Team.LogoUrl` to point to blob URLs instead
+  4. Consider image caching/versioning strategy
 
 ## User Preferences
 - **Security-first:** OIDC, token-based auth, no stored passwords
@@ -148,7 +161,7 @@ MLSNextSchedule/
 │   ├── Models/                        # ParsedMatch (DTO)
 │   └── YSS.Ingestion.csproj
 ├── YSS.Functions/                     # Azure Functions Host
-│   ├── Triggers/                      # GetMatches, GetTeams, GetDivisions, GetRegions, GetAgeGroups, TriggerIngestion, ScheduledIngestion
+│   ├── Triggers/                      # GetMatches, GetTeams, GetDivisions, GetRegions, GetAgeGroups, TriggerIngestion, DailyIngestion, WeeklyIngestion (3 batches)
 │   ├── Program.cs                     # Dependency Injection
 │   ├── host.json
 │   ├── local.settings.json            # LocalDB connection, CORS: http://localhost:5173

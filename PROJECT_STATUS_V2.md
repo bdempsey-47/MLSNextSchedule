@@ -1,7 +1,7 @@
 # Youth Soccer Schedules (YSS) — Project Status
 
-**Last Updated:** March 2, 2026 (Evening)  
-**Status:** Phase 3 Complete → Phase 4 In Progress (Azure Deployment)
+**Last Updated:** March 5, 2026
+**Status:** Phase 5 In Progress — Full data ingestion complete, automated weekly ingestion active
 
 ---
 
@@ -12,8 +12,8 @@
 **Phase 1 & 2 — Backend & Data Layer** ✅
 - Database schema: League → Division → Region → Match hierarchy
 - Ingestion pipeline: HTML parsing, API calls, database upsert
-- Azure Functions: 5 HTTP endpoints + scheduled timer trigger
-- Testing: 36/36 unit & integration tests passing
+- Azure Functions: 5 HTTP endpoints + 4 timer triggers (daily + 3 weekly batches)
+- Testing: 37/37 unit & integration tests passing
 - Build: All projects compile with 0 errors
 
 **Phase 3 — React Frontend** ✅
@@ -34,7 +34,10 @@ Frontend (React)              Backend (Azure Functions)      Database (SQL)
 ├─ MatchList ✅              ├─ GetRegions ✅              ├─ Matches
 └─ MatchCard ✅              ├─ GetAgeGroups ✅            ├─ Teams
                              ├─ TriggerIngestion ✅        ├─ Venues
-                             └─ ScheduledIngestion ✅      ├─ AgeGroups
+                             ├─ DailyIngestion ✅          ├─ AgeGroups
+                             ├─ WeeklyIngestion_u13u14 ✅  │
+                             ├─ WeeklyIngestion_u15u16 ✅  │
+                             └─ WeeklyIngestion_u17u19 ✅  │
                                                           └─ Competitions
 ```
 
@@ -589,7 +592,7 @@ dotnet test YSS.Tests /p:CollectCoverage=true /p:CoverageFormat=lcov
    - ✅ Location data (now fixed)
 
 ### Git Commits This Session
-- (Pending) venue field name fix for Academy matches
+- `09a461c` fix: Add 'Location' field fallback for Academy tournament venue parsing
 
 ### Next Steps
 1. Test full re-ingestion with location fix applied
@@ -669,3 +672,46 @@ Monitor the output for final match/team counts. Then verify on the live frontend
 - https://happy-smoke-0edf8100f.2.azurestaticapps.net
 - Filter by Academy, Spring 2026
 - Should see all available matches (likely 500+ vs current 25)
+
+---
+
+## 📝 Session 12 Summary (March 5, 2026)
+
+### Completed This Session
+
+1. **Fixed Age Group API Codes**
+   - Age group codes in config were wrong (using age numbers 13–18 instead of Modular11 API codes)
+   - Correct mapping: u13→21, u14→22, u15→33, u16→14, u17→15, u19→26
+   - Fixed in: `YSS.Functions/local.settings.json`, `YSS.Verification/local.settings.json`, `YSS.Verification/Program.cs`
+   - Updated Azure Function App env var `Modular11__AgeGroups` = `21,22,33,14,15,26` manually in Azure Portal
+
+2. **Added Age Group Override to Ingestion Pipeline**
+   - Added `ageGroupsOverride` param to `Modular11Client.FetchPageAsync()` and `BuildQueryParams()`
+   - Added `ageGroups` param to `IngestionOrchestrator.RunAsync()`
+   - Override takes precedence over settings; null falls back to `Modular11Settings.AgeGroups`
+
+3. **Split Weekly Ingestion into 3 Staggered Batches**
+   - Previous single `WeeklyIngestion` trigger (all 6 ages, 150-day window) risked exceeding 10-min Azure timeout
+   - Replaced with 3 staggered Sunday timer triggers in the same class:
+     - `WeeklyIngestion_u13u14` — codes `21,22` at 3:00 AM UTC Sunday
+     - `WeeklyIngestion_u15u16` — codes `33,14` at 3:30 AM UTC Sunday
+     - `WeeklyIngestion_u17u19` — codes `15,26` at 4:00 AM UTC Sunday
+   - Daily ingestion unchanged — still uses all 6 codes from settings, ±14-day window
+   - Each weekly batch: ~2–3 min per run, well under timeout
+
+4. **Full Production Data Ingestion**
+   - Ran `ingest-azure.ps1` for Academy S26 + Homegrown S26, all 6 age groups
+   - Confirmed data visible in live frontend
+
+### Git Commits This Session
+- `f5be80c` — feat: Fix age group codes and split weekly ingestion into 3 staggered batches
+
+### Testing Status
+- ✅ Build: 0 errors
+- ✅ Tests: 37/37 passing
+- ✅ Azure: 4 timer triggers + 5 HTTP triggers all Enabled
+- ✅ Production data: Academy S26 + Homegrown S26 ingested for all age groups
+
+### Next Session Priorities
+1. Fix Android calendar export (.ics format)
+2. Implement compact match card collapse mode for mobile
