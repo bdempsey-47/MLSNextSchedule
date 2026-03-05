@@ -198,16 +198,15 @@
   gap: 10px;
 }
 
-.team-logo {
+.standings-table .standings-team-logo {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--color-bg);
   flex-shrink: 0;
 }
 
-.team-name {
+.standings-table .standings-team-name {
   font-weight: 500;
 }
 
@@ -281,12 +280,12 @@
     min-width: 150px;
   }
 
-  .team-logo {
+  .standings-table .standings-team-logo {
     width: 28px;
     height: 28px;
   }
 
-  .team-name {
+  .standings-table .standings-team-name {
     font-size: 0.85rem;
   }
 

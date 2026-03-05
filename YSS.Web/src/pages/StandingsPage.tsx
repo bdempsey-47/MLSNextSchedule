@@ -259,9 +259,9 @@ function StandingsPage() {
                   <td className="col-rank">{row.rank}</td>
                   <td className="col-team">
                     {row.logoUrl && (
-                      <img src={row.logoUrl} alt={row.teamName} className="team-logo" />
+                      <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
                     )}
-                    <span className="team-name">{row.teamName}</span>
+                    <span className="standings-team-name">{row.teamName}</span>
                   </td>
                   <td className="col-gp">{row.gp}</td>
                   <td className="col-record">
