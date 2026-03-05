@@ -715,3 +715,33 @@ Monitor the output for final match/team counts. Then verify on the live frontend
 ### Next Session Priorities
 1. Fix Android calendar export (.ics format)
 2. Implement compact match card collapse mode for mobile
+
+---
+
+## 🐛 Backlog — Next Session
+
+### Bugs
+
+1. **Multi-select age group filter returns no matches**
+   - Selecting more than one age group at a time returns 0 results
+   - Single age group selection works fine
+   - Likely a query parameter issue — check how `ageGroup` is passed to `GetMatches` and how it's filtered in the query
+
+2. **Competition field shows "AD" for all Academy matches**
+   - Homegrown matches correctly show meaningful values like "MLS Next Flex" or "League"
+   - Academy matches all show "AD" — likely a parsing issue or the API returns a code instead of a label
+   - Investigate: ScheduleParser "Competition" field extraction, compare HTML structure between tournaments
+
+### Features / Enhancements
+
+3. **"Last updated" timestamp on match cards** *(needs decision)*
+   - Show a small timestamp on each card indicating when the match data was last ingested
+   - Requires adding an `UpdatedAt` or `LastIngestedAt` column to the `Matches` table (new migration)
+   - Decision needed: is this useful enough for users, or just noise?
+
+4. **App rebrand + Standings section** *(bigger effort, plan before starting)*
+   - "Youth Soccer Schedules" is too narrow once standings are added
+   - Need a catchier name (e.g., "Youth Soccer Hub", "NextPitch", "Pitch Side" — TBD with user)
+   - UI restructure: top-level nav with **Schedules** and **Standings** sections
+   - Standings page: win/loss/draw records per program, season, region, age group
+   - This is a multi-session effort — plan the rebrand and data model first
