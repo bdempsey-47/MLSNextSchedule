@@ -138,8 +138,9 @@ public class ScheduleParser
         var competition = GetValue(matchData, "Competition");
         var division = GetValue(matchData, "Division");
         
-        // Look for venue using multiple possible field names
-        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name") ?? GetValue(matchData, "Location");
+        // Look for venue using labeled fields, then fall back to the mobile summary row
+        // (Academy tournament: "Location Name" field exists but is empty; venue is in summary row after <br>)
+        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name") ?? ExtractVenueFromSummaryRow(block);
 
 
         // Validate required fields
@@ -313,10 +314,47 @@ public class ScheduleParser
         return parts;
     }
 
+    /// <summary>
+    /// Extract venue name from the mobile summary row (.match-row-mobile .col-xs-2.pad-right).
+    /// That div contains: "date\t<br>venue name\t". We take the text node after the &lt;br&gt;.
+    /// </summary>
+    private string? ExtractVenueFromSummaryRow(IElement block)
+    {
+        try
+        {
+            var summaryCol = block.QuerySelector(".match-row-mobile .col-xs-2.pad-right");
+            if (summaryCol == null) return null;
+
+            bool foundBr = false;
+            foreach (var node in summaryCol.ChildNodes)
+            {
+                if (node.NodeName.Equals("BR", StringComparison.OrdinalIgnoreCase))
+                {
+                    foundBr = true;
+                    continue;
+                }
+                if (foundBr && node.NodeType == AngleSharp.Dom.NodeType.Text)
+                {
+                    var text = node.TextContent.Trim();
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        _logger.LogDebug("Extracted venue from summary row: {Venue}", text);
+                        return text;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Error extracting venue from summary row");
+        }
+        return null;
+    }
+
     private string? GetValue(Dictionary<string, string> data, string key)
     {
-        return data.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) 
-            ? value.Trim() 
+        return data.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value)
+            ? value.Trim()
             : null;
     }
 }

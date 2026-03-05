@@ -268,6 +268,78 @@ public class ScheduleParserTests
         matches.Should().BeEmpty();
     }
 
+    [Fact]
+    public void ParseMatches_WithEmptyLocationNameField_ExtractsVenueFromSummaryRow()
+    {
+        // Arrange - Academy-style HTML: Location Name field is empty, venue is in summary row after <br>
+        var html = @"
+<html>
+  <div class='visible-xs'>
+    <div class='row match-row-mobile dspl-f'>
+      <div class='col-xs-1 pad-0'></div>
+      <div class='col-xs-2 pad-right'>
+        09/06/25 08:00am			<br>
+        Bell Road Sports Complex - Field #16		</div>
+    </div>
+    <div class='mobile-block-match-info hidden'>
+      <div class='row marg-0 dspl-f row-underline'>
+        <div class='col-xs-5 pad-right'>
+          <div class='row text-right row-heading-mobile'>Home Team</div>
+          <div class='row text-right row-content-mobile'><p>RSL Arizona Mesa</p></div>
+        </div>
+        <div class='col-xs-5 pad-left'>
+          <div class='row row-heading-mobile'>Away Team</div>
+          <div class='row row-content-mobile'><p>Wasatch SC</p></div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4 pad-left'>
+          <div class='row row-heading-mobile'>Match ID</div>
+          <div class='row row-content-mobile'>109526</div>
+        </div>
+        <div class='col-xs-4 pad-left'>
+          <div class='row row-heading-mobile'>Date</div>
+          <div class='row row-content-mobile'>09/06/25 08:00am</div>
+        </div>
+        <div class='col-xs-4 pad-left'>
+          <div class='row row-heading-mobile'>Age</div>
+          <div class='row row-content-mobile'>U16</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-4 pad-left'>
+          <div class='row row-heading-mobile'>Gender</div>
+          <div class='row row-content-mobile'>MALE</div>
+        </div>
+        <div class='col-xs-4 pad-left'>
+          <div class='row row-heading-mobile'>Competition</div>
+          <div class='row row-content-mobile'>AD</div>
+        </div>
+        <div class='col-xs-4 pad-left'>
+          <div class='row row-heading-mobile'>Division</div>
+          <div class='row row-content-mobile'>Desert</div>
+        </div>
+      </div>
+      <div class='row marg-0 pad-10'>
+        <div class='col-xs-8 pad-left'>
+          <div class='row row-heading-mobile'>Location Name</div>
+          <div class='row row-content-mobile'>
+						</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>";
+
+        // Act
+        var matches = _parser.ParseMatches(html, 35);
+
+        // Assert
+        matches.Should().HaveCount(1);
+        matches[0].MatchId.Should().Be("109526");
+        matches[0].VenueName.Should().Be("Bell Road Sports Complex - Field #16");
+    }
+
     [Theory]
     [InlineData("2-1", "2-1")]
     [InlineData("0-0", "0-0")]
