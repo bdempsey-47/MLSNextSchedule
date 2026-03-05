@@ -172,14 +172,14 @@ function StandingsPage() {
         />
       </div>
 
-      <div className="filter-section">
-        <div className="filter-group">
+      <div className="standings-filters">
+        <div className="standings-filter-group">
           <label htmlFor="region-select">Region</label>
           <select
             id="region-select"
             value={selectedRegion}
             onChange={(e) => setSelectedRegion(e.target.value)}
-            className="filter-select"
+            className="standings-filter-select"
           >
             <option value="">Select a region</option>
             {regions.map((r) => (
@@ -190,13 +190,13 @@ function StandingsPage() {
           </select>
         </div>
 
-        <div className="filter-group">
+        <div className="standings-filter-group">
           <label htmlFor="agegroup-select">Age Group</label>
           <select
             id="agegroup-select"
             value={selectedAgeGroup}
             onChange={(e) => setSelectedAgeGroup(e.target.value)}
-            className="filter-select"
+            className="standings-filter-select"
           >
             <option value="">Select an age group</option>
             {ageGroups.map((ag) => (
@@ -215,15 +215,15 @@ function StandingsPage() {
       )}
 
       {error && (
-        <div className="error-message">
+        <div className="standings-error">
           <AlertCircle size={16} />
           {error}
         </div>
       )}
 
       {loading && (
-        <div className="loading-state">
-          <div className="loading-spinner" />
+        <div className="standings-loading">
+          <div className="standings-spinner" />
           <p>Loading standings…</p>
         </div>
       )}

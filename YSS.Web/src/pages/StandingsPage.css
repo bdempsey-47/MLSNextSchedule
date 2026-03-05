@@ -27,8 +27,8 @@
   flex-shrink: 0;
 }
 
-/* Filter section */
-.filter-section {
+/* Filter section — scoped to avoid conflicting with FilterBar.css */
+.standings-page .standings-filters {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -40,13 +40,13 @@
   gap: 20px;
 }
 
-.filter-group {
+.standings-page .standings-filter-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.filter-group label {
+.standings-page .standings-filter-group label {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text);
@@ -54,7 +54,7 @@
   letter-spacing: 0.3px;
 }
 
-.filter-select {
+.standings-page .standings-filter-select {
   padding: 10px 12px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -65,18 +65,18 @@
   transition: border-color 0.2s ease;
 }
 
-.filter-select:hover {
+.standings-page .standings-filter-select:hover {
   border-color: var(--color-primary);
 }
 
-.filter-select:focus {
+.standings-page .standings-filter-select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(10, 22, 40, 0.1);
 }
 
-/* Error and loading states */
-.error-message {
+/* Error and loading states — scoped */
+.standings-page .standings-error {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -85,13 +85,12 @@
   margin-bottom: 16px;
   font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid;
+  border: 1px solid #fecaca;
   background: #fef2f2;
   color: #991b1b;
-  border-color: #fecaca;
 }
 
-.loading-state {
+.standings-page .standings-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,25 +100,25 @@
   gap: 12px;
 }
 
-.loading-spinner {
+.standings-page .standings-spinner {
   width: 32px;
   height: 32px;
   border: 3px solid var(--color-border);
   border-top-color: var(--color-accent);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: standings-spin 0.7s linear infinite;
 }
 
-@keyframes spin {
+@keyframes standings-spin {
   to { transform: rotate(360deg); }
 }
 
-.loading-state p {
+.standings-page .standings-loading p {
   font-size: 0.9rem;
   font-weight: 500;
 }
 
-.no-results {
+.standings-page .no-results {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -129,7 +128,7 @@
   color: var(--color-text-secondary);
 }
 
-.no-results p {
+.standings-page .no-results p {
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -264,7 +263,7 @@
     display: none;
   }
 
-  .filter-section {
+  .standings-page .standings-filters {
     padding: 16px;
     gap: 16px;
   }
