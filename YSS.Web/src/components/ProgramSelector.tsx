@@ -5,15 +5,16 @@ import './ProgramSelector.css'
 interface ProgramSelectorProps {
   selected: Program[]
   onChange: (programs: Program[]) => void
+  singleSelect?: boolean
 }
 
-export default function ProgramSelector({ selected, onChange }: ProgramSelectorProps) {
+export default function ProgramSelector({ selected, onChange, singleSelect = false }: ProgramSelectorProps) {
   const toggleProgram = (program: Program) => {
-    if (selected.includes(program)) {
-      // Deselect: remove from array
+    if (singleSelect) {
+      onChange([program])
+    } else if (selected.includes(program)) {
       onChange(selected.filter(p => p !== program))
     } else {
-      // Select: add to array
       onChange([...selected, program])
     }
   }

@@ -129,6 +129,7 @@ function StandingsPage() {
         <ProgramSelector
           selected={[selectedProgram]}
           onChange={handleProgramChange}
+          singleSelect
         />
         <div className="controls-divider" />
         <div className="season-selector">
