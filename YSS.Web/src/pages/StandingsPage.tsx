@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
-import SeasonSelector from '../components/SeasonSelector'
-import { Program, Season, AgeGroup, StandingRow } from '../types'
+import { Program, AgeGroup, StandingRow } from '../types'
+import '../components/SeasonSelector.css'
 import './StandingsPage.css'
+
+// MLS Next standings span the full season — no fall/spring split
+const STANDINGS_SEASON = '2025-2026'
 
 function StandingsPage() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -11,11 +14,6 @@ function StandingsPage() {
   const [selectedProgram, setSelectedProgram] = useState<Program>(() => {
     const p = urlParams.get('program') as Program
     return p === 'homegrown' || p === 'academy' ? p : 'homegrown'
-  })
-
-  const [selectedSeason, setSelectedSeason] = useState<Season>(() => {
-    const s = urlParams.get('season') as Season
-    return s === 'fall2025' || s === 'spring2026' ? s : 'fall2025'
   })
 
   const [selectedRegion, setSelectedRegion] = useState<string>(urlParams.get('region') || '')
@@ -31,11 +29,10 @@ function StandingsPage() {
   useEffect(() => {
     const params = new URLSearchParams()
     params.set('program', selectedProgram)
-    params.set('season', selectedSeason)
     if (selectedRegion) params.set('region', selectedRegion)
     if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
     history.replaceState(null, '', `?${params.toString()}`)
-  }, [selectedProgram, selectedSeason, selectedRegion, selectedAgeGroup])
+  }, [selectedProgram, selectedRegion, selectedAgeGroup])
 
   // Fetch regions and ageGroups on mount
   useEffect(() => {
@@ -102,7 +99,7 @@ function StandingsPage() {
 
         const params = new URLSearchParams()
         params.set('program', selectedProgram)
-        params.set('season', selectedSeason)
+        params.set('season', STANDINGS_SEASON)
         params.set('region', selectedRegion)
         params.set('ageGroup', selectedAgeGroup)
 
@@ -143,20 +140,14 @@ function StandingsPage() {
     }
 
     fetchStandings()
-  }, [selectedProgram, selectedSeason, selectedRegion, selectedAgeGroup])
+  }, [selectedProgram, selectedRegion, selectedAgeGroup])
 
   const handleProgramChange = (programs: Program[]) => {
-    // For standings, only single program selection
     setSelectedProgram(programs[0] || 'homegrown')
     setSelectedRegion('')
   }
 
-  const handleSeasonChange = (seasons: Season[]) => {
-    // For standings, only single season selection
-    setSelectedSeason(seasons[0] || 'fall2025')
-  }
-
-  const isFiltersComplete = selectedProgram && selectedSeason && selectedRegion && selectedAgeGroup
+  const isFiltersComplete = selectedProgram && selectedRegion && selectedAgeGroup
 
   return (
     <div className="standings-page">
@@ -166,10 +157,12 @@ function StandingsPage() {
           onChange={handleProgramChange}
         />
         <div className="controls-divider" />
-        <SeasonSelector
-          selected={[selectedSeason]}
-          onChange={handleSeasonChange}
-        />
+        <div className="season-selector">
+          <span className="selector-label">Season</span>
+          <div className="season-buttons">
+            <span className="season-button active">2025–2026</span>
+          </div>
+        </div>
       </div>
 
       <div className="standings-filters">

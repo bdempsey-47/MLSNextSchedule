@@ -33,15 +33,18 @@ public class GetStandings
             _logger.LogInformation("GetStandings called with: program={Program}, season={Season}, region={Region}, ageGroup={AgeGroup}",
                 program, season, region, ageGroup);
 
-            // All filters are required for standings
-            if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(season) ||
-                string.IsNullOrEmpty(region) || string.IsNullOrEmpty(ageGroup))
+            // program, region, ageGroup are required; season defaults to full 2025-2026 if omitted
+            if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(region) || string.IsNullOrEmpty(ageGroup))
             {
                 var errorResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
                 errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
-                await errorResponse.WriteAsJsonAsync(new { error = "Missing required parameters: program, season, region, ageGroup" });
+                await errorResponse.WriteAsJsonAsync(new { error = "Missing required parameters: program, region, ageGroup" });
                 return errorResponse;
             }
+
+            // Default to full season if not specified
+            if (string.IsNullOrEmpty(season))
+                season = "2025-2026";
 
             var matches = _context.Matches
                 .Include(m => m.HomeTeam)
@@ -106,8 +109,9 @@ public class GetStandings
     {
         return season.ToLower() switch
         {
-            "fall2025" => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
-            "spring2026" => (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
+            "2025-2026" => (new DateTime(2025, 7, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
+            "fall2025"  => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
+            "spring2026"=> (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
             _ => ((DateTime?)null, (DateTime?)null)
         };
     }
