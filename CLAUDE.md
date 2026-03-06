@@ -97,17 +97,36 @@ Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encry
 - `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`: Downloaded from Function App → Get publish profile
 
 ## Current Known Issues (Phase 5 Priorities)
-1. **Android Calendar Export** — .ics file shows "Unable to launch event"
-   - Works on other platforms
-   - Check: .ics format, MIME type headers, file encoding
-   - File: `YSS.Web/src/components/MatchCard.tsx` (calendar export logic)
 
-2. **Mobile UI** — Match card layout too verbose on small screens
+### Next Up
+1. **Landing Page Polish** — HomePage.tsx needs visual cleanup to match Schedules/Standings look and feel
+   - File: `YSS.Web/src/pages/HomePage.tsx`, `YSS.Web/src/pages/HomePage.css` (create)
+   - Goal: consistent card styling, typography, spacing with the rest of the site
+   - Also add teaser analytics section on landing page to drive interest in Analytics tab
+
+2. **Standings Drill-In** — Clicking a team row on the Standings page should show that team's matches and results
+   - Approach: navigate to `/Schedules?program=...&ageGroup=...&team=...` pre-filtered, OR show a modal/drawer with inline match results
+   - Data source: our existing `/api/matches` endpoint already supports `program`, `ageGroup`, `team` filters
+   - Files: `YSS.Web/src/pages/StandingsPage.tsx`, possibly a new `TeamMatchesDrawer` component
+
+3. **Analytics Page** — New `/Analytics` route, eventual paywall candidate
+   - Add route to `App.tsx` and nav link to `NavMenu.tsx`
+   - Placeholder page initially; full spec TBD (see `Analytics_specs.txt` in project root)
+   - Teaser content: surface a few headline stats on the landing page to drive interest
+   - Consider: which analytics are free vs. paywalled; authentication approach when paywall is added
+
+### Ongoing
+3. **Android Calendar Export** — .ics file shows "Unable to launch event"
+   - Works on other platforms; switched to Google Calendar URL workaround
+   - File: `YSS.Web/src/components/MatchCard.tsx`
+
+4. **Mobile UI** — Match card layout too verbose on small screens
    - Need: Compact collapse mode (Date | Home | Score | Away)
    - Target: Screens < 600px
    - File: `YSS.Web/src/components/MatchCard.tsx`
 
-3. ~~**Data Volume**~~ — Resolved. Full Academy S26 + Homegrown S26 ingested for all 6 age groups.
+### Resolved
+5. ~~**Data Volume**~~ — Full Academy S26 + Homegrown S26 ingested for all 6 age groups.
 
 ## Team Logos Architecture
 **Current:** Hyperlinking to Modular11 CDN URLs

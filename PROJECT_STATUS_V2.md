@@ -675,6 +675,62 @@ Monitor the output for final match/team counts. Then verify on the live frontend
 
 ---
 
+## 📝 Session 13 Summary (March 5, 2026)
+
+### Completed This Session
+
+1. **Website Restructure — React Router + YSI Branding**
+   - Added `react-router-dom` v6 with `/`, `/Schedules`, `/Standings` routes
+   - New `Header.tsx` with hamburger menu button (left side), title updates per route
+   - New `NavMenu.tsx` — slide-in drawer with Home / Schedules / Standings links
+   - New `HomePage.tsx` — landing page with two clickable cards
+   - Moved all schedule logic from `App.tsx` → `SchedulesPage.tsx`
+   - Added `staticwebapp.config.json` for SPA routing support on Azure Static Web Apps
+   - Branding: "Youth Soccer Intelligence" (YSI)
+
+2. **Standings Page — Fully Implemented**
+   - Backend: `GetStandings.cs` proxies Modular11's `get_teams` HTML endpoint
+   - HTML parsed with AngleSharp (same library as schedule ingestion)
+   - One API call returns all regions for a given program + age group
+   - Frontend: age group dropdown → fetches all regions; region dropdown populated from response; filter is in-memory (instant, no extra request)
+   - URL bookmarkable: `?program=homegrown&ageGroup=U17&region=Northeast`
+   - Table: Rank, Team (logo), GP, W-D-L, Pts, PPM — data sourced directly from Modular11 (correct tiebreakers, tournament exclusions handled by them)
+   - Program selector uses `singleSelect` mode (mutually exclusive, not multi-toggle)
+
+3. **Bug Fixes**
+   - CSS collision: scoped all StandingsPage styles under `.standings-page` / `.standings-table` to prevent breaking Schedules page filter layout and MatchCard logos
+   - W-D-L zero display ("4--5"): replaced `||` with `??` in PascalCase→camelCase transform
+   - Logo clipping: `object-fit: contain` with no border-radius (not circle-cropped)
+   - Gzip decompression: registered named `"standings"` HttpClient with `AutomaticDecompression = GZip | Deflate`
+   - Region name collisions: regex now captures full name including pathway tier (e.g., "Northeast (Pro Player Pathway)" vs "Northeast")
+   - U19 age group: added `"U19" = "26"` to the AgeGroupMap (Modular11 uses "U19" not "U18/19")
+   - Academy parameters: `UID_gender=3`, `list_type=71` (different from Homegrown's 1/53)
+   - ProgramSelector toggle bug: added `singleSelect` prop; clicking Academy when Homegrown was active was a no-op because `programs[0]` was always 'homegrown'
+
+### Git Commits This Session
+- `fd76ad6` — fix: Use Google Calendar URL for Android calendar export
+- `18a478a` — feat: Replace standings computation with Modular11 HTML proxy
+- `7e5e2a6` — fix: Enable gzip decompression for Modular11 standings HTTP client
+- `7342098` — fix: Preserve full division name to avoid region name collisions
+- `30fe7bc` — fix: Add U19 to age group map
+- `88000e4` — fix: Use correct UID_gender and list_type for Academy standings
+- `64f4647` — fix: Add singleSelect mode to ProgramSelector for Standings page
+
+### Modular11 Standings API Parameters (for reference)
+| Program   | UID_event | UID_gender | list_type | Referer |
+|-----------|-----------|------------|-----------|---------|
+| Homegrown | 12        | 1          | 53        | /standings?year=21&gender=1 |
+| Academy   | 35        | 3          | 71        | /league-standings/mls-next-academy-division/21 |
+
+Age group → UID_age: U13=21, U14=22, U15=33, U16=14, U17=15, U19=26
+
+### Next Session Priorities
+1. **Clean up landing page** — match look and feel of Schedules/Standings pages
+2. **Standings drill-in** — click a team row to see the games played and their results
+3. Android calendar export fix (ongoing)
+
+---
+
 ## 📝 Session 12 Summary (March 5, 2026)
 
 ### Completed This Session
