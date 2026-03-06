@@ -66,7 +66,7 @@ public class GetStandings
 
             _logger.LogInformation("Fetching Modular11 standings: {Url}", url);
 
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient("standings");
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("accept", "text/html, */*; q=0.01");
             request.Headers.Add("x-requested-with", "XMLHttpRequest");

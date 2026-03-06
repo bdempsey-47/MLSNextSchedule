@@ -68,7 +68,12 @@ var host = new HostBuilder()
 
         // Add HTTP client factory
         services.AddHttpClient<Modular11Client>();
-        services.AddHttpClient(); // generic factory for GetStandings proxy
+        // Named client for GetStandings proxy — gzip decompression required for Modular11 responses
+        services.AddHttpClient("standings")
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate
+            });
     })
     .ConfigureFunctionsWorkerDefaults((Action<IFunctionsWorkerApplicationBuilder>)(builder => { }))
     .Build();
