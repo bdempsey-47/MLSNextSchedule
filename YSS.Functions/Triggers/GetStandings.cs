@@ -25,8 +25,11 @@ public class GetStandings
         ["U18/U19"] = "26",
     };
 
+    // Captures everything between "U{age} " and " Division"
+    // e.g. "Male -  U17 Northeast (Pro Player Pathway) Division" → "Northeast (Pro Player Pathway)"
+    // e.g. "Male -  U17 Northeast Division"                      → "Northeast"
     private static readonly Regex RegionNameRegex =
-        new(@"U\d+\s+(.+?)\s*(?:\(|Division)", RegexOptions.Compiled);
+        new(@"U\d+\s+(.+?)\s+Division", RegexOptions.Compiled);
 
     public GetStandings(IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
     {
