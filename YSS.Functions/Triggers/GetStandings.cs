@@ -23,6 +23,7 @@ public class GetStandings
         ["U17"]     = "15",
         ["U18/19"]  = "26",
         ["U18/U19"] = "26",
+        ["U19"]     = "26",
     };
 
     // Captures everything between "U{age} " and " Division"
