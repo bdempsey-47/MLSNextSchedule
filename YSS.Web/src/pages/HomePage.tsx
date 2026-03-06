@@ -21,6 +21,12 @@ function HomePage() {
               <h3>Standings</h3>
               <p>View league standings and rankings</p>
             </Link>
+
+            <Link to="/Analytics" className="home-card analytics-card">
+              <div className="card-icon">📊</div>
+              <h3>Analytics</h3>
+              <p>Team form, momentum, and performance metrics</p>
+            </Link>
           </div>
         </div>
       </div>

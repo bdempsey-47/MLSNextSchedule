@@ -67,6 +67,10 @@
   border-color: #10b981;
 }
 
+.home-card.analytics-card:hover {
+  border-color: #8b5cf6;
+}
+
 .card-icon {
   font-size: 3rem;
   margin-bottom: 16px;

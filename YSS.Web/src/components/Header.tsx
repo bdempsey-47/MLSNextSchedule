@@ -15,6 +15,8 @@ function Header({ onMenuClick }: HeaderProps) {
         return 'Schedules'
       case '/Standings':
         return 'Standings'
+      case '/Analytics':
+        return 'Analytics'
       default:
         return ''
     }

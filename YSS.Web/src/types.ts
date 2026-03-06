@@ -72,3 +72,13 @@ export interface StandingsGroup {
   regionName: string
   standings: StandingRow[]
 }
+
+export interface TeamAnalytics {
+  teamName: string
+  logoUrl?: string
+  regionName: string
+  momentumScore: number
+  momentumLabel: string
+  last5: string[]
+  gp: number
+}

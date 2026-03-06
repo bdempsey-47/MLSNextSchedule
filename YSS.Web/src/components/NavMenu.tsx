@@ -47,6 +47,11 @@ function NavMenu({ isOpen, onClose }: NavMenuProps) {
               Standings
             </button>
           </li>
+          <li>
+            <button className="nav-link" onClick={() => handleNavClick('/Analytics')}>
+              Analytics
+            </button>
+          </li>
         </ul>
       </nav>
     </>

@@ -6,6 +6,7 @@ import NavMenu from './components/NavMenu'
 import HomePage from './pages/HomePage'
 import SchedulesPage from './pages/SchedulesPage'
 import StandingsPage from './pages/StandingsPage'
+import AnalyticsPage from './pages/AnalyticsPage'
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/Schedules" element={<SchedulesPage />} />
             <Route path="/Standings" element={<StandingsPage />} />
+            <Route path="/Analytics" element={<AnalyticsPage />} />
           </Routes>
         </main>
       </div>
