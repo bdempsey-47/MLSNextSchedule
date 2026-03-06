@@ -114,7 +114,7 @@ function StandingsPage() {
   }
 
   // Region options come from the fetched data
-  const regionOptions = allGroups.map(g => g.regionName)
+  const regionOptions = allGroups.map(g => g.regionName).sort((a, b) => a.localeCompare(b))
 
   // Filter displayed groups by selected region
   const displayedGroups = selectedRegion
