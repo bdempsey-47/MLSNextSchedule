@@ -1,20 +1,36 @@
+using AngleSharp;
+using AngleSharp.Dom;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using YSS.Data;
-using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace YSS.Functions.Triggers;
 
 public class GetStandings
 {
-    private readonly AppDbContext _context;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger _logger;
 
-    public GetStandings(AppDbContext context, ILoggerFactory loggerFactory)
+    // Maps our age group display names to Modular11's UID_age parameter
+    private static readonly Dictionary<string, string> AgeGroupMap = new(StringComparer.OrdinalIgnoreCase)
     {
-        _context = context;
+        ["U13"]     = "21",
+        ["U14"]     = "22",
+        ["U15"]     = "33",
+        ["U16"]     = "14",
+        ["U17"]     = "15",
+        ["U18/19"]  = "26",
+        ["U18/U19"] = "26",
+    };
+
+    private static readonly Regex RegionNameRegex =
+        new(@"U\d+\s+(.+?)\s*(?:\(|Division)", RegexOptions.Compiled);
+
+    public GetStandings(IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+    {
+        _httpClientFactory = httpClientFactory;
         _logger = loggerFactory.CreateLogger<GetStandings>();
     }
 
@@ -25,74 +41,52 @@ public class GetStandings
         try
         {
             var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
-            var program = queryParams["program"] ?? string.Empty;
-            var season = queryParams["season"] ?? string.Empty;
-            var region = queryParams["region"] ?? string.Empty;
+            var program  = queryParams["program"]  ?? string.Empty;
             var ageGroup = queryParams["ageGroup"] ?? string.Empty;
 
-            _logger.LogInformation("GetStandings called with: program={Program}, season={Season}, region={Region}, ageGroup={AgeGroup}",
-                program, season, region, ageGroup);
+            _logger.LogInformation("GetStandings called: program={Program}, ageGroup={AgeGroup}", program, ageGroup);
 
-            // program, region, ageGroup are required; season defaults to full 2025-2026 if omitted
-            if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(region) || string.IsNullOrEmpty(ageGroup))
-            {
-                var errorResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
-                errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
-                await errorResponse.WriteAsJsonAsync(new { error = "Missing required parameters: program, region, ageGroup" });
-                return errorResponse;
-            }
+            if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(ageGroup))
+                return await BadRequest(req, "Missing required parameters: program, ageGroup");
 
-            // Default to full season if not specified
-            if (string.IsNullOrEmpty(season))
-                season = "2025-2026";
-
-            var matches = _context.Matches
-                .Include(m => m.HomeTeam)
-                .Include(m => m.AwayTeam)
-                .Include(m => m.Region)
-                .ThenInclude(r => r.Division)
-                .Include(m => m.AgeGroup)
-                .AsQueryable();
-
-            // Filter by program (homegrown=12, academy=35)
-            int? tournamentId = program.ToLower() switch
+            var uidEvent = program.ToLower() switch
             {
                 "homegrown" => 12,
-                "academy" => 35,
-                _ => null
+                "academy"   => 35,
+                _           => (int?)null
             };
+            if (!uidEvent.HasValue)
+                return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
 
-            if (tournamentId.HasValue)
-            {
-                matches = matches.Where(m => m.Region.Division.TournamentId == tournamentId.Value);
-            }
+            if (!AgeGroupMap.TryGetValue(ageGroup, out var uidAge))
+                return await BadRequest(req, $"Unknown age group: {ageGroup}");
 
-            // Filter by season
-            var (seasonStartDate, seasonEndDate) = ParseSeason(season);
-            if (seasonStartDate.HasValue)
-                matches = matches.Where(m => m.MatchDateUtc >= seasonStartDate.Value);
-            if (seasonEndDate.HasValue)
-                matches = matches.Where(m => m.MatchDateUtc <= seasonEndDate.Value);
+            var url = $"https://www.modular11.com/public_schedule/league/get_teams" +
+                      $"?tournament_type=league&UID_event={uidEvent}&UID_age={uidAge}&UID_gender=1&list_type=53";
 
-            // Filter by region
-            matches = matches.Where(m => m.Region.Name == region);
+            _logger.LogInformation("Fetching Modular11 standings: {Url}", url);
 
-            // Filter by age group
-            matches = matches.Where(m => m.AgeGroup.Name == ageGroup);
+            var client = _httpClientFactory.CreateClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("accept", "text/html, */*; q=0.01");
+            request.Headers.Add("x-requested-with", "XMLHttpRequest");
+            request.Headers.Add("referer", "https://www.modular11.com/standings?year=21&gender=1");
+            request.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36");
 
-            // Get all matches for this filter set
-            var allMatches = await matches.ToListAsync();
-            _logger.LogInformation("Found {Count} total matches for standings", allMatches.Count);
+            var httpResponse = await client.SendAsync(request);
+            httpResponse.EnsureSuccessStatusCode();
+            var html = await httpResponse.Content.ReadAsStringAsync();
 
-            // Compute standings from scored matches only
-            var standings = ComputeStandings(allMatches);
-            _logger.LogInformation("Computed standings for {Count} teams", standings.Count);
+            _logger.LogInformation("Modular11 response size: {Length} chars", html.Length);
+
+            var groups = ParseStandings(html);
+            _logger.LogInformation("Parsed {Count} standing groups", groups.Count);
 
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
             response.Headers.Add("Access-Control-Allow-Origin", "*");
             response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
             response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
-            await response.WriteAsJsonAsync(standings);
+            await response.WriteAsJsonAsync(groups);
             return response;
         }
         catch (Exception ex)
@@ -105,180 +99,129 @@ public class GetStandings
         }
     }
 
-    private (DateTime? StartDate, DateTime? EndDate) ParseSeason(string season)
+    private async Task<HttpResponseData> BadRequest(HttpRequestData req, string message)
     {
-        return season.ToLower() switch
-        {
-            "2025-2026" => (new DateTime(2025, 7, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
-            "fall2025"  => (new DateTime(2025, 7, 1), new DateTime(2025, 12, 31, 23, 59, 59)),
-            "spring2026"=> (new DateTime(2026, 1, 1), new DateTime(2026, 6, 30, 23, 59, 59)),
-            _ => ((DateTime?)null, (DateTime?)null)
-        };
+        var r = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+        r.Headers.Add("Access-Control-Allow-Origin", "*");
+        await r.WriteAsJsonAsync(new { error = message });
+        return r;
     }
 
-    private List<StandingRowDto> ComputeStandings(List<YSS.Data.Entities.Match> matches)
+    private List<StandingsGroupDto> ParseStandings(string html)
     {
-        var teamStats = new Dictionary<string, TeamStats>();
+        var context  = BrowsingContext.New(Configuration.Default);
+        var document = context.OpenAsync(req => req.Content(html)).Result;
 
-        foreach (var match in matches)
-        {
-            // Skip matches without scores
-            if (string.IsNullOrEmpty(match.Score) || match.Score == "TBD")
-                continue;
-
-            // Parse score
-            var (homeGoals, awayGoals) = ParseScore(match.Score);
-            if (!homeGoals.HasValue || !awayGoals.HasValue)
-                continue;
-
-            var homeTeamName = match.HomeTeam.Name;
-            var awayTeamName = match.AwayTeam.Name;
-
-            // Initialize team stats if not seen before
-            if (!teamStats.ContainsKey(homeTeamName))
-                teamStats[homeTeamName] = new TeamStats { TeamId = match.HomeTeam.Id, TeamName = homeTeamName, LogoUrl = match.HomeTeam.LogoUrl };
-            if (!teamStats.ContainsKey(awayTeamName))
-                teamStats[awayTeamName] = new TeamStats { TeamId = match.AwayTeam.Id, TeamName = awayTeamName, LogoUrl = match.AwayTeam.LogoUrl };
-
-            // Update home team stats
-            var homeStats = teamStats[homeTeamName];
-            homeStats.GP++;
-            homeStats.GF += homeGoals.Value;
-            homeStats.GA += awayGoals.Value;
-            homeStats.HomeGF += homeGoals.Value;
-            homeStats.HomeGA += awayGoals.Value;
-
-            if (homeGoals > awayGoals)
-                homeStats.W++;
-            else if (homeGoals == awayGoals)
-                homeStats.D++;
-            else
-                homeStats.L++;
-
-            // Update away team stats
-            var awayStats = teamStats[awayTeamName];
-            awayStats.GP++;
-            awayStats.GF += awayGoals.Value;
-            awayStats.GA += homeGoals.Value;
-            awayStats.AwayGF += awayGoals.Value;
-            awayStats.AwayGA += homeGoals.Value;
-
-            if (awayGoals > homeGoals)
-                awayStats.W++;
-            else if (awayGoals == homeGoals)
-                awayStats.D++;
-            else
-                awayStats.L++;
-        }
-
-        // Convert to standings rows with rank
-        // Tiebreaker order (MLS Next): PPM → wins → GD → GF → away GD → away GF → home GD → home GF
-        // Note: head-to-head (2-team ties only) is not implemented — requires custom pairwise sort
-        var rows = teamStats.Values
-            .Select(ts => new StandingRowDto
-            {
-                TeamId = ts.TeamId,
-                TeamName = ts.TeamName,
-                LogoUrl = ts.LogoUrl,
-                GP = ts.GP,
-                W = ts.W,
-                D = ts.D,
-                L = ts.L,
-                GF = ts.GF,
-                GA = ts.GA,
-                GD = ts.GF - ts.GA,
-                Pts = ts.W * 3 + ts.D,
-                PPM = ts.GP > 0 ? Math.Round((decimal)(ts.W * 3 + ts.D) / ts.GP, 3) : 0m,
-                GFM = ts.GP > 0 ? Math.Round((decimal)ts.GF / ts.GP, 2) : 0m,
-                GAM = ts.GP > 0 ? Math.Round((decimal)ts.GA / ts.GP, 2) : 0m,
-                GDM = ts.GP > 0 ? Math.Round((decimal)(ts.GF - ts.GA) / ts.GP, 2) : 0m,
-                AwayGD = ts.AwayGF - ts.AwayGA,
-                AwayGF = ts.AwayGF,
-                HomeGD = ts.HomeGF - ts.HomeGA,
-                HomeGF = ts.HomeGF
-            })
-            .OrderByDescending(r => r.PPM)
-            .ThenByDescending(r => r.W)
-            .ThenByDescending(r => r.GD)
-            .ThenByDescending(r => r.GF)
-            .ThenByDescending(r => r.AwayGD)
-            .ThenByDescending(r => r.AwayGF)
-            .ThenByDescending(r => r.HomeGD)
-            .ThenByDescending(r => r.HomeGF)
+        // Extract division heading names in DOM order → ["Central", "West", ...]
+        var headingElements = document.QuerySelectorAll(".container-group-text p[data-title]");
+        var regionNames = headingElements
+            .Select(el => ExtractRegionName(el.GetAttribute("data-title") ?? ""))
+            .Where(n => !string.IsNullOrWhiteSpace(n))
             .ToList();
 
-        // Add rank
-        for (int i = 0; i < rows.Count; i++)
+        // Group team rows by js-group, preserving first-occurrence order
+        var teamRows = document.QuerySelectorAll(".form_row.main_row[js-group]");
+        var groupOrder = new List<string>();
+        var rowsByGroup = new Dictionary<string, List<IElement>>();
+
+        foreach (var row in teamRows)
         {
-            rows[i].Rank = i + 1;
+            var groupId = row.GetAttribute("js-group") ?? "";
+            if (!rowsByGroup.ContainsKey(groupId))
+            {
+                rowsByGroup[groupId] = new List<IElement>();
+                groupOrder.Add(groupId);
+            }
+            rowsByGroup[groupId].Add(row);
         }
 
-        return rows;
+        // Match region name to group ID by position
+        var result = new List<StandingsGroupDto>();
+        for (int i = 0; i < groupOrder.Count; i++)
+        {
+            var groupId    = groupOrder[i];
+            var regionName = i < regionNames.Count ? regionNames[i] : groupId;
+            var standings  = rowsByGroup[groupId]
+                .Select(ParseTeamRow)
+                .Where(r => r is not null)
+                .Cast<StandingRowDto>()
+                .ToList();
+
+            result.Add(new StandingsGroupDto { RegionName = regionName, Standings = standings });
+        }
+
+        return result;
     }
 
-    private (int? homeGoals, int? awayGoals) ParseScore(string score)
+    private string ExtractRegionName(string title)
     {
-        if (string.IsNullOrEmpty(score))
-            return (null, null);
-
-        // Remove parenthetical notation like "(PK)" or "AET"
-        var cleanScore = score.Split('(')[0].Trim();
-        var parts = cleanScore.Split('-');
-
-        if (parts.Length < 2)
-            return (null, null);
-
-        var homePart = parts[0].Trim();
-        var awayPart = parts[1].Trim();
-
-        // Extract just the number from away part if it has extra text
-        if (awayPart.Contains(' '))
-            awayPart = awayPart.Split(' ')[0].Trim();
-
-        if (int.TryParse(homePart, out int homeGoals) && int.TryParse(awayPart, out int awayGoals))
-            return (homeGoals, awayGoals);
-
-        return (null, null);
+        // "Male -  U17 Central (Pro Player Pathway) Division" → "Central"
+        var match = RegionNameRegex.Match(title);
+        return match.Success ? match.Groups[1].Value.Trim() : title;
     }
 
-    private class TeamStats
+    private StandingRowDto? ParseTeamRow(IElement row)
     {
-        public int TeamId { get; set; }
-        public string TeamName { get; set; } = string.Empty;
-        public string? LogoUrl { get; set; }
-        public int GP { get; set; }
-        public int W { get; set; }
-        public int D { get; set; }
-        public int L { get; set; }
-        public int GF { get; set; }
-        public int GA { get; set; }
-        public int HomeGF { get; set; }
-        public int HomeGA { get; set; }
-        public int AwayGF { get; set; }
-        public int AwayGA { get; set; }
+        try
+        {
+            var rank     = int.TryParse(row.QuerySelector(".container-rank")?.TextContent?.Trim(), out var r) ? r : 0;
+            var teamName = row.QuerySelector("p[data-title]")?.GetAttribute("data-title")?.Trim() ?? "";
+            var logoUrl  = row.QuerySelector(".container-img img")?.GetAttribute("src");
+
+            if (string.IsNullOrEmpty(teamName)) return null;
+
+            // Mobile cells: PTS (index 0), PPM (index 1)
+            var mobileCells = row.QuerySelectorAll(".col-xs-6.col-sm-1.pad-0.gap-right-mobile-lg").ToList();
+            var pts = mobileCells.Count > 0 && int.TryParse(mobileCells[0].TextContent?.Trim(), out var p) ? p : 0;
+            var ppm = mobileCells.Count > 1 && decimal.TryParse(
+                mobileCells[1].TextContent?.Trim(),
+                System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var ppmVal) ? ppmVal : 0m;
+
+            // Desktop hidden cells: MP (0), W (1), L (2), T/draw (3)
+            var desktopCells = row.QuerySelectorAll(".col-sm-1.pad-0.gap-right-mobile-sm.hidden-xs").ToList();
+            var gp = desktopCells.Count > 0 && int.TryParse(desktopCells[0].TextContent?.Trim(), out var gp_) ? gp_ : 0;
+            var w  = desktopCells.Count > 1 && int.TryParse(desktopCells[1].TextContent?.Trim(), out var w_)  ? w_  : 0;
+            var l  = desktopCells.Count > 2 && int.TryParse(desktopCells[2].TextContent?.Trim(), out var l_)  ? l_  : 0;
+            var d  = desktopCells.Count > 3 && int.TryParse(desktopCells[3].TextContent?.Trim(), out var d_)  ? d_  : 0;
+
+            return new StandingRowDto
+            {
+                Rank     = rank,
+                TeamName = teamName,
+                LogoUrl  = logoUrl,
+                GP       = gp,
+                W        = w,
+                D        = d,
+                L        = l,
+                Pts      = pts,
+                PPM      = ppm
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to parse a team row");
+            return null;
+        }
+    }
+
+    public class StandingsGroupDto
+    {
+        public string RegionName { get; set; } = string.Empty;
+        public List<StandingRowDto> Standings { get; set; } = new();
     }
 
     public class StandingRowDto
     {
         public int Rank { get; set; }
-        public int TeamId { get; set; }
         public string TeamName { get; set; } = string.Empty;
         public string? LogoUrl { get; set; }
         public int GP { get; set; }
         public int W { get; set; }
         public int D { get; set; }
         public int L { get; set; }
-        public int GF { get; set; }
-        public int GA { get; set; }
-        public int GD { get; set; }
         public int Pts { get; set; }
         public decimal PPM { get; set; }
-        public decimal GFM { get; set; }
-        public decimal GAM { get; set; }
-        public decimal GDM { get; set; }
-        public int AwayGD { get; set; }
-        public int AwayGF { get; set; }
-        public int HomeGD { get; set; }
-        public int HomeGF { get; set; }
     }
 }

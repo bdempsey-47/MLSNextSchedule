@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
 import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
-import { Program, AgeGroup, StandingRow } from '../types'
+import { Program, AgeGroup, StandingsGroup } from '../types'
 import '../components/SeasonSelector.css'
 import './StandingsPage.css'
-
-// MLS Next standings span the full season — no fall/spring split
-const STANDINGS_SEASON = '2025-2026'
 
 function StandingsPage() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -16,70 +13,42 @@ function StandingsPage() {
     return p === 'homegrown' || p === 'academy' ? p : 'homegrown'
   })
 
-  const [selectedRegion, setSelectedRegion] = useState<string>(urlParams.get('region') || '')
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>(urlParams.get('ageGroup') || '')
+  const [selectedRegion, setSelectedRegion]     = useState<string>(urlParams.get('region') || '')
 
-  const [regions, setRegions] = useState<{ id: number; name: string }[]>([])
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
-  const [standings, setStandings] = useState<StandingRow[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>('')
+  const [allGroups, setAllGroups] = useState<StandingsGroup[]>([])
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState<string>('')
 
-  // Update URL when filters change
+  // Sync URL params
   useEffect(() => {
     const params = new URLSearchParams()
     params.set('program', selectedProgram)
-    if (selectedRegion) params.set('region', selectedRegion)
     if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
+    if (selectedRegion)   params.set('region', selectedRegion)
     history.replaceState(null, '', `?${params.toString()}`)
-  }, [selectedProgram, selectedRegion, selectedAgeGroup])
+  }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
-  // Fetch regions and ageGroups on mount
+  // Fetch age groups on mount
   useEffect(() => {
-    const fetchStaticOptions = async () => {
-      const apiBase = import.meta.env.VITE_API_BASE_URL
+    const apiBase = import.meta.env.VITE_API_BASE_URL
+    if (!apiBase) return
+    fetch(`${apiBase}/agegroups`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => {
+        const transformed: AgeGroup[] = data
+          .map((ag: any) => ({ id: ag.Id ?? ag.id, name: ag.Name ?? ag.name }))
+          .sort((a: AgeGroup, b: AgeGroup) => a.name.localeCompare(b.name))
+        setAgeGroups(transformed)
+      })
+      .catch(err => console.error('Error fetching age groups:', err))
+  }, [])
 
-      try {
-        if (!apiBase) {
-          setRegions([])
-          setAgeGroups([])
-          return
-        }
-
-        // Fetch regions (filtered by division)
-        const divisionName = selectedProgram === 'homegrown' ? 'Homegrown' : 'Academy'
-        const regionsRes = await fetch(`${apiBase}/regions?division=${encodeURIComponent(divisionName)}`)
-        if (regionsRes.ok) {
-          const regionsData = await regionsRes.json()
-          const transformedRegions = regionsData.map((r: any) => ({
-            id: r.Id || r.id,
-            name: r.Name || r.name
-          }))
-          setRegions(transformedRegions)
-        }
-
-        // Fetch age groups
-        const ageGroupsRes = await fetch(`${apiBase}/agegroups`)
-        if (ageGroupsRes.ok) {
-          const ageGroupsData = await ageGroupsRes.json()
-          const transformedAgeGroups = ageGroupsData.map((ag: any) => ({
-            id: ag.Id || ag.id,
-            name: ag.Name || ag.name
-          })).sort((a: AgeGroup, b: AgeGroup) => a.name.localeCompare(b.name))
-          setAgeGroups(transformedAgeGroups)
-        }
-      } catch (err) {
-        console.error('Error fetching filter options:', err)
-      }
-    }
-
-    fetchStaticOptions()
-  }, [selectedProgram])
-
-  // Fetch standings when all filters are selected
+  // Fetch standings when program + ageGroup are selected
   useEffect(() => {
-    if (!selectedRegion || !selectedAgeGroup) {
-      setStandings([])
+    if (!selectedAgeGroup) {
+      setAllGroups([])
       setError('')
       return
     }
@@ -92,62 +61,67 @@ function StandingsPage() {
         const apiBase = import.meta.env.VITE_API_BASE_URL
         if (!apiBase) {
           setError('API not configured')
-          setStandings([])
           setLoading(false)
           return
         }
 
         const params = new URLSearchParams()
         params.set('program', selectedProgram)
-        params.set('season', STANDINGS_SEASON)
-        params.set('region', selectedRegion)
         params.set('ageGroup', selectedAgeGroup)
 
         const response = await fetch(`${apiBase}/standings?${params.toString()}`)
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`)
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
-        const data = await response.json()
-        // Transform PascalCase to camelCase
-        const transformed = data.map((row: any) => ({
-          rank: row.Rank ?? row.rank,
-          teamId: row.TeamId ?? row.teamId,
-          teamName: row.TeamName ?? row.teamName,
-          logoUrl: row.LogoUrl ?? row.logoUrl,
-          gp: row.GP ?? row.gp ?? 0,
-          w: row.W ?? row.w ?? 0,
-          d: row.D ?? row.d ?? 0,
-          l: row.L ?? row.l ?? 0,
-          gf: row.GF ?? row.gf ?? 0,
-          ga: row.GA ?? row.ga ?? 0,
-          gd: row.GD ?? row.gd ?? 0,
-          pts: row.Pts ?? row.pts ?? 0,
-          ppm: row.PPM ?? row.ppm ?? 0,
-          gfm: row.GFM ?? row.gfm ?? 0,
-          gam: row.GAM ?? row.gam ?? 0,
-          gdm: row.GDM ?? row.gdm ?? 0
+        const data: any[] = await response.json()
+
+        const groups: StandingsGroup[] = data.map((g: any) => ({
+          regionName: g.RegionName ?? g.regionName,
+          standings: (g.Standings ?? g.standings ?? []).map((row: any) => ({
+            rank:     row.Rank     ?? row.rank     ?? 0,
+            teamName: row.TeamName ?? row.teamName ?? '',
+            logoUrl:  row.LogoUrl  ?? row.logoUrl,
+            gp:       row.GP       ?? row.gp       ?? 0,
+            w:        row.W        ?? row.w        ?? 0,
+            d:        row.D        ?? row.d        ?? 0,
+            l:        row.L        ?? row.l        ?? 0,
+            pts:      row.Pts      ?? row.pts      ?? 0,
+            ppm:      row.PPM      ?? row.ppm      ?? 0,
+          }))
         }))
 
-        setStandings(transformed)
+        setAllGroups(groups)
+
+        // If the region from URL is no longer present in the new data, clear it
+        if (selectedRegion && !groups.some(g => g.regionName === selectedRegion)) {
+          setSelectedRegion('')
+        }
       } catch (err) {
         console.error('Error fetching standings:', err)
         setError(err instanceof Error ? err.message : 'Failed to load standings')
-        setStandings([])
+        setAllGroups([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchStandings()
-  }, [selectedProgram, selectedRegion, selectedAgeGroup])
+  }, [selectedProgram, selectedAgeGroup])
 
   const handleProgramChange = (programs: Program[]) => {
     setSelectedProgram(programs[0] || 'homegrown')
+    setAllGroups([])
     setSelectedRegion('')
   }
 
-  const isFiltersComplete = selectedProgram && selectedRegion && selectedAgeGroup
+  // Region options come from the fetched data
+  const regionOptions = allGroups.map(g => g.regionName)
+
+  // Filter displayed groups by selected region
+  const displayedGroups = selectedRegion
+    ? allGroups.filter(g => g.regionName === selectedRegion)
+    : allGroups
+
+  const isFiltersComplete = selectedProgram && selectedAgeGroup
 
   return (
     <div className="standings-page">
@@ -167,35 +141,32 @@ function StandingsPage() {
 
       <div className="standings-filters">
         <div className="standings-filter-group">
-          <label htmlFor="region-select">Region</label>
+          <label htmlFor="agegroup-select">Age Group</label>
           <select
-            id="region-select"
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
+            id="agegroup-select"
+            value={selectedAgeGroup}
+            onChange={e => { setSelectedAgeGroup(e.target.value); setSelectedRegion('') }}
             className="standings-filter-select"
           >
-            <option value="">Select a region</option>
-            {regions.map((r) => (
-              <option key={r.id} value={r.name}>
-                {r.name}
-              </option>
+            <option value="">Select an age group</option>
+            {ageGroups.map(ag => (
+              <option key={ag.id} value={ag.name}>{ag.name}</option>
             ))}
           </select>
         </div>
 
         <div className="standings-filter-group">
-          <label htmlFor="agegroup-select">Age Group</label>
+          <label htmlFor="region-select">Region</label>
           <select
-            id="agegroup-select"
-            value={selectedAgeGroup}
-            onChange={(e) => setSelectedAgeGroup(e.target.value)}
+            id="region-select"
+            value={selectedRegion}
+            onChange={e => setSelectedRegion(e.target.value)}
             className="standings-filter-select"
+            disabled={regionOptions.length === 0}
           >
-            <option value="">Select an age group</option>
-            {ageGroups.map((ag) => (
-              <option key={ag.id} value={ag.name}>
-                {ag.name}
-              </option>
+            <option value="">All regions</option>
+            {regionOptions.map(name => (
+              <option key={name} value={name}>{name}</option>
             ))}
           </select>
         </div>
@@ -203,7 +174,7 @@ function StandingsPage() {
 
       {!isFiltersComplete && !loading && (
         <div className="no-results">
-          <p>Select all filters to view standings</p>
+          <p>Select an age group to view standings</p>
         </div>
       )}
 
@@ -221,59 +192,48 @@ function StandingsPage() {
         </div>
       )}
 
-      {isFiltersComplete && !loading && standings.length === 0 && !error && (
+      {isFiltersComplete && !loading && allGroups.length === 0 && !error && (
         <div className="no-results">
           <p>No standings available yet</p>
         </div>
       )}
 
-      {standings.length > 0 && (
-        <div className="standings-table-wrapper">
-          <table className="standings-table">
-            <thead>
-              <tr>
-                <th className="col-rank">#</th>
-                <th className="col-team">Team</th>
-                <th className="col-gp">GP</th>
-                <th className="col-record">W-D-L</th>
-                <th className="col-goals">GF</th>
-                <th className="col-goals">GA</th>
-                <th className="col-goals">GD</th>
-                <th className="col-gpm">GF/M</th>
-                <th className="col-gpm">GA/M</th>
-                <th className="col-gpm">GD/M</th>
-                <th className="col-pts">Pts</th>
-                <th className="col-ppm">PPM</th>
-              </tr>
-            </thead>
-            <tbody>
-              {standings.map((row, idx) => (
-                <tr key={row.teamId} className={idx % 2 === 0 ? 'even' : 'odd'}>
-                  <td className="col-rank">{row.rank}</td>
-                  <td className="col-team">
-                    {row.logoUrl && (
-                      <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
-                    )}
-                    <span className="standings-team-name">{row.teamName}</span>
-                  </td>
-                  <td className="col-gp">{row.gp}</td>
-                  <td className="col-record">
-                    {row.w}-{row.d}-{row.l}
-                  </td>
-                  <td className="col-goals">{row.gf}</td>
-                  <td className="col-goals">{row.ga}</td>
-                  <td className="col-goals">{row.gd}</td>
-                  <td className="col-gpm">{row.gfm.toFixed(2)}</td>
-                  <td className="col-gpm">{row.gam.toFixed(2)}</td>
-                  <td className="col-gpm">{row.gdm.toFixed(2)}</td>
-                  <td className="col-pts">{row.pts}</td>
-                  <td className="col-ppm">{row.ppm.toFixed(3)}</td>
+      {displayedGroups.map(group => (
+        <div key={group.regionName} className="standings-group">
+          <h3 className="standings-region-heading">{group.regionName}</h3>
+          <div className="standings-table-wrapper">
+            <table className="standings-table">
+              <thead>
+                <tr>
+                  <th className="col-rank">#</th>
+                  <th className="col-team">Team</th>
+                  <th className="col-gp">GP</th>
+                  <th className="col-record">W-D-L</th>
+                  <th className="col-pts">Pts</th>
+                  <th className="col-ppm">PPM</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {group.standings.map((row, idx) => (
+                  <tr key={`${group.regionName}-${row.rank}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
+                    <td className="col-rank">{row.rank}</td>
+                    <td className="col-team">
+                      {row.logoUrl && (
+                        <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
+                      )}
+                      <span className="standings-team-name">{row.teamName}</span>
+                    </td>
+                    <td className="col-gp">{row.gp}</td>
+                    <td className="col-record">{row.w}-{row.d}-{row.l}</td>
+                    <td className="col-pts">{row.pts}</td>
+                    <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      )}
+      ))}
     </div>
   )
 }

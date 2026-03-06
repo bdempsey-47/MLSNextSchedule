@@ -58,19 +58,17 @@ export interface FilterOptions {
 
 export interface StandingRow {
   rank: number
-  teamId: number
   teamName: string
   logoUrl?: string
   gp: number
   w: number
   d: number
   l: number
-  gf: number
-  ga: number
-  gd: number
   pts: number
   ppm: number
-  gfm: number
-  gam: number
-  gdm: number
+}
+
+export interface StandingsGroup {
+  regionName: string
+  standings: StandingRow[]
 }

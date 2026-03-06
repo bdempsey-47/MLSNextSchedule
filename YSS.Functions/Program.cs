@@ -61,12 +61,14 @@ var host = new HostBuilder()
         services.AddScoped<GetDivisions>();
         services.AddScoped<GetRegions>();
         services.AddScoped<GetAgeGroups>();
+        services.AddScoped<GetStandings>();
         services.AddScoped<TriggerIngestion>();
         services.AddScoped<ScheduledIngestion>();
         services.AddScoped<WeeklyIngestion>();
 
         // Add HTTP client factory
         services.AddHttpClient<Modular11Client>();
+        services.AddHttpClient(); // generic factory for GetStandings proxy
     })
     .ConfigureFunctionsWorkerDefaults((Action<IFunctionsWorkerApplicationBuilder>)(builder => { }))
     .Build();

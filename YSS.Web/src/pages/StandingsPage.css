@@ -133,6 +133,21 @@
   font-weight: 500;
 }
 
+/* Region group */
+.standings-group {
+  margin-bottom: 32px;
+}
+
+.standings-region-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+  padding: 0 4px;
+}
+
 /* Standings table */
 .standings-table-wrapper {
   background: var(--color-surface);
