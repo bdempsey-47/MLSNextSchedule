@@ -46,7 +46,6 @@ function SchedulesPage() {
   const handleProgramChange = (programs: Program[]) => {
     setSelectedPrograms(programs)
     setSelectedRegion('')
-    setSelectedTeam('')
     setMatches([])
   }
 
