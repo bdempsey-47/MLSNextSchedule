@@ -53,20 +53,23 @@ public class GetStandings
             if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(ageGroup))
                 return await BadRequest(req, "Missing required parameters: program, ageGroup");
 
-            var uidEvent = program.ToLower() switch
+            // Program-specific Modular11 parameters
+            // Homegrown: UID_event=12, UID_gender=1, list_type=53
+            // Academy:   UID_event=35, UID_gender=3, list_type=71
+            var (uidEvent, uidGender, listType, referer) = program.ToLower() switch
             {
-                "homegrown" => 12,
-                "academy"   => 35,
-                _           => (int?)null
+                "homegrown" => (12, 1, 53, "https://www.modular11.com/standings?year=21&gender=1"),
+                "academy"   => (35, 3, 71, "https://www.modular11.com/league-standings/mls-next-academy-division/21"),
+                _           => (0,  0,  0,  "")
             };
-            if (!uidEvent.HasValue)
+            if (uidEvent == 0)
                 return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
 
             if (!AgeGroupMap.TryGetValue(ageGroup, out var uidAge))
                 return await BadRequest(req, $"Unknown age group: {ageGroup}");
 
             var url = $"https://www.modular11.com/public_schedule/league/get_teams" +
-                      $"?tournament_type=league&UID_event={uidEvent}&UID_age={uidAge}&UID_gender=1&list_type=53";
+                      $"?tournament_type=league&UID_event={uidEvent}&UID_age={uidAge}&UID_gender={uidGender}&list_type={listType}";
 
             _logger.LogInformation("Fetching Modular11 standings: {Url}", url);
 
@@ -74,7 +77,7 @@ public class GetStandings
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("accept", "text/html, */*; q=0.01");
             request.Headers.Add("x-requested-with", "XMLHttpRequest");
-            request.Headers.Add("referer", "https://www.modular11.com/standings?year=21&gender=1");
+            request.Headers.Add("referer", referer);
             request.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36");
 
             var httpResponse = await client.SendAsync(request);
