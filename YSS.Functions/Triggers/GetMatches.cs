@@ -32,7 +32,7 @@ public class GetMatches
             var seasons = queryParams.GetValues("season")?.ToList() ?? new List<string>();
             var startDateStr = queryParams["startDate"] ?? string.Empty;
             var endDateStr = queryParams["endDate"] ?? string.Empty;
-            var ageGroup = queryParams["ageGroup"] ?? string.Empty;
+            var ageGroups = queryParams.GetValues("ageGroup")?.ToList() ?? new List<string>();
             var division = queryParams["division"] ?? string.Empty;
             
             // Support multiple program values: ?program=homegrown&program=academy
@@ -115,9 +115,9 @@ public class GetMatches
             }
 
             // Filter by age group
-            if (!string.IsNullOrEmpty(ageGroup))
+            if (ageGroups.Any())
             {
-                matches = matches.Where(m => m.AgeGroup.Name == ageGroup);
+                matches = matches.Where(m => ageGroups.Contains(m.AgeGroup.Name));
             }
 
             // Filter by division (region name)

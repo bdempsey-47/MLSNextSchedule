@@ -783,14 +783,9 @@ Age group → UID_age: U13=21, U14=22, U15=33, U16=14, U17=15, U19=26
    - Single age group selection works fine
    - Likely a query parameter issue — check how `ageGroup` is passed to `GetMatches` and how it's filtered in the query
 
-2. **Competition field shows "AD" for all Academy matches**
-   - Homegrown matches correctly show meaningful values like "MLS Next Flex" or "League"
-   - Academy matches all show "AD" — likely a parsing issue or the API returns a code instead of a label
-   - Investigate: ScheduleParser "Competition" field extraction, compare HTML structure between tournaments
-
 ### Features / Enhancements
 
-3. **"Last updated" timestamp on match cards** *(needs decision)*
+2. **"Last updated" timestamp on match cards** *(needs decision)*
    - Show a small timestamp on each card indicating when the match data was last ingested
    - Requires adding an `UpdatedAt` or `LastIngestedAt` column to the `Matches` table (new migration)
    - Decision needed: is this useful enough for users, or just noise?
