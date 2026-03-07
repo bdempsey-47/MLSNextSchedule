@@ -774,6 +774,51 @@ Age group → UID_age: U13=21, U14=22, U15=33, U16=14, U17=15, U19=26
 
 ---
 
+## 📝 Session 14 Summary (March 7, 2026)
+
+### Completed This Session
+
+1. **Analytics Page — Multi-Region Support**
+   - Backend (`GetAnalytics.cs`): added `RegionNames` string[] to `TeamAnalyticsDto`
+   - Cross-region teams (e.g. NY Red Bulls playing in both Academy and Northeast regions) now appear once with all region memberships listed
+   - Region filter dropdown populated from flattened regionNames union across all teams
+   - Frontend client-side filter: `team.regionNames.includes(selectedRegion)`
+
+2. **Analytics Page — Strength of Schedule (SOS) column**
+   - New `Sos` field on `TeamAnalyticsDto` — average ELO-proxy of opponents faced
+   - Displayed as a numeric column (2 decimal places) in the Analytics table
+   - Gives context to momentum score (a 70 on hard schedule > 70 on easy schedule)
+
+3. **Analytics Page — Expanded Momentum (Last 8, Bayesian weighting)**
+   - Last 5 → Last 8 matches for momentum calculation
+   - Recency weights applied: last 5 matches weighted [5,4,3,2,1], older 3 de-emphasized
+   - Badges 6-8 rendered at 45% opacity in the Last 8 column
+   - Bayesian shrinkage for low-GP teams (blends toward 50 when <5 games played)
+
+4. **Analytics Page — Visual Polish**
+   - Region cell: stacked `<div>`/`<span>` tags replaced with `regionNames.join(', ')` — reads naturally on one line
+   - Team cell: moved `display: flex` from `<td>` to inner `<div class="team-cell-inner">` — fixes grey horizontal line artefact and keeps logo/name vertically centred in tall rows
+   - Removed unused `.region-tags` / `.region-tag` CSS rules
+
+### Git Commits This Session
+- `e99d732` — feat: Show all regions for cross-region teams and add Bayesian momentum
+- `e71080c` — feat: Add Strength of Schedule (SOS) column to Analytics page
+- `6a846fd` — feat: Add region column, expand momentum to last 8 games with weighted scoring
+- `4ef8efd` — feat: Add Analytics page with Momentum Index
+- `252f6ed` — fix: Polish Analytics table — comma regions, fix flex-on-td grey line
+
+### Next Session Priorities
+
+1. **ELO Power Rankings** — cross-region leaderboard ("Top 10 U17 teams in the US")
+2. **Cross-page Linking / Drill-in** — clicking a team anywhere should navigate to their match history + analytics
+   - Standings → team row click → filtered Schedules view (or modal/drawer)
+   - Analytics → team row click → same drill-in
+   - Schedules → team name click → same drill-in
+   - Single destination: `/Schedules?program=...&ageGroup=...&team=...` already works; just need to wire up the links
+3. **Landing Page Polish** — headline stats (top momentum team, top ELO team) to drive interest in Analytics tab
+
+---
+
 ## 🐛 Backlog — Next Session
 
 ### Bugs

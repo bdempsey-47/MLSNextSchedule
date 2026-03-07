@@ -108,18 +108,20 @@ Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encry
    - Frontend: new tab or section on AnalyticsPage showing rank, team, ELO score, delta
    - Unlocks downstream: match win probabilities, upset detector, rising teams, club power index
 
-2. **Standings Drill-In** — Clicking a team row on the Standings page should show that team's matches and results
-   - Approach: navigate to `/Schedules?program=...&ageGroup=...&team=...` pre-filtered, OR show a modal/drawer with inline match results
-   - Data source: our existing `/api/matches` endpoint already supports `program`, `ageGroup`, `team` filters
-   - Files: `YSS.Web/src/pages/StandingsPage.tsx`, possibly a new `TeamMatchesDrawer` component
+2. **Cross-page Linking / Team Drill-In** — tapping a team anywhere should navigate to that team's match history + analytics
+   - Click a team row on Standings or Analytics → filtered view of their matches + stats
+   - Simplest: navigate to `/Schedules?program=...&ageGroup=...&team=...` (all params already supported)
+   - Richer: modal/drawer showing match history + analytics snippet side-by-side
+   - Files: `StandingsPage.tsx`, `AnalyticsPage.tsx`, `MatchCard.tsx`, possibly a new `TeamDetailDrawer` component
 
 3. **Landing Page Polish** — HomePage.tsx teaser content
    - Add a few headline stats (e.g. top momentum team, top ELO team) to drive interest in Analytics tab
 
 ### Resolved
-4. ~~**Analytics Page**~~ — `/Analytics` route live with Momentum Index (March 6, 2026)
-   - `GetAnalytics.cs` computes weighted W/D/L momentum (last 5 matches) per team
-   - Frontend: program/ageGroup/region/team filters, result badges, momentum arrow + score + label
+4. ~~**Analytics Page**~~ — `/Analytics` route live, fully polished (March 7, 2026)
+   - `GetAnalytics.cs` computes weighted W/D/L momentum (last 8 matches, Bayesian), SOS, multi-region support
+   - Frontend: program/ageGroup/region filters, last-8 badges (older 3 de-emphasized), momentum arrow+score+label, SOS column
+   - Regions displayed as comma-joined inline text; team cell flex fixed (no more grey line artefact)
 
 ### Ongoing
 5. **Android Calendar Export** — .ics file shows "Unable to launch event"
