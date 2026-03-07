@@ -78,18 +78,33 @@ public class GetAnalytics
                 if (!teamData.ContainsKey(match.HomeTeamId))
                     teamData[match.HomeTeamId] = new TeamRecord(match.HomeTeam.Name, match.HomeTeam.LogoUrl, match.Region.Name);
                 teamData[match.HomeTeamId].Results.Add((match.MatchDateUtc, homeResult));
+                teamData[match.HomeTeamId].Opponents.Add(match.AwayTeamId);
 
                 if (!teamData.ContainsKey(match.AwayTeamId))
                     teamData[match.AwayTeamId] = new TeamRecord(match.AwayTeam.Name, match.AwayTeam.LogoUrl, match.Region.Name);
                 teamData[match.AwayTeamId].Results.Add((match.MatchDateUtc, awayResult));
+                teamData[match.AwayTeamId].Opponents.Add(match.HomeTeamId);
             }
 
-            var result = teamData.Values
-                .Select(rec =>
+            var teamPpg = teamData.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Results.Count == 0 ? 0.0 :
+                       kvp.Value.Results.Sum(r => r.Result == "W" ? 3 : r.Result == "D" ? 1 : 0)
+                       / (double)kvp.Value.Results.Count);
+
+            var result = teamData
+                .Select(kvp =>
                 {
+                    var (teamId, rec) = (kvp.Key, kvp.Value);
                     var sorted = rec.Results.OrderByDescending(r => r.Date).ToList();
                     var last8  = sorted.Take(8).Select(r => r.Result).ToList();
                     var score  = ComputeMomentum(last8);
+                    var sos    = rec.Opponents.Count == 0 ? 0.0
+                        : rec.Opponents
+                            .Where(id => teamPpg.ContainsKey(id))
+                            .Select(id => teamPpg[id])
+                            .DefaultIfEmpty(0)
+                            .Average();
                     return new TeamAnalyticsDto
                     {
                         TeamName      = rec.Name,
@@ -99,6 +114,7 @@ public class GetAnalytics
                         Last8         = last8,
                         MomentumScore = Math.Round(score, 1),
                         MomentumLabel = GetMomentumLabel(score),
+                        Sos           = Math.Round(sos, 2),
                     };
                 })
                 .OrderByDescending(t => t.MomentumScore)
@@ -170,6 +186,7 @@ public class GetAnalytics
     private record TeamRecord(string Name, string? LogoUrl, string RegionName)
     {
         public List<(DateTime Date, string Result)> Results { get; } = new();
+        public List<int> Opponents { get; } = new();
     }
 
     public class TeamAnalyticsDto
@@ -181,5 +198,6 @@ public class GetAnalytics
         public string MomentumLabel { get; set; } = string.Empty;
         public List<string> Last8   { get; set; } = new();
         public int GP               { get; set; }
+        public double Sos           { get; set; }
     }
 }

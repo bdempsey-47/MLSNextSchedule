@@ -82,6 +82,7 @@ function AnalyticsPage() {
           momentumLabel: t.MomentumLabel ?? t.momentumLabel ?? '',
           last8:         t.Last8         ?? t.last8         ?? [],
           gp:            t.GP            ?? t.gp            ?? 0,
+          sos:           t.Sos           ?? t.sos           ?? 0,
         }))
 
         setAllTeams(teams)
@@ -203,6 +204,7 @@ function AnalyticsPage() {
                 <th className="col-team">Team</th>
                 <th className="col-region">Region</th>
                 <th className="col-gp">GP</th>
+                <th className="col-sos" title="Strength of Schedule">SOS</th>
                 <th className="col-last8">Last 8</th>
                 <th className="col-momentum">Momentum</th>
                 <th className="col-form">Form</th>
@@ -220,6 +222,7 @@ function AnalyticsPage() {
                   </td>
                   <td className="col-region">{team.regionName}</td>
                   <td className="col-gp">{team.gp}</td>
+                  <td className="col-sos">{team.sos.toFixed(2)}</td>
                   <td className="col-last8">
                     <div className="last5-badges">
                       {team.last8.map((result, i) => (

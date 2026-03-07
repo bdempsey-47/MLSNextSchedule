@@ -222,6 +222,11 @@
   text-align: center;
 }
 
+.analytics-table .col-sos {
+  width: 60px;
+  text-align: center;
+}
+
 .analytics-table .col-last8 {
   width: 155px;
 }

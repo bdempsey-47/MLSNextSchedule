@@ -81,4 +81,5 @@ export interface TeamAnalytics {
   momentumLabel: string
   last8: string[]
   gp: number
+  sos: number
 }
