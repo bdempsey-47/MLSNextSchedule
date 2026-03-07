@@ -216,19 +216,17 @@ function AnalyticsPage() {
                 <tr key={`${team.teamName}-${idx}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
                   <td className="col-rank">{idx + 1}</td>
                   <td className="col-team">
-                    {team.logoUrl && (
-                      <img src={team.logoUrl} alt={team.teamName} className="analytics-team-logo" />
-                    )}
-                    <span className="analytics-team-name">{team.teamName}</span>
+                    <div className="team-cell-inner">
+                      {team.logoUrl && (
+                        <img src={team.logoUrl} alt={team.teamName} className="analytics-team-logo" />
+                      )}
+                      <span className="analytics-team-name">{team.teamName}</span>
+                    </div>
                   </td>
                   <td className="col-region">
-                    {team.regionNames.length > 1 ? (
-                      <div className="region-tags">
-                        {team.regionNames.map(r => <span key={r} className="region-tag">{r}</span>)}
-                      </div>
-                    ) : (
-                      team.regionNames[0] ?? team.regionName
-                    )}
+                    {team.regionNames.length > 0
+                      ? team.regionNames.join(', ')
+                      : team.regionName}
                   </td>
                   <td className="col-gp">{team.gp}</td>
                   <td className="col-sos">{team.sos.toFixed(2)}</td>

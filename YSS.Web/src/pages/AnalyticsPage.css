@@ -194,7 +194,7 @@
   min-width: 200px;
 }
 
-.analytics-table td.col-team {
+.team-cell-inner {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -272,19 +272,6 @@
 .result-badge.draw { background: #ca8a04; }
 .result-badge.loss { background: #dc2626; }
 .result-badge.deemphasized { opacity: 0.45; }
-
-/* Region tags (multi-region teams) */
-.region-tags {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.region-tag {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  line-height: 1.3;
-}
 
 /* Momentum badge */
 .momentum-badge {
