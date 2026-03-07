@@ -78,6 +78,7 @@ function AnalyticsPage() {
           teamName:      t.TeamName      ?? t.teamName      ?? '',
           logoUrl:       t.LogoUrl       ?? t.logoUrl,
           regionName:    t.RegionName    ?? t.regionName    ?? '',
+          regionNames:   t.RegionNames   ?? t.regionNames   ?? [],
           momentumScore: t.MomentumScore ?? t.momentumScore ?? 0,
           momentumLabel: t.MomentumLabel ?? t.momentumLabel ?? '',
           last8:         t.Last8         ?? t.last8         ?? [],
@@ -87,7 +88,7 @@ function AnalyticsPage() {
 
         setAllTeams(teams)
 
-        if (selectedRegion && !teams.some(t => t.regionName === selectedRegion)) {
+        if (selectedRegion && !teams.some(t => t.regionNames.includes(selectedRegion))) {
           setSelectedRegion('')
         }
       } catch (err) {
@@ -109,11 +110,11 @@ function AnalyticsPage() {
   }
 
   // Region options derived from all teams fetched (before region filter applied client-side)
-  const regionOptions = [...new Set(allTeams.map(t => t.regionName))].sort((a, b) => a.localeCompare(b))
+  const regionOptions = [...new Set(allTeams.flatMap(t => t.regionNames))].sort((a, b) => a.localeCompare(b))
 
   // Apply region filter client-side on the current data
   const displayedTeams = selectedRegion
-    ? allTeams.filter(t => t.regionName === selectedRegion)
+    ? allTeams.filter(t => t.regionNames.includes(selectedRegion))
     : allTeams
 
   const isFiltersComplete = selectedProgram && selectedAgeGroup
@@ -220,7 +221,15 @@ function AnalyticsPage() {
                     )}
                     <span className="analytics-team-name">{team.teamName}</span>
                   </td>
-                  <td className="col-region">{team.regionName}</td>
+                  <td className="col-region">
+                    {team.regionNames.length > 1 ? (
+                      <div className="region-tags">
+                        {team.regionNames.map(r => <span key={r} className="region-tag">{r}</span>)}
+                      </div>
+                    ) : (
+                      team.regionNames[0] ?? team.regionName
+                    )}
+                  </td>
                   <td className="col-gp">{team.gp}</td>
                   <td className="col-sos">{team.sos.toFixed(2)}</td>
                   <td className="col-last8">
@@ -238,7 +247,12 @@ function AnalyticsPage() {
                       {team.momentumScore.toFixed(1)}
                     </span>
                   </td>
-                  <td className="col-form">{team.momentumLabel}</td>
+                  <td className="col-form">
+                    {team.momentumLabel}
+                    {team.gp < 5 && (
+                      <span className="limited-data-note">⚠ {team.gp} match{team.gp !== 1 ? 'es' : ''}</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

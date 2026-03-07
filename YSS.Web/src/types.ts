@@ -77,6 +77,7 @@ export interface TeamAnalytics {
   teamName: string
   logoUrl?: string
   regionName: string
+  regionNames: string[]
   momentumScore: number
   momentumLabel: string
   last8: string[]

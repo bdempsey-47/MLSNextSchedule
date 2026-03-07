@@ -79,11 +79,13 @@ public class GetAnalytics
                     teamData[match.HomeTeamId] = new TeamRecord(match.HomeTeam.Name, match.HomeTeam.LogoUrl, match.Region.Name);
                 teamData[match.HomeTeamId].Results.Add((match.MatchDateUtc, homeResult));
                 teamData[match.HomeTeamId].Opponents.Add(match.AwayTeamId);
+                teamData[match.HomeTeamId].RegionNames.Add(match.Region.Name);
 
                 if (!teamData.ContainsKey(match.AwayTeamId))
                     teamData[match.AwayTeamId] = new TeamRecord(match.AwayTeam.Name, match.AwayTeam.LogoUrl, match.Region.Name);
                 teamData[match.AwayTeamId].Results.Add((match.MatchDateUtc, awayResult));
                 teamData[match.AwayTeamId].Opponents.Add(match.HomeTeamId);
+                teamData[match.AwayTeamId].RegionNames.Add(match.Region.Name);
             }
 
             var teamPpg = teamData.ToDictionary(
@@ -96,9 +98,12 @@ public class GetAnalytics
                 .Select(kvp =>
                 {
                     var (teamId, rec) = (kvp.Key, kvp.Value);
-                    var sorted = rec.Results.OrderByDescending(r => r.Date).ToList();
-                    var last8  = sorted.Take(8).Select(r => r.Result).ToList();
-                    var score  = ComputeMomentum(last8);
+                    var sorted    = rec.Results.OrderByDescending(r => r.Date).ToList();
+                    var last8     = sorted.Take(8).Select(r => r.Result).ToList();
+                    var rawScore  = ComputeMomentum(last8);
+                    // Bayesian shrinkage: pull toward 50 when sample is small
+                    var gp        = rec.Results.Count;
+                    var score     = (rawScore * gp + 50.0 * 5) / (gp + 5);
                     var sos    = rec.Opponents.Count == 0 ? 0.0
                         : rec.Opponents
                             .Where(id => teamPpg.ContainsKey(id))
@@ -110,6 +115,7 @@ public class GetAnalytics
                         TeamName      = rec.Name,
                         LogoUrl       = rec.LogoUrl,
                         RegionName    = rec.RegionName,
+                        RegionNames   = rec.RegionNames.OrderBy(x => x).ToList(),
                         GP            = rec.Results.Count,
                         Last8         = last8,
                         MomentumScore = Math.Round(score, 1),
@@ -187,17 +193,19 @@ public class GetAnalytics
     {
         public List<(DateTime Date, string Result)> Results { get; } = new();
         public List<int> Opponents { get; } = new();
+        public HashSet<string> RegionNames { get; } = new();
     }
 
     public class TeamAnalyticsDto
     {
-        public string TeamName      { get; set; } = string.Empty;
-        public string? LogoUrl      { get; set; }
-        public string RegionName    { get; set; } = string.Empty;
-        public double MomentumScore { get; set; }
-        public string MomentumLabel { get; set; } = string.Empty;
-        public List<string> Last8   { get; set; } = new();
-        public int GP               { get; set; }
-        public double Sos           { get; set; }
+        public string TeamName          { get; set; } = string.Empty;
+        public string? LogoUrl          { get; set; }
+        public string RegionName        { get; set; } = string.Empty;
+        public List<string> RegionNames { get; set; } = new();
+        public double MomentumScore     { get; set; }
+        public string MomentumLabel     { get; set; } = string.Empty;
+        public List<string> Last8       { get; set; } = new();
+        public int GP                   { get; set; }
+        public double Sos               { get; set; }
     }
 }
