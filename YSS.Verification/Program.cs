@@ -49,11 +49,10 @@ Action<DbContextOptionsBuilder> ConfigureDbContext = options =>
 // Run ingestion for each tournament
 var tournaments = new[]
 {
-    new { TournamentId = "35", Label = "Academy S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
-    // Other tournaments (uncomment to ingest all seasons):
-    // new { TournamentId = "35", Label = "Academy",    StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
-    // new { TournamentId = "12", Label = "Homegrown",  StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
-    // new { TournamentId = "12", Label = "Homegrown S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
+    new { TournamentId = "35", Label = "Academy F25",   StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
+    new { TournamentId = "12", Label = "Homegrown F25", StartDate = "2025-07-01 00:00:01", EndDate = "2025-12-31 23:59:59" },
+    new { TournamentId = "35", Label = "Academy S26",   StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
+    new { TournamentId = "12", Label = "Homegrown S26", StartDate = "2026-01-01 00:00:01", EndDate = "2026-06-30 23:59:59" },
 };
 
 foreach (var t in tournaments)

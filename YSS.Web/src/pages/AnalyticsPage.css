@@ -211,13 +211,19 @@
   font-weight: 500;
 }
 
+.analytics-table .col-region {
+  min-width: 120px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
 .analytics-table .col-gp {
   width: 45px;
   text-align: center;
 }
 
-.analytics-table .col-last5 {
-  width: 120px;
+.analytics-table .col-last8 {
+  width: 155px;
 }
 
 .analytics-table .col-momentum {
@@ -252,6 +258,7 @@
 .result-badge.win  { background: #16a34a; }
 .result-badge.draw { background: #ca8a04; }
 .result-badge.loss { background: #dc2626; }
+.result-badge.deemphasized { opacity: 0.45; }
 
 /* Momentum badge */
 .momentum-badge {

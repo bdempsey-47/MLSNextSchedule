@@ -28,10 +28,9 @@ public class GetAnalytics
             var program  = queryParams["program"]  ?? string.Empty;
             var ageGroup = queryParams["ageGroup"] ?? string.Empty;
             var region   = queryParams["region"]   ?? string.Empty;
-            var team     = queryParams["team"]     ?? string.Empty;
 
-            _logger.LogInformation("GetAnalytics called: program={Program}, ageGroup={AgeGroup}, region={Region}, team={Team}",
-                program, ageGroup, region, team);
+            _logger.LogInformation("GetAnalytics called: program={Program}, ageGroup={AgeGroup}, region={Region}",
+                program, ageGroup, region);
 
             if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(ageGroup))
                 return await BadRequest(req, "Missing required parameters: program, ageGroup");
@@ -61,11 +60,6 @@ public class GetAnalytics
             if (!string.IsNullOrEmpty(region))
                 query = query.Where(m => m.Region.Name == region);
 
-            if (!string.IsNullOrEmpty(team))
-                query = query.Where(m =>
-                    m.HomeTeam.Name.Contains(team) ||
-                    m.AwayTeam.Name.Contains(team));
-
             var matches = await query.ToListAsync();
 
             _logger.LogInformation("GetAnalytics: {Count} completed matches found", matches.Count);
@@ -94,15 +88,15 @@ public class GetAnalytics
                 .Select(rec =>
                 {
                     var sorted = rec.Results.OrderByDescending(r => r.Date).ToList();
-                    var last5  = sorted.Take(5).Select(r => r.Result).ToList();
-                    var score  = ComputeMomentum(last5);
+                    var last8  = sorted.Take(8).Select(r => r.Result).ToList();
+                    var score  = ComputeMomentum(last8);
                     return new TeamAnalyticsDto
                     {
                         TeamName      = rec.Name,
                         LogoUrl       = rec.LogoUrl,
                         RegionName    = rec.RegionName,
                         GP            = rec.Results.Count,
-                        Last5         = last5,
+                        Last8         = last8,
                         MomentumScore = Math.Round(score, 1),
                         MomentumLabel = GetMomentumLabel(score),
                     };
@@ -138,16 +132,17 @@ public class GetAnalytics
                int.TryParse(parts[1].Trim(), out awayScore);
     }
 
-    private static double ComputeMomentum(List<string> last5)
+    private static double ComputeMomentum(List<string> last8)
     {
-        // last5[0] = most recent; weights = [5, 4, 3, 2, 1]
-        if (last5.Count == 0) return 0;
-        int[] weights = [5, 4, 3, 2, 1];
+        // last8[0] = most recent; recent 3 emphasized, oldest 3 deemphasized
+        // weights: [8, 7, 6, 4, 3, 2, 1, 1]
+        if (last8.Count == 0) return 0;
+        int[] weights = [8, 7, 6, 4, 3, 2, 1, 1];
         double weightedSum = 0;
         double weightSum   = 0;
-        for (int i = 0; i < last5.Count; i++)
+        for (int i = 0; i < last8.Count; i++)
         {
-            var points = last5[i] == "W" ? 3 : last5[i] == "D" ? 1 : 0;
+            var points = last8[i] == "W" ? 3 : last8[i] == "D" ? 1 : 0;
             weightedSum += points * weights[i];
             weightSum   += weights[i];
         }
@@ -184,7 +179,7 @@ public class GetAnalytics
         public string RegionName    { get; set; } = string.Empty;
         public double MomentumScore { get; set; }
         public string MomentumLabel { get; set; } = string.Empty;
-        public List<string> Last5   { get; set; } = new();
+        public List<string> Last8   { get; set; } = new();
         public int GP               { get; set; }
     }
 }

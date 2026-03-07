@@ -15,7 +15,6 @@ function AnalyticsPage() {
 
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>(urlParams.get('ageGroup') || '')
   const [selectedRegion, setSelectedRegion]     = useState<string>(urlParams.get('region') || '')
-  const [teamFilter, setTeamFilter]             = useState<string>(urlParams.get('team') || '')
 
   const [ageGroups, setAgeGroups]   = useState<AgeGroup[]>([])
   const [allTeams, setAllTeams]     = useState<TeamAnalytics[]>([])
@@ -28,9 +27,8 @@ function AnalyticsPage() {
     params.set('program', selectedProgram)
     if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
     if (selectedRegion)   params.set('region', selectedRegion)
-    if (teamFilter)       params.set('team', teamFilter)
     history.replaceState(null, '', `?${params.toString()}`)
-  }, [selectedProgram, selectedAgeGroup, selectedRegion, teamFilter])
+  }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
   // Fetch age groups on mount
   useEffect(() => {
@@ -71,7 +69,6 @@ function AnalyticsPage() {
         params.set('program', selectedProgram)
         params.set('ageGroup', selectedAgeGroup)
         if (selectedRegion) params.set('region', selectedRegion)
-        if (teamFilter)     params.set('team', teamFilter)
 
         const response = await fetch(`${apiBase}/analytics?${params.toString()}`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -83,7 +80,7 @@ function AnalyticsPage() {
           regionName:    t.RegionName    ?? t.regionName    ?? '',
           momentumScore: t.MomentumScore ?? t.momentumScore ?? 0,
           momentumLabel: t.MomentumLabel ?? t.momentumLabel ?? '',
-          last5:         t.Last5         ?? t.last5         ?? [],
+          last8:         t.Last8         ?? t.last8         ?? [],
           gp:            t.GP            ?? t.gp            ?? 0,
         }))
 
@@ -102,7 +99,7 @@ function AnalyticsPage() {
     }
 
     fetchAnalytics()
-  }, [selectedProgram, selectedAgeGroup, selectedRegion, teamFilter])
+  }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
   const handleProgramChange = (programs: Program[]) => {
     setSelectedProgram(programs[0] || 'homegrown')
@@ -169,17 +166,6 @@ function AnalyticsPage() {
           </select>
         </div>
 
-        <div className="analytics-filter-group">
-          <label htmlFor="team-search">Team</label>
-          <input
-            id="team-search"
-            type="text"
-            value={teamFilter}
-            onChange={e => setTeamFilter(e.target.value)}
-            placeholder="Search team name…"
-            className="analytics-filter-input"
-          />
-        </div>
       </div>
 
       {!isFiltersComplete && !loading && (
@@ -215,8 +201,9 @@ function AnalyticsPage() {
               <tr>
                 <th className="col-rank">#</th>
                 <th className="col-team">Team</th>
+                <th className="col-region">Region</th>
                 <th className="col-gp">GP</th>
-                <th className="col-last5">Last 5</th>
+                <th className="col-last8">Last 8</th>
                 <th className="col-momentum">Momentum</th>
                 <th className="col-form">Form</th>
               </tr>
@@ -231,11 +218,12 @@ function AnalyticsPage() {
                     )}
                     <span className="analytics-team-name">{team.teamName}</span>
                   </td>
+                  <td className="col-region">{team.regionName}</td>
                   <td className="col-gp">{team.gp}</td>
-                  <td className="col-last5">
+                  <td className="col-last8">
                     <div className="last5-badges">
-                      {team.last5.map((result, i) => (
-                        <span key={i} className={`result-badge ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'}`}>
+                      {team.last8.map((result, i) => (
+                        <span key={i} className={`result-badge ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'} ${i >= 5 ? 'deemphasized' : ''}`}>
                           {result}
                         </span>
                       ))}
