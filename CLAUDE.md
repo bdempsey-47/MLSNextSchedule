@@ -37,7 +37,7 @@
 ```powershell
 # Terminal 1: Backend (HTTP functions only, no timer trigger)
 cd YSS.Functions
-func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion
+func start --functions GetMatches GetTeams GetDivisions GetRegions GetAgeGroups TriggerIngestion GetAnalytics
 # Runs on http://localhost:7071
 
 # Terminal 2: Frontend
@@ -99,24 +99,30 @@ Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encry
 ## Current Known Issues (Phase 5 Priorities)
 
 ### Next Up
-1. **Landing Page Polish** — HomePage.tsx needs visual cleanup to match Schedules/Standings look and feel
-   - File: `YSS.Web/src/pages/HomePage.tsx`, `YSS.Web/src/pages/HomePage.css` (create)
-   - Goal: consistent card styling, typography, spacing with the rest of the site
-   - Also add teaser analytics section on landing page to drive interest in Analytics tab
+1. **ELO Power Rankings** — Cross-region leaderboard (e.g. "Top 10 U17 teams in the US")
+   - Rank teams across ALL regions for a program+ageGroup using ELO rating
+   - Full spec in `ELO_Specs.txt`. Key params: K=30, home advantage +100, margin multiplier 1.0/1.5/1.75
+   - Process all completed matches chronologically; start each team at 1500
+   - Approach A (fast to ship): compute on-the-fly in `GetAnalytics.cs` or a new `GetPowerRankings.cs`
+   - Approach B (better perf): store `EloRating` on Team entity, recompute nightly in `DailyIngestion`
+   - Frontend: new tab or section on AnalyticsPage showing rank, team, ELO score, delta
+   - Unlocks downstream: match win probabilities, upset detector, rising teams, club power index
 
 2. **Standings Drill-In** — Clicking a team row on the Standings page should show that team's matches and results
    - Approach: navigate to `/Schedules?program=...&ageGroup=...&team=...` pre-filtered, OR show a modal/drawer with inline match results
    - Data source: our existing `/api/matches` endpoint already supports `program`, `ageGroup`, `team` filters
    - Files: `YSS.Web/src/pages/StandingsPage.tsx`, possibly a new `TeamMatchesDrawer` component
 
-3. **Analytics Page** — New `/Analytics` route, eventual paywall candidate
-   - Add route to `App.tsx` and nav link to `NavMenu.tsx`
-   - Placeholder page initially; full spec TBD (see `Analytics_specs.txt` in project root)
-   - Teaser content: surface a few headline stats on the landing page to drive interest
-   - Consider: which analytics are free vs. paywalled; authentication approach when paywall is added
+3. **Landing Page Polish** — HomePage.tsx teaser content
+   - Add a few headline stats (e.g. top momentum team, top ELO team) to drive interest in Analytics tab
+
+### Resolved
+4. ~~**Analytics Page**~~ — `/Analytics` route live with Momentum Index (March 6, 2026)
+   - `GetAnalytics.cs` computes weighted W/D/L momentum (last 5 matches) per team
+   - Frontend: program/ageGroup/region/team filters, result badges, momentum arrow + score + label
 
 ### Ongoing
-3. **Android Calendar Export** — .ics file shows "Unable to launch event"
+5. **Android Calendar Export** — .ics file shows "Unable to launch event"
    - Works on other platforms; switched to Google Calendar URL workaround
    - File: `YSS.Web/src/components/MatchCard.tsx`
 
@@ -125,8 +131,8 @@ Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encry
    - Target: Screens < 600px
    - File: `YSS.Web/src/components/MatchCard.tsx`
 
-### Resolved
-5. ~~**Data Volume**~~ — Full Academy S26 + Homegrown S26 ingested for all 6 age groups.
+### Also Resolved
+6. ~~**Data Volume**~~ — Full Academy S26 + Homegrown S26 ingested for all 6 age groups.
 
 ## Team Logos Architecture
 **Current:** Hyperlinking to Modular11 CDN URLs
@@ -180,7 +186,7 @@ MLSNextSchedule/
 │   ├── Models/                        # ParsedMatch (DTO)
 │   └── YSS.Ingestion.csproj
 ├── YSS.Functions/                     # Azure Functions Host
-│   ├── Triggers/                      # GetMatches, GetTeams, GetDivisions, GetRegions, GetAgeGroups, TriggerIngestion, DailyIngestion, WeeklyIngestion (3 batches)
+│   ├── Triggers/                      # GetMatches, GetTeams, GetDivisions, GetRegions, GetAgeGroups, GetAnalytics, TriggerIngestion, DailyIngestion, WeeklyIngestion (3 batches)
 │   ├── Program.cs                     # Dependency Injection
 │   ├── host.json
 │   ├── local.settings.json            # LocalDB connection, CORS: http://localhost:5173
