@@ -259,7 +259,7 @@
 
 .team-match-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 8px;
   font-size: 0.85rem;
@@ -317,7 +317,6 @@
   flex-shrink: 0;
   min-width: 36px;
   text-align: center;
-  align-self: center;
 }
 
 @media (max-width: 400px) {
