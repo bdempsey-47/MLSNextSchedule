@@ -301,8 +301,6 @@
 }
 
 .match-name {
-  flex: 1;
-  min-width: 0;
   overflow-wrap: break-word;
   word-break: break-word;
 }
