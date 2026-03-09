@@ -186,12 +186,18 @@ public class GetStandings
                 System.Globalization.CultureInfo.InvariantCulture,
                 out var ppmVal) ? ppmVal : 0m;
 
-            // Desktop hidden cells: MP (0), W (1), L (2), T/draw (3)
+            // Desktop hidden cells: MP (0), W (1), L (2), T/draw (3), GF (4), GA (5)
             var desktopCells = row.QuerySelectorAll(".col-sm-1.pad-0.gap-right-mobile-sm.hidden-xs").ToList();
             var gp = desktopCells.Count > 0 && int.TryParse(desktopCells[0].TextContent?.Trim(), out var gp_) ? gp_ : 0;
             var w  = desktopCells.Count > 1 && int.TryParse(desktopCells[1].TextContent?.Trim(), out var w_)  ? w_  : 0;
             var l  = desktopCells.Count > 2 && int.TryParse(desktopCells[2].TextContent?.Trim(), out var l_)  ? l_  : 0;
             var d  = desktopCells.Count > 3 && int.TryParse(desktopCells[3].TextContent?.Trim(), out var d_)  ? d_  : 0;
+            var gf = desktopCells.Count > 4 && int.TryParse(desktopCells[4].TextContent?.Trim(), out var gf_) ? gf_ : 0;
+            var ga = desktopCells.Count > 5 && int.TryParse(desktopCells[5].TextContent?.Trim(), out var ga_) ? ga_ : 0;
+
+            var wpm  = gp > 0 ? Math.Round((decimal)w        / gp, 3) : 0m;
+            var gdpm = gp > 0 ? Math.Round((decimal)(gf - ga) / gp, 3) : 0m;
+            var gpm  = gp > 0 ? Math.Round((decimal)gf        / gp, 3) : 0m;
 
             return new StandingRowDto
             {
@@ -202,8 +208,14 @@ public class GetStandings
                 W        = w,
                 D        = d,
                 L        = l,
+                GF       = gf,
+                GA       = ga,
+                GD       = gf - ga,
                 Pts      = pts,
-                PPM      = ppm
+                PPM      = ppm,
+                WPM      = wpm,
+                GDPM     = gdpm,
+                GPM      = gpm,
             };
         }
         catch (Exception ex)
@@ -228,7 +240,13 @@ public class GetStandings
         public int W { get; set; }
         public int D { get; set; }
         public int L { get; set; }
+        public int GF { get; set; }
+        public int GA { get; set; }
+        public int GD { get; set; }
         public int Pts { get; set; }
         public decimal PPM { get; set; }
+        public decimal WPM { get; set; }
+        public decimal GDPM { get; set; }
+        public decimal GPM { get; set; }
     }
 }

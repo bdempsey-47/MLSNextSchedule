@@ -89,8 +89,14 @@ function StandingsPage() {
             w:        row.W        ?? row.w        ?? 0,
             d:        row.D        ?? row.d        ?? 0,
             l:        row.L        ?? row.l        ?? 0,
+            gf:       row.GF       ?? row.gf       ?? 0,
+            ga:       row.GA       ?? row.ga       ?? 0,
+            gd:       row.GD       ?? row.gd       ?? 0,
             pts:      row.Pts      ?? row.pts      ?? 0,
             ppm:      row.PPM      ?? row.ppm      ?? 0,
+            wpm:      row.WPM      ?? row.wpm      ?? 0,
+            gdpm:     row.GDPM     ?? row.gdpm     ?? 0,
+            gpm:      row.GPM      ?? row.gpm      ?? 0,
           }))
         }))
 
@@ -222,8 +228,14 @@ function StandingsPage() {
                       <th className="col-team">Team</th>
                       <th className="col-gp">GP</th>
                       <th className="col-record">W-D-L</th>
+                      <th className="col-goals" title="Goals For">GF</th>
+                      <th className="col-goals" title="Goals Against">GA</th>
+                      <th className="col-goals" title="Goal Differential">GD</th>
                       <th className="col-pts">Pts</th>
-                      <th className="col-ppm">PPM</th>
+                      <th className="col-ppm" title="Points Per Match">PPM</th>
+                      <th className="col-wpm" title="Wins Per Match">WPM</th>
+                      <th className="col-gdpm" title="Goal Differential Per Match">GDPM</th>
+                      <th className="col-gpm" title="Goals For Per Match">GPM</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -238,8 +250,14 @@ function StandingsPage() {
                         </td>
                         <td className="col-gp">{row.gp}</td>
                         <td className="col-record">{row.w}-{row.d}-{row.l}</td>
+                        <td className="col-goals">{row.gf}</td>
+                        <td className="col-goals">{row.ga}</td>
+                        <td className="col-goals">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
                         <td className="col-pts">{row.pts}</td>
                         <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
+                        <td className="col-wpm">{typeof row.wpm === 'number' ? row.wpm.toFixed(3) : row.wpm}</td>
+                        <td className="col-gdpm">{typeof row.gdpm === 'number' ? row.gdpm.toFixed(3) : row.gdpm}</td>
+                        <td className="col-gpm">{typeof row.gpm === 'number' ? row.gpm.toFixed(3) : row.gpm}</td>
                       </tr>
                     ))}
                   </tbody>

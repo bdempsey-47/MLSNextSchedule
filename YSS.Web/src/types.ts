@@ -64,8 +64,14 @@ export interface StandingRow {
   w: number
   d: number
   l: number
+  gf: number
+  ga: number
+  gd: number
   pts: number
   ppm: number
+  wpm: number
+  gdpm: number
+  gpm: number
 }
 
 export interface StandingsGroup {

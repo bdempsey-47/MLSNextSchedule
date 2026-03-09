@@ -261,6 +261,18 @@
   background: rgba(200, 16, 46, 0.05);
 }
 
+.col-wpm {
+  width: 60px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.col-gdpm {
+  width: 65px;
+  text-align: center;
+  font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .standings-page {
@@ -307,6 +319,8 @@
     width: 50px;
   }
 
+  .col-wpm, .col-gdpm { width: 50px; }
+
   .col-ppm {
     width: 55px;
     font-size: 0.85rem;
@@ -341,7 +355,9 @@
   }
 
   .col-pts,
-  .col-gpm {
+  .col-gpm,
+  .col-wpm,
+  .col-gdpm {
     width: 45px;
   }
 
