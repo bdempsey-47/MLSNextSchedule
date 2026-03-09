@@ -153,12 +153,20 @@ function StandingsPage() {
         matchDateUtc: m.matchDateUtc ?? m.MatchDateUtc,
         score:        m.score        ?? m.Score ?? null,
         gender:       m.gender       ?? m.Gender ?? '',
-        homeTeam:  { id: m.homeTeam?.id ?? 0, name: m.homeTeam?.name ?? '', logoUrl: m.homeTeam?.logoUrl },
-        awayTeam:  { id: m.awayTeam?.id ?? 0, name: m.awayTeam?.name ?? '', logoUrl: m.awayTeam?.logoUrl },
-        venue:     { id: m.venue?.id ?? 0, name: m.venue?.name ?? '' },
-        ageGroup:  { id: m.ageGroup?.id ?? 0, name: m.ageGroup?.name ?? '' },
-        region:    { id: m.region?.id ?? 0, name: m.region?.name ?? '' },
-        competition: { id: m.competition?.id ?? 0, name: m.competition?.name ?? '' },
+        homeTeam: {
+          id:      m.HomeTeam?.Id      || m.homeTeam?.id      || 0,
+          name:    m.HomeTeam?.Name    || m.homeTeam?.name    || '',
+          logoUrl: m.HomeTeam?.LogoUrl || m.homeTeam?.logoUrl,
+        },
+        awayTeam: {
+          id:      m.AwayTeam?.Id      || m.awayTeam?.id      || 0,
+          name:    m.AwayTeam?.Name    || m.awayTeam?.name    || '',
+          logoUrl: m.AwayTeam?.LogoUrl || m.awayTeam?.logoUrl,
+        },
+        venue:       { id: m.Venue?.Id       || m.venue?.id       || 0, name: m.Venue?.Name       || m.venue?.name       || '' },
+        ageGroup:    { id: m.AgeGroup?.Id    || m.ageGroup?.id    || 0, name: m.AgeGroup?.Name    || m.ageGroup?.name    || '' },
+        region:      { id: m.Region?.Id      || m.region?.id      || 0, name: m.Region?.Name      || m.region?.name      || '' },
+        competition: { id: m.Competition?.Id || m.competition?.id || 0, name: m.Competition?.Name || m.competition?.name || '' },
       }))
       setTeamMatchesCache(prev => ({ ...prev, [teamName]: matches }))
     } catch (e) {
