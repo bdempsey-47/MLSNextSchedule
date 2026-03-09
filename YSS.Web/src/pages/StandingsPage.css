@@ -260,18 +260,21 @@
 .team-match-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
   font-size: 0.85rem;
   padding: 4px 0;
   border-bottom: 1px solid var(--color-border);
+  position: relative;
 }
 .team-match-row:last-child {
   border-bottom: none;
 }
 
 .match-date {
+  position: absolute;
+  left: 0;
   width: 48px;
-  flex-shrink: 0;
   color: var(--color-text-secondary);
   font-size: 0.8rem;
 }
@@ -281,7 +284,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  flex: 1;
+  width: 190px;
   font-weight: 500;
   min-width: 0;
   overflow: hidden;
@@ -289,9 +292,12 @@
   text-overflow: ellipsis;
 }
 
-.match-away {
+.match-home {
   justify-content: flex-end;
-  text-align: right;
+}
+
+.match-away {
+  justify-content: flex-start;
 }
 
 .match-logo {
