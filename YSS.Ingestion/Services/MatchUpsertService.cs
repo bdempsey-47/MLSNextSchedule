@@ -153,12 +153,12 @@ public class MatchUpsertService
         }
 
         var team = await _dbContext.Teams
-            .Where(t => t.Name == name)
+            .Where(t => t.Name == name.Trim())
             .FirstOrDefaultAsync(ct);
 
         if (team == null)
         {
-            team = new Team { Name = name, LogoUrl = logoUrl };
+            team = new Team { Name = name.Trim(), LogoUrl = logoUrl };
             await _dbContext.Teams.AddAsync(team, ct);
             await _dbContext.SaveChangesAsync(ct);
             _logger.LogDebug("Created new team: {TeamName}", name);
