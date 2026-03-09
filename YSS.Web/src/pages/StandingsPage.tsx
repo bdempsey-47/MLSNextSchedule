@@ -18,6 +18,7 @@ function StandingsPage() {
 
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
   const [allGroups, setAllGroups] = useState<StandingsGroup[]>([])
+  const [ageGroupsLoading, setAgeGroupsLoading] = useState(true)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string>('')
 
@@ -41,8 +42,12 @@ function StandingsPage() {
           .map((ag: any) => ({ id: ag.Id ?? ag.id, name: ag.Name ?? ag.name }))
           .sort((a: AgeGroup, b: AgeGroup) => a.name.localeCompare(b.name))
         setAgeGroups(transformed)
+        setAgeGroupsLoading(false)
       })
-      .catch(err => console.error('Error fetching age groups:', err))
+      .catch(err => {
+        console.error('Error fetching age groups:', err)
+        setAgeGroupsLoading(false)
+      })
   }, [])
 
   // Fetch standings when program + ageGroup are selected
@@ -125,116 +130,125 @@ function StandingsPage() {
 
   return (
     <div className="standings-page">
-      <div className="controls-bar">
-        <ProgramSelector
-          selected={[selectedProgram]}
-          onChange={handleProgramChange}
-          singleSelect
-        />
-        <div className="controls-divider" />
-        <div className="season-selector">
-          <span className="selector-label">Season</span>
-          <div className="season-buttons">
-            <span className="season-button active">2025–2026</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="standings-filters">
-        <div className="standings-filter-group">
-          <label htmlFor="agegroup-select">Age Group</label>
-          <select
-            id="agegroup-select"
-            value={selectedAgeGroup}
-            onChange={e => { setSelectedAgeGroup(e.target.value); setSelectedRegion('') }}
-            className="standings-filter-select"
-          >
-            <option value="">Select an age group</option>
-            {ageGroups.map(ag => (
-              <option key={ag.id} value={ag.name}>{ag.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="standings-filter-group">
-          <label htmlFor="region-select">Region</label>
-          <select
-            id="region-select"
-            value={selectedRegion}
-            onChange={e => setSelectedRegion(e.target.value)}
-            className="standings-filter-select"
-            disabled={regionOptions.length === 0}
-          >
-            <option value="">All regions</option>
-            {regionOptions.map(name => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {!isFiltersComplete && !loading && (
-        <div className="no-results">
-          <p>Select an age group to view standings</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="standings-error">
-          <AlertCircle size={16} />
-          {error}
-        </div>
-      )}
-
-      {loading && (
+      {ageGroupsLoading ? (
         <div className="standings-loading">
           <div className="standings-spinner" />
-          <p>Loading standings…</p>
+          <p>Loading…</p>
         </div>
-      )}
-
-      {isFiltersComplete && !loading && allGroups.length === 0 && !error && (
-        <div className="no-results">
-          <p>No standings available yet</p>
-        </div>
-      )}
-
-      {displayedGroups.map(group => (
-        <div key={group.regionName} className="standings-group">
-          <h3 className="standings-region-heading">{group.regionName}</h3>
-          <div className="standings-table-wrapper">
-            <table className="standings-table">
-              <thead>
-                <tr>
-                  <th className="col-rank">#</th>
-                  <th className="col-team">Team</th>
-                  <th className="col-gp">GP</th>
-                  <th className="col-record">W-D-L</th>
-                  <th className="col-pts">Pts</th>
-                  <th className="col-ppm">PPM</th>
-                </tr>
-              </thead>
-              <tbody>
-                {group.standings.map((row, idx) => (
-                  <tr key={`${group.regionName}-${row.rank}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
-                    <td className="col-rank">{row.rank}</td>
-                    <td className="col-team">
-                      {row.logoUrl && (
-                        <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
-                      )}
-                      <span className="standings-team-name">{row.teamName}</span>
-                    </td>
-                    <td className="col-gp">{row.gp}</td>
-                    <td className="col-record">{row.w}-{row.d}-{row.l}</td>
-                    <td className="col-pts">{row.pts}</td>
-                    <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      ) : (
+        <>
+          <div className="controls-bar">
+            <ProgramSelector
+              selected={[selectedProgram]}
+              onChange={handleProgramChange}
+              singleSelect
+            />
+            <div className="controls-divider" />
+            <div className="season-selector">
+              <span className="selector-label">Season</span>
+              <div className="season-buttons">
+                <span className="season-button active">2025–2026</span>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+
+          <div className="standings-filters">
+            <div className="standings-filter-group">
+              <label htmlFor="agegroup-select">Age Group</label>
+              <select
+                id="agegroup-select"
+                value={selectedAgeGroup}
+                onChange={e => { setSelectedAgeGroup(e.target.value); setSelectedRegion('') }}
+                className="standings-filter-select"
+              >
+                <option value="">Select an age group</option>
+                {ageGroups.map(ag => (
+                  <option key={ag.id} value={ag.name}>{ag.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="standings-filter-group">
+              <label htmlFor="region-select">Region</label>
+              <select
+                id="region-select"
+                value={selectedRegion}
+                onChange={e => setSelectedRegion(e.target.value)}
+                className="standings-filter-select"
+                disabled={regionOptions.length === 0}
+              >
+                <option value="">All regions</option>
+                {regionOptions.map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {!isFiltersComplete && !loading && (
+            <div className="no-results">
+              <p>Select an age group to view standings</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="standings-error">
+              <AlertCircle size={16} />
+              {error}
+            </div>
+          )}
+
+          {loading && (
+            <div className="standings-loading">
+              <div className="standings-spinner" />
+              <p>Loading standings…</p>
+            </div>
+          )}
+
+          {isFiltersComplete && !loading && allGroups.length === 0 && !error && (
+            <div className="no-results">
+              <p>No standings available yet</p>
+            </div>
+          )}
+
+          {displayedGroups.map(group => (
+            <div key={group.regionName} className="standings-group">
+              <h3 className="standings-region-heading">{group.regionName}</h3>
+              <div className="standings-table-wrapper">
+                <table className="standings-table">
+                  <thead>
+                    <tr>
+                      <th className="col-rank">#</th>
+                      <th className="col-team">Team</th>
+                      <th className="col-gp">GP</th>
+                      <th className="col-record">W-D-L</th>
+                      <th className="col-pts">Pts</th>
+                      <th className="col-ppm">PPM</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.standings.map((row, idx) => (
+                      <tr key={`${group.regionName}-${row.rank}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
+                        <td className="col-rank">{row.rank}</td>
+                        <td className="col-team">
+                          {row.logoUrl && (
+                            <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
+                          )}
+                          <span className="standings-team-name">{row.teamName}</span>
+                        </td>
+                        <td className="col-gp">{row.gp}</td>
+                        <td className="col-record">{row.w}-{row.d}-{row.l}</td>
+                        <td className="col-pts">{row.pts}</td>
+                        <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   )
 }
