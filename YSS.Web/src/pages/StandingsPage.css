@@ -289,16 +289,22 @@
   max-width: 190px;
   font-weight: 500;
   min-width: 0;
-  overflow-wrap: break-word;
-  word-break: break-word;
 }
 
 .match-home {
   justify-content: flex-end;
+  text-align: right;
 }
 
 .match-away {
   justify-content: flex-start;
+}
+
+.match-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .match-logo {

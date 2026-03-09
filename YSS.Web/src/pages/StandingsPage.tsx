@@ -344,12 +344,12 @@ function StandingsPage() {
                                           <span className="match-date">{date}</span>
                                           <span className="match-home">
                                             {m.homeTeam.logoUrl && <img src={m.homeTeam.logoUrl} alt="" className="match-logo" />}
-                                            {m.homeTeam.name}
+                                            <span className="match-name">{m.homeTeam.name}</span>
                                           </span>
                                           <span className="match-score">{m.score}</span>
                                           <span className="match-away">
                                             {m.awayTeam.logoUrl && <img src={m.awayTeam.logoUrl} alt="" className="match-logo" />}
-                                            {m.awayTeam.name}
+                                            <span className="match-name">{m.awayTeam.name}</span>
                                           </span>
                                         </li>
                                       )
