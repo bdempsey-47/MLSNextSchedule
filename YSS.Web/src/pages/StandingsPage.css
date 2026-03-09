@@ -199,6 +199,117 @@
   background: rgba(10, 22, 40, 0.03);
 }
 
+/* Clickable team rows */
+.standings-team-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.standings-team-row:hover {
+  background: rgba(10, 22, 40, 0.06) !important;
+}
+.standings-team-row.expanded {
+  background: rgba(10, 22, 40, 0.04) !important;
+}
+
+/* Chevron indicator */
+.standings-chevron {
+  font-size: 0.6rem;
+  color: var(--color-text-secondary);
+  margin-right: 4px;
+  display: inline-block;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.standings-chevron.open {
+  transform: rotate(90deg);
+}
+
+/* Expansion panel */
+.team-matches-expansion td {
+  padding: 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.team-matches-loading,
+.team-matches-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.standings-spinner.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.team-matches-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team-match-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.team-match-row:last-child {
+  border-bottom: none;
+}
+
+.match-date {
+  width: 48px;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.match-home,
+.match-away {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.match-away {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.match-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.match-score {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: center;
+}
+
 /* Column widths */
 .col-rank {
   width: 40px;

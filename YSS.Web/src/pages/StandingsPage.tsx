@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
-import { Program, AgeGroup, StandingsGroup } from '../types'
+import { Program, AgeGroup, StandingsGroup, Match } from '../types'
 import '../components/SeasonSelector.css'
 import './StandingsPage.css'
 
@@ -21,6 +21,10 @@ function StandingsPage() {
   const [ageGroupsLoading, setAgeGroupsLoading] = useState(true)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string>('')
+
+  const [expandedTeam, setExpandedTeam]             = useState<string | null>(null)
+  const [teamMatchesCache, setTeamMatchesCache]     = useState<Record<string, Match[]>>({})
+  const [teamMatchesLoading, setTeamMatchesLoading] = useState<string | null>(null)
 
   // Sync URL params
   useEffect(() => {
@@ -122,6 +126,47 @@ function StandingsPage() {
     setSelectedProgram(programs[0] || 'homegrown')
     setAllGroups([])
     setSelectedRegion('')
+    setExpandedTeam(null)
+    setTeamMatchesCache({})
+  }
+
+  const handleTeamClick = async (teamName: string) => {
+    if (expandedTeam === teamName) {
+      setExpandedTeam(null)
+      return
+    }
+    setExpandedTeam(teamName)
+    if (teamMatchesCache[teamName]) return // already fetched
+
+    try {
+      setTeamMatchesLoading(teamName)
+      const apiBase = import.meta.env.VITE_API_BASE_URL
+      const params = new URLSearchParams()
+      params.set('program', selectedProgram)
+      params.set('ageGroup', selectedAgeGroup)
+      params.set('team', teamName)
+      const res = await fetch(`${apiBase}/matches?${params.toString()}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data: any[] = await res.json()
+      const matches: Match[] = data.map((m: any) => ({
+        matchId:      m.matchId      ?? m.MatchId,
+        matchDateUtc: m.matchDateUtc ?? m.MatchDateUtc,
+        score:        m.score        ?? m.Score ?? null,
+        gender:       m.gender       ?? m.Gender ?? '',
+        homeTeam:  { id: m.homeTeam?.id ?? 0, name: m.homeTeam?.name ?? '', logoUrl: m.homeTeam?.logoUrl },
+        awayTeam:  { id: m.awayTeam?.id ?? 0, name: m.awayTeam?.name ?? '', logoUrl: m.awayTeam?.logoUrl },
+        venue:     { id: m.venue?.id ?? 0, name: m.venue?.name ?? '' },
+        ageGroup:  { id: m.ageGroup?.id ?? 0, name: m.ageGroup?.name ?? '' },
+        region:    { id: m.region?.id ?? 0, name: m.region?.name ?? '' },
+        competition: { id: m.competition?.id ?? 0, name: m.competition?.name ?? '' },
+      }))
+      setTeamMatchesCache(prev => ({ ...prev, [teamName]: matches }))
+    } catch (e) {
+      console.error('Failed to fetch team matches', e)
+      setTeamMatchesCache(prev => ({ ...prev, [teamName]: [] }))
+    } finally {
+      setTeamMatchesLoading(null)
+    }
   }
 
   // Region options come from the fetched data
@@ -164,7 +209,12 @@ function StandingsPage() {
               <select
                 id="agegroup-select"
                 value={selectedAgeGroup}
-                onChange={e => { setSelectedAgeGroup(e.target.value); setSelectedRegion('') }}
+                onChange={e => {
+                  setSelectedAgeGroup(e.target.value)
+                  setSelectedRegion('')
+                  setExpandedTeam(null)
+                  setTeamMatchesCache({})
+                }}
                 className="standings-filter-select"
               >
                 <option value="">Select an age group</option>
@@ -240,25 +290,68 @@ function StandingsPage() {
                   </thead>
                   <tbody>
                     {group.standings.map((row, idx) => (
-                      <tr key={`${group.regionName}-${row.rank}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
-                        <td className="col-rank">{row.rank}</td>
-                        <td className="col-team">
-                          {row.logoUrl && (
-                            <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
-                          )}
-                          <span className="standings-team-name">{row.teamName}</span>
-                        </td>
-                        <td className="col-gp">{row.gp}</td>
-                        <td className="col-record">{row.w}-{row.d}-{row.l}</td>
-                        <td className="col-goals">{row.gf}</td>
-                        <td className="col-goals">{row.ga}</td>
-                        <td className="col-goals">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
-                        <td className="col-pts">{row.pts}</td>
-                        <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
-                        <td className="col-wpm">{typeof row.wpm === 'number' ? row.wpm.toFixed(3) : row.wpm}</td>
-                        <td className="col-gdpm">{typeof row.gdpm === 'number' ? row.gdpm.toFixed(3) : row.gdpm}</td>
-                        <td className="col-gpm">{typeof row.gpm === 'number' ? row.gpm.toFixed(3) : row.gpm}</td>
-                      </tr>
+                      <React.Fragment key={`${group.regionName}-${row.rank}`}>
+                        <tr
+                          className={`${idx % 2 === 0 ? 'even' : 'odd'} standings-team-row${expandedTeam === row.teamName ? ' expanded' : ''}`}
+                          onClick={() => handleTeamClick(row.teamName)}
+                        >
+                          <td className="col-rank">{row.rank}</td>
+                          <td className="col-team">
+                            <span className={`standings-chevron${expandedTeam === row.teamName ? ' open' : ''}`}>▶</span>
+                            {row.logoUrl && (
+                              <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
+                            )}
+                            <span className="standings-team-name">{row.teamName}</span>
+                          </td>
+                          <td className="col-gp">{row.gp}</td>
+                          <td className="col-record">{row.w}-{row.d}-{row.l}</td>
+                          <td className="col-goals">{row.gf}</td>
+                          <td className="col-goals">{row.ga}</td>
+                          <td className="col-goals">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
+                          <td className="col-pts">{row.pts}</td>
+                          <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
+                          <td className="col-wpm">{typeof row.wpm === 'number' ? row.wpm.toFixed(3) : row.wpm}</td>
+                          <td className="col-gdpm">{typeof row.gdpm === 'number' ? row.gdpm.toFixed(3) : row.gdpm}</td>
+                          <td className="col-gpm">{typeof row.gpm === 'number' ? row.gpm.toFixed(3) : row.gpm}</td>
+                        </tr>
+
+                        {expandedTeam === row.teamName && (
+                          <tr className="team-matches-expansion">
+                            <td colSpan={12}>
+                              {teamMatchesLoading === row.teamName ? (
+                                <div className="team-matches-loading">
+                                  <div className="standings-spinner small" /> Loading matches…
+                                </div>
+                              ) : (teamMatchesCache[row.teamName] ?? []).length === 0 ? (
+                                <div className="team-matches-empty">No matches found</div>
+                              ) : (
+                                <ul className="team-matches-list">
+                                  {(teamMatchesCache[row.teamName] ?? [])
+                                    .filter(m => m.score && m.score !== 'TBD')
+                                    .sort((a, b) => new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime())
+                                    .map(m => {
+                                      const date = new Date(m.matchDateUtc).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                      return (
+                                        <li key={m.matchId} className="team-match-row">
+                                          <span className="match-date">{date}</span>
+                                          <span className="match-home">
+                                            {m.homeTeam.logoUrl && <img src={m.homeTeam.logoUrl} alt="" className="match-logo" />}
+                                            {m.homeTeam.name}
+                                          </span>
+                                          <span className="match-score">{m.score}</span>
+                                          <span className="match-away">
+                                            {m.awayTeam.logoUrl && <img src={m.awayTeam.logoUrl} alt="" className="match-logo" />}
+                                            {m.awayTeam.name}
+                                          </span>
+                                        </li>
+                                      )
+                                    })}
+                                </ul>
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>
