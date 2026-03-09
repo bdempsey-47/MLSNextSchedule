@@ -263,7 +263,7 @@
   justify-content: center;
   gap: 8px;
   font-size: 0.85rem;
-  padding: 4px 0;
+  padding: 4px 52px;
   border-bottom: 1px solid var(--color-border);
   position: relative;
 }
@@ -317,6 +317,7 @@
   flex-shrink: 0;
   min-width: 36px;
   text-align: center;
+  align-self: center;
 }
 
 @media (max-width: 400px) {

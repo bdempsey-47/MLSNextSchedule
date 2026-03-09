@@ -3,7 +3,16 @@
     "allow": [
       "Bash(gh run:*)",
       "WebFetch(domain:github.com)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(az storage:*)",
+      "Bash(az functionapp:*)",
+      "Bash(git:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
