@@ -130,21 +130,23 @@ function StandingsPage() {
     setTeamMatchesCache({})
   }
 
-  const handleTeamClick = async (teamName: string) => {
-    if (expandedTeam === teamName) {
+  const handleTeamClick = async (teamName: string, regionName: string) => {
+    const key = `${teamName}__${regionName}`
+    if (expandedTeam === key) {
       setExpandedTeam(null)
       return
     }
-    setExpandedTeam(teamName)
-    if (teamMatchesCache[teamName]) return // already fetched
+    setExpandedTeam(key)
+    if (teamMatchesCache[key]) return // already fetched
 
     try {
-      setTeamMatchesLoading(teamName)
+      setTeamMatchesLoading(key)
       const apiBase = import.meta.env.VITE_API_BASE_URL
       const params = new URLSearchParams()
       params.set('program', selectedProgram)
       params.set('ageGroup', selectedAgeGroup)
       params.set('team', teamName)
+      params.set('division', regionName)
       const res = await fetch(`${apiBase}/matches?${params.toString()}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: any[] = await res.json()
@@ -168,10 +170,10 @@ function StandingsPage() {
         region:      { id: m.Region?.Id      || m.region?.id      || 0, name: m.Region?.Name      || m.region?.name      || '' },
         competition: { id: m.Competition?.Id || m.competition?.id || 0, name: m.Competition?.Name || m.competition?.name || '' },
       }))
-      setTeamMatchesCache(prev => ({ ...prev, [teamName]: matches }))
+      setTeamMatchesCache(prev => ({ ...prev, [key]: matches }))
     } catch (e) {
       console.error('Failed to fetch team matches', e)
-      setTeamMatchesCache(prev => ({ ...prev, [teamName]: [] }))
+      setTeamMatchesCache(prev => ({ ...prev, [key]: [] }))
     } finally {
       setTeamMatchesLoading(null)
     }
@@ -297,15 +299,17 @@ function StandingsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {group.standings.map((row, idx) => (
+                    {group.standings.map((row, idx) => {
+                      const teamKey = `${row.teamName}__${group.regionName}`
+                      return (
                       <React.Fragment key={`${group.regionName}-${row.rank}`}>
                         <tr
-                          className={`${idx % 2 === 0 ? 'even' : 'odd'} standings-team-row${expandedTeam === row.teamName ? ' expanded' : ''}`}
-                          onClick={() => handleTeamClick(row.teamName)}
+                          className={`${idx % 2 === 0 ? 'even' : 'odd'} standings-team-row${expandedTeam === teamKey ? ' expanded' : ''}`}
+                          onClick={() => handleTeamClick(row.teamName, group.regionName)}
                         >
                           <td className="col-rank">{row.rank}</td>
                           <td className="col-team">
-                            <span className={`standings-chevron${expandedTeam === row.teamName ? ' open' : ''}`}>▶</span>
+                            <span className={`standings-chevron${expandedTeam === teamKey ? ' open' : ''}`}>▶</span>
                             {row.logoUrl && (
                               <img src={row.logoUrl} alt={row.teamName} className="standings-team-logo" />
                             )}
@@ -323,18 +327,18 @@ function StandingsPage() {
                           <td className="col-gpm">{typeof row.gpm === 'number' ? row.gpm.toFixed(3) : row.gpm}</td>
                         </tr>
 
-                        {expandedTeam === row.teamName && (
+                        {expandedTeam === teamKey && (
                           <tr className="team-matches-expansion">
                             <td colSpan={12}>
-                              {teamMatchesLoading === row.teamName ? (
+                              {teamMatchesLoading === teamKey ? (
                                 <div className="team-matches-loading">
                                   <div className="standings-spinner small" /> Loading matches…
                                 </div>
-                              ) : (teamMatchesCache[row.teamName] ?? []).length === 0 ? (
+                              ) : (teamMatchesCache[teamKey] ?? []).length === 0 ? (
                                 <div className="team-matches-empty">No matches found</div>
                               ) : (
                                 <ul className="team-matches-list">
-                                  {(teamMatchesCache[row.teamName] ?? [])
+                                  {(teamMatchesCache[teamKey] ?? [])
                                     .filter(m => m.score && m.score !== 'TBD')
                                     .sort((a, b) => new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime())
                                     .map(m => {
@@ -360,7 +364,8 @@ function StandingsPage() {
                           </tr>
                         )}
                       </React.Fragment>
-                    ))}
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
