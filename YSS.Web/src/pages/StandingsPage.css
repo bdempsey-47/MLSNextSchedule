@@ -306,10 +306,10 @@
 }
 
 .match-logo {
-  width: 20px;
+  width: auto;
+  max-width: 20px;
   height: 20px;
   object-fit: contain;
-  object-position: right center;
   flex-shrink: 0;
   align-self: flex-start;
   margin-top: 1px;

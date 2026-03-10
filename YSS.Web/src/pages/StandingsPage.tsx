@@ -343,8 +343,8 @@ function StandingsPage() {
                                         <li key={m.matchId} className="team-match-row">
                                           <span className="match-date">{date}</span>
                                           <span className="match-home">
-                                            {m.homeTeam.logoUrl && <img src={m.homeTeam.logoUrl} alt="" className="match-logo" />}
                                             <span className="match-name">{m.homeTeam.name.trim()}</span>
+                                            {m.homeTeam.logoUrl && <img src={m.homeTeam.logoUrl} alt="" className="match-logo" />}
                                           </span>
                                           <span className="match-score">{m.score}</span>
                                           <span className="match-away">
