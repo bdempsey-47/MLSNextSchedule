@@ -146,7 +146,6 @@ function StandingsPage() {
       params.set('program', selectedProgram)
       params.set('ageGroup', selectedAgeGroup)
       params.set('team', teamName)
-      params.set('division', regionName)
       const res = await fetch(`${apiBase}/matches?${params.toString()}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: any[] = await res.json()
