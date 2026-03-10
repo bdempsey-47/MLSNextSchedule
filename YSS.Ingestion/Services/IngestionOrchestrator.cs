@@ -48,11 +48,12 @@ public class IngestionOrchestrator
         string leagueName = "MLS Next",
         string? startDate = null,
         string? endDate = null,
-        List<string>? ageGroups = null)
+        List<string>? ageGroups = null,
+        int startPage = 1)
     {
         var startTime = DateTime.UtcNow;
         var totalMatches = 0;
-        var pageNumber = 1;
+        var pageNumber = startPage;
         var seenMatchIds = new HashSet<string>();
         var noDataResponseCount = 0;
 

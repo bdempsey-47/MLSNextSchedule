@@ -199,7 +199,7 @@ static async Task RunFestIngestion(string[] args, IConfiguration config)
 
     try
     {
-        await orchestrator.RunAsync(CancellationToken.None, maxMatches: null, "MLS Next");
+        await orchestrator.RunAsync(CancellationToken.None, maxMatches: null, "MLS Next", startPage: 0);
         Console.WriteLine("✅ FEST ingestion complete.");
     }
     catch (Exception ex)

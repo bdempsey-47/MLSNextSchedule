@@ -338,7 +338,9 @@ function StandingsPage() {
                               ) : (
                                 <ul className="team-matches-list">
                                   {(teamMatchesCache[teamKey] ?? [])
-                                    .filter(m => m.score && m.score !== 'TBD' && m.region.name === group.regionName && (m.competition.name.includes('League') || m.competition.name.includes('FEST')))
+                                    .filter(m => m.score && m.score !== 'TBD'
+                                      && m.competition.name !== 'MLS NEXT Flex (Regular Season)'
+                                      && (m.region.name === group.regionName || m.region.name === 'FEST'))
                                     .sort((a, b) => new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime())
                                     .map(m => {
                                       const date = new Date(m.matchDateUtc).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
