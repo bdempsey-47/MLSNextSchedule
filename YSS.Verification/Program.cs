@@ -18,6 +18,13 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+// Check for --fest mode
+if (args.Length > 0 && args[0] == "--fest")
+{
+    await RunFestIngestion(args, config);
+    return;
+}
+
 // If an access token is provided as a CLI argument, set it as an environment variable
 if (args.Length > 0)
 {
@@ -114,3 +121,93 @@ Console.WriteLine("\n=== All ingestion runs complete ===");
     await sp.DisposeAsync();
 }
 
+// --- FEST ingestion helper ---
+static async Task RunFestIngestion(string[] args, IConfiguration config)
+{
+    Console.WriteLine("=== FEST Ingestion Mode ===");
+
+    // Collect args or prompt interactively
+    string festUrl = args.Length > 1 ? args[1] : string.Empty;
+    string sessionToken = args.Length > 2 ? args[2] : string.Empty;
+    string? azureToken = args.Length > 3 ? args[3] : null;
+
+    if (string.IsNullOrEmpty(festUrl))
+    {
+        Console.Write("Paste the FEST get_matches URL (open_page=0): ");
+        festUrl = Console.ReadLine()?.Trim() ?? string.Empty;
+    }
+    if (string.IsNullOrEmpty(sessionToken))
+    {
+        Console.Write("Paste the Modular11 session token (_token value): ");
+        sessionToken = Console.ReadLine()?.Trim() ?? string.Empty;
+    }
+    if (string.IsNullOrEmpty(azureToken))
+    {
+        azureToken = Environment.GetEnvironmentVariable("AZURE_SQL_ACCESS_TOKEN");
+    }
+
+    if (string.IsNullOrEmpty(festUrl) || string.IsNullOrEmpty(sessionToken))
+    {
+        Console.WriteLine("ERROR: FEST URL and session token are required.");
+        return;
+    }
+
+    // Extract tournament ID from URL (e.g. "tournament=75")
+    var tournamentMatch = System.Text.RegularExpressions.Regex.Match(festUrl, @"[?&]tournament=(\d+)");
+    var tournamentId = tournamentMatch.Success ? tournamentMatch.Groups[1].Value : "0";
+    Console.WriteLine($"Detected tournament ID: {tournamentId}");
+
+    var connectionString = config.GetConnectionString("DefaultConnection");
+
+    Action<DbContextOptionsBuilder> configureDb = options =>
+    {
+        if (!string.IsNullOrEmpty(azureToken))
+        {
+            var connection = new SqlConnection(
+                "Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            connection.AccessToken = azureToken;
+            options.UseSqlServer(connection);
+        }
+        else
+        {
+            options.UseSqlServer(connectionString);
+        }
+    };
+
+    var settings = new Modular11Settings
+    {
+        TournamentId = tournamentId,
+        Gender = "1",
+        Status = "scheduled",
+        MatchType = "1",
+        AgeGroups = new List<string>(),
+        SessionToken = sessionToken,
+        BaseUrlOverride = festUrl,
+    };
+
+    var services = new ServiceCollection();
+    services.AddHttpClient<Modular11Client>();
+    services.AddScoped<ScheduleParser>();
+    services.AddScoped<MatchUpsertService>();
+    services.AddScoped<IngestionOrchestrator>();
+    services.AddDbContext<AppDbContext>(configureDb);
+    services.AddSingleton(settings);
+    services.AddLogging(b => { b.AddConsole(); b.SetMinimumLevel(LogLevel.Information); });
+
+    var sp = services.BuildServiceProvider();
+    var orchestrator = sp.GetRequiredService<IngestionOrchestrator>();
+
+    try
+    {
+        await orchestrator.RunAsync(CancellationToken.None, maxMatches: null, "MLS Next");
+        Console.WriteLine("✅ FEST ingestion complete.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ FEST ingestion failed: {ex.Message}");
+    }
+    finally
+    {
+        await sp.DisposeAsync();
+    }
+}

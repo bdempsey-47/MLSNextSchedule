@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace YSS.Ingestion.Services;
@@ -29,6 +30,8 @@ public class Modular11Client
 
     /// <summary>
     /// Fetch a page of match data from Modular11.
+    /// In FEST mode (when SessionToken + BaseUrlOverride are set), uses the authenticated
+    /// events endpoint with the session token injected as headers.
     /// </summary>
     /// <param name="pageNumber">The 1-indexed page number</param>
     /// <param name="ct">Cancellation token</param>
@@ -43,14 +46,32 @@ public class Modular11Client
         _logger.LogDebug("Throttling request for page {PageNumber} by {ThrottleMs}ms", pageNumber, throttleMs);
         await Task.Delay(throttleMs, ct);
 
-        var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride, ageGroupsOverride);
-        var url = $"https://www.modular11.com/public_schedule/league/get_matches?{queryParams}";
+        string url;
+        HttpRequestMessage request;
 
-        _logger.LogInformation("Fetching Modular11 page {PageNumber}: {Url}", pageNumber, url);
+        if (!string.IsNullOrEmpty(_settings.SessionToken) && !string.IsNullOrEmpty(_settings.BaseUrlOverride))
+        {
+            // FEST mode: replace open_page param in the DevTools URL and inject auth headers
+            url = Regex.Replace(_settings.BaseUrlOverride, @"open_page=\d+", $"open_page={pageNumber}");
+            _logger.LogInformation("Fetching FEST page {PageNumber}: {Url}", pageNumber, url);
+
+            request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("_token", _settings.SessionToken);
+            request.Headers.Add("x-csrf-token", _settings.SessionToken);
+            request.Headers.Add("x-request-type", "ajax");
+            request.Headers.Add("x-requested-with", "XMLHttpRequest");
+        }
+        else
+        {
+            var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride, ageGroupsOverride);
+            url = $"https://www.modular11.com/public_schedule/league/get_matches?{queryParams}";
+            _logger.LogInformation("Fetching Modular11 page {PageNumber}: {Url}", pageNumber, url);
+            request = new HttpRequestMessage(HttpMethod.Get, url);
+        }
 
         try
         {
-            var response = await _httpClient.GetAsync(url, ct);
+            var response = await _httpClient.SendAsync(request, ct);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync(ct);
@@ -110,4 +131,8 @@ public class Modular11Settings
     public required List<string> AgeGroups { get; set; }
     public string? StartDate { get; set; }
     public string? EndDate { get; set; }
+
+    // FEST mode: authenticated event endpoint
+    public string? SessionToken { get; set; }       // Modular11 _token / x-csrf-token value
+    public string? BaseUrlOverride { get; set; }    // Full page-0 URL from DevTools (open_page=0)
 }
