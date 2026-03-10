@@ -77,23 +77,6 @@ public class IngestionOrchestrator
                 // Parse matches from HTML
                 var parsedMatches = _parser.ParseMatches(htmlContent, _client.TournamentId);
 
-                if (parsedMatches.Count == 0)
-                {
-                    noDataResponseCount++;
-                    _logger.LogWarning("Page {PageNumber} returned no matches (empty count: {EmptyCount})", pageNumber, noDataResponseCount);
-                    
-                    // Stop after 3 consecutive empty pages
-                    if (noDataResponseCount >= 3)
-                    {
-                        _logger.LogInformation("Stopping after {Count} consecutive empty pages", noDataResponseCount);
-                        break;
-                    }
-                }
-                else
-                {
-                    noDataResponseCount = 0; // Reset counter
-                }
-
                 // In-memory deduplication
                 var newMatches = new List<Models.ParsedMatch>();
                 foreach (var match in parsedMatches)
@@ -107,6 +90,24 @@ public class IngestionOrchestrator
                     {
                         _logger.LogDebug("Skipping duplicate match ID: {MatchId}", match.MatchId);
                     }
+                }
+
+                // Stop after 3 consecutive pages with no new matches (catches both empty
+                // responses and APIs that loop/repeat pages after the last real page)
+                if (newMatches.Count == 0)
+                {
+                    noDataResponseCount++;
+                    _logger.LogWarning("Page {PageNumber} returned no new matches (consecutive: {EmptyCount})", pageNumber, noDataResponseCount);
+
+                    if (noDataResponseCount >= 3)
+                    {
+                        _logger.LogInformation("Stopping after {Count} consecutive pages with no new matches", noDataResponseCount);
+                        break;
+                    }
+                }
+                else
+                {
+                    noDataResponseCount = 0;
                 }
 
                 // Trim to respect MaxMatches cap
