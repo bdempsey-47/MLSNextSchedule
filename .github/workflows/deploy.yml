@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: '10.0.100'
   AZURE_FUNCTIONAPP_NAME: 'yss-func-prod'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './YSS.Functions'
 
