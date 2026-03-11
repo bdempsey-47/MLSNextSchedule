@@ -1,6 +1,6 @@
 # Youth Soccer Schedules (YSS) — Project Status
 
-**Last Updated:** March 5, 2026
+**Last Updated:** March 10, 2026
 **Status:** Phase 5 In Progress — Full data ingestion complete, automated weekly ingestion active
 
 ---
@@ -816,6 +816,54 @@ Age group → UID_age: U13=21, U14=22, U15=33, U16=14, U17=15, U19=26
    - Schedules → team name click → same drill-in
    - Single destination: `/Schedules?program=...&ageGroup=...&team=...` already works; just need to wire up the links
 3. **Landing Page Polish** — headline stats (top momentum team, top ELO team) to drive interest in Analytics tab
+
+---
+
+## 📝 Session 15 Summary (March 10, 2026)
+
+### Completed This Session
+
+1. **Fixed FEST Match Ingestion Pipeline**
+   - Tournament ID 75 (FEST / Pro Player Pathway) was not in the `LookupOrCreateDivisionAsync` switch statement → all FEST matches silently failed
+   - Added `75 => "Homegrown"` mapping in `MatchUpsertService.cs`
+   - Added "Age Group" and "Field" fallbacks in `ScheduleParser.cs` for FEST HTML format differences
+   - Fixed `ingest-fest-azure.ps1` working directory issue (Push-Location)
+
+2. **Added FEST to API Query Filters**
+   - `GetMatches.cs`: homegrown program filter now includes tournament IDs {12, 75}
+   - `GetAnalytics.cs`: refactored from single `tournamentId` to `int[]` with `.Contains()` filter, includes 75 for homegrown
+
+3. **Fixed Duplicate Division Error**
+   - FEST tournament 75 maps to "Homegrown" division name, but DB lookup queried by `TournamentId=75` only — not found
+   - Then tried to INSERT a new "Homegrown" division → violated unique index `IX_Divisions_LeagueId_Name`
+   - Fix: added fallback lookup by division name (`d.Name == divisionName`) so tournament 75 reuses the existing Homegrown division row
+
+4. **Successful FEST Data Ingestion**
+   - Ran `ingest-fest-azure.ps1` — FEST matches now in Azure SQL
+   - Matches stored with: division="Homegrown", region="FEST", competition="Pro Player Pathway"
+
+### Git Commits This Session
+- `6fd7479` — fix: Enable FEST match ingestion and include FEST in API queries
+- `20eea38` — fix: Resolve duplicate division error for FEST ingestion
+
+### Testing Status
+- ✅ Build: 0 errors
+- ✅ Tests: 37/37 passing
+- ✅ FEST ingestion: successful
+
+### Files Changed
+| File | Change |
+|---|---|
+| `YSS.Ingestion/Services/MatchUpsertService.cs` | Added tournament 75 mapping + division name fallback lookup |
+| `YSS.Ingestion/Services/ScheduleParser.cs` | Added "Age Group" and "Field" fallbacks |
+| `YSS.Functions/Triggers/GetMatches.cs` | Added tournament 75 to homegrown filter |
+| `YSS.Functions/Triggers/GetAnalytics.cs` | Refactored to tournamentIds array, includes 75 |
+| `ingest-fest-azure.ps1` | Push-Location fix for working directory |
+
+### Next Session Priorities
+1. **ELO Power Rankings** — cross-region leaderboard
+2. **Cross-page Linking / Team Drill-In**
+3. **Landing Page Polish**
 
 ---
 
