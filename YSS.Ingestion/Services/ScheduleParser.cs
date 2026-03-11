@@ -133,14 +133,14 @@ public class ScheduleParser
 
         var homeTeam = GetValue(matchData, "Home Team");
         var awayTeam = GetValue(matchData, "Away Team");
-        var ageGroup = GetValue(matchData, "Age");
+        var ageGroup = GetValue(matchData, "Age") ?? GetValue(matchData, "Age Group");
         var gender = GetValue(matchData, "Gender");
         var competition = GetValue(matchData, "Competition");
         var division = GetValue(matchData, "Division");
         
         // Look for venue using labeled fields, then fall back to the mobile summary row
         // (Academy tournament: "Location Name" field exists but is empty; venue is in summary row after <br>)
-        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name") ?? ExtractVenueFromSummaryRow(block);
+        var venue = GetValue(matchData, "Venue") ?? GetValue(matchData, "Location Name") ?? GetValue(matchData, "Field") ?? ExtractVenueFromSummaryRow(block);
 
 
         // Validate required fields

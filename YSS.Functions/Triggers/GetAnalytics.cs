@@ -35,14 +35,14 @@ public class GetAnalytics
             if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(ageGroup))
                 return await BadRequest(req, "Missing required parameters: program, ageGroup");
 
-            var tournamentId = program.ToLower() switch
+            var tournamentIds = program.ToLower() switch
             {
-                "homegrown" => 12,
-                "academy"   => 35,
-                _           => 0
+                "homegrown" => new[] { 12, 75 },  // 75 = FEST (Pro Player Pathway)
+                "academy"   => new[] { 35 },
+                _           => Array.Empty<int>()
             };
 
-            if (tournamentId == 0)
+            if (tournamentIds.Length == 0)
                 return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
 
             // Load completed matches for this program + age group
@@ -53,7 +53,7 @@ public class GetAnalytics
                 .Include(m => m.Region)
                     .ThenInclude(r => r.Division)
                 .Where(m =>
-                    m.Region.Division.TournamentId == tournamentId &&
+                    tournamentIds.Contains(m.Region.Division.TournamentId) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD");
 

@@ -200,11 +200,12 @@ public class MatchUpsertService
         if (_divisionCache.TryGetValue(tournamentId, out var cached))
             return cached;
 
-        // Map tournament ID to division name: 12=Homegrown, 35=Academy
+        // Map tournament ID to division name: 12=Homegrown, 35=Academy, 75=FEST (Homegrown)
         var divisionName = tournamentId switch
         {
             12 => "Homegrown",
             35 => "Academy",
+            75 => "Homegrown",    // FEST (Pro Player Pathway)
             _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };
 

@@ -35,4 +35,6 @@ if (-not $AzureToken) {
 }
 
 Write-Host "Starting FEST ingestion..." -ForegroundColor Cyan
-dotnet run --project YSS.Verification -- --fest $FestUrl $SessionToken $AzureToken
+Push-Location YSS.Verification
+dotnet run -- --fest $FestUrl $SessionToken $AzureToken
+Pop-Location

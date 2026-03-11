@@ -66,7 +66,10 @@ public class GetMatches
                 foreach (var program in programs)
                 {
                     if (program.ToLower() == "homegrown")
+                    {
                         tournamentIds.Add(12);
+                        tournamentIds.Add(75);  // FEST (Pro Player Pathway)
+                    }
                     else if (program.ToLower() == "academy")
                         tournamentIds.Add(35);
                 }
