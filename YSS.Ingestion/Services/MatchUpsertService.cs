@@ -209,8 +209,12 @@ public class MatchUpsertService
             _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };
 
+        // First try exact tournamentId, then fall back to division name (e.g. 75 shares "Homegrown" with 12)
         var division = await _dbContext.Divisions
             .Where(d => d.TournamentId == tournamentId)
+            .FirstOrDefaultAsync(ct)
+            ?? await _dbContext.Divisions
+            .Where(d => d.Name == divisionName)
             .FirstOrDefaultAsync(ct);
 
         if (division == null)
