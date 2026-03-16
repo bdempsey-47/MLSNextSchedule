@@ -298,9 +298,13 @@ function StandingsPage() {
                       </th>
                       <th className="col-pts">Pts</th>
                       <th className="col-ppm" title="Points Per Match">PPM</th>
-                      <th className="col-wpm" title="Wins Per Match">WPM</th>
-                      <th className="col-gdpm" title="Goal Differential Per Match">GDPM</th>
-                      <th className="col-gpm" title="Goals For Per Match">GPM</th>
+                      {selectedProgram !== 'homegrown' && (
+                        <>
+                          <th className="col-wpm" title="Wins Per Match">WPM</th>
+                          <th className="col-gdpm" title="Goal Differential Per Match">GDPM</th>
+                          <th className="col-gpm" title="Goals For Per Match">GPM</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -335,14 +339,18 @@ function StandingsPage() {
                           </td>
                           <td className="col-pts">{row.pts}</td>
                           <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
-                          <td className="col-wpm">{typeof row.wpm === 'number' ? row.wpm.toFixed(3) : row.wpm}</td>
-                          <td className="col-gdpm">{typeof row.gdpm === 'number' ? row.gdpm.toFixed(3) : row.gdpm}</td>
-                          <td className="col-gpm">{typeof row.gpm === 'number' ? row.gpm.toFixed(3) : row.gpm}</td>
+                          {selectedProgram !== 'homegrown' && (
+                            <>
+                              <td className="col-wpm">{typeof row.wpm === 'number' ? row.wpm.toFixed(3) : row.wpm}</td>
+                              <td className="col-gdpm">{typeof row.gdpm === 'number' ? row.gdpm.toFixed(3) : row.gdpm}</td>
+                              <td className="col-gpm">{typeof row.gpm === 'number' ? row.gpm.toFixed(3) : row.gpm}</td>
+                            </>
+                          )}
                         </tr>
 
                         {expandedTeam === teamKey && (
                           <tr className="team-matches-expansion">
-                            <td colSpan={12}>
+                            <td colSpan={selectedProgram === 'homegrown' ? 9 : 12}>
                               {teamMatchesLoading === teamKey ? (
                                 <div className="team-matches-loading">
                                   <div className="standings-spinner small" /> Loading matches…
