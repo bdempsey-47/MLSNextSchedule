@@ -24,17 +24,31 @@ public class ScheduledIngestion
         _logger = loggerFactory.CreateLogger<ScheduledIngestion>();
     }
 
+    // Nightly: 2 AM UTC (10 PM EDT) every day
     [Function("DailyIngestion")]
     public async Task Run([TimerTrigger("0 0 2 * * *")] TimerInfo myTimer, CancellationToken ct)
+        => await RunIngestion("Daily", myTimer, ct);
+
+    // Weekend midday: 4 PM UTC (12 PM EDT) Saturday + Sunday
+    [Function("WeekendIngestion_Noon")]
+    public async Task RunWeekendNoon([TimerTrigger("0 0 16 * * 0,6")] TimerInfo myTimer, CancellationToken ct)
+        => await RunIngestion("Weekend-Noon", myTimer, ct);
+
+    // Weekend evening: 9 PM UTC (5 PM EDT) Saturday + Sunday
+    [Function("WeekendIngestion_Evening")]
+    public async Task RunWeekendEvening([TimerTrigger("0 0 21 * * 0,6")] TimerInfo myTimer, CancellationToken ct)
+        => await RunIngestion("Weekend-Evening", myTimer, ct);
+
+    private async Task RunIngestion(string label, TimerInfo myTimer, CancellationToken ct)
     {
         var now = DateTime.UtcNow;
         var start = now.AddDays(-14).ToString("yyyy-MM-dd 00:00:01");
         var end   = now.AddDays(14).ToString("yyyy-MM-dd 23:59:59");
 
-        _logger.LogInformation("Daily ingestion started at {Now:O} — window: {Start} to {End}", now, start, end);
+        _logger.LogInformation("{Label} ingestion started at {Now:O} — window: {Start} to {End}", label, now, start, end);
 
         if (myTimer.IsPastDue)
-            _logger.LogWarning("Daily ingestion is running behind schedule");
+            _logger.LogWarning("{Label} ingestion is running behind schedule", label);
 
         var activeSeasons = _seasons.Where(s => s.IsActive(now)).ToList();
         if (activeSeasons.Count == 0)
@@ -45,7 +59,8 @@ public class ScheduledIngestion
 
         foreach (var season in activeSeasons)
         {
-            _logger.LogInformation("Processing season: {Label} (tournament {TournamentId})", season.Label, season.TournamentId);
+            _logger.LogInformation("Processing season: {Label} (tournament {TournamentId}) [{RunLabel}]",
+                season.Label, season.TournamentId, label);
             _settings.TournamentId = season.TournamentId;
 
             try
@@ -54,11 +69,11 @@ public class ScheduledIngestion
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during daily ingestion for season {Label}", season.Label);
+                _logger.LogError(ex, "Error during {Label} ingestion for season {SeasonLabel}", label, season.Label);
                 throw;
             }
         }
 
-        _logger.LogInformation("Daily ingestion complete");
+        _logger.LogInformation("{Label} ingestion complete", label);
     }
 }
