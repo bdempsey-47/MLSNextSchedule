@@ -287,9 +287,15 @@ function StandingsPage() {
                       <th className="col-team">Team</th>
                       <th className="col-gp">GP</th>
                       <th className="col-record">W-D-L</th>
-                      <th className="col-goals" title="Goals For">GF</th>
-                      <th className="col-goals" title="Goals Against">GA</th>
-                      <th className="col-goals" title="Goal Differential">GD</th>
+                      <th className="col-goals" title={selectedProgram === 'homegrown' ? "Goals For per Match" : "Goals For"}>
+                        {selectedProgram === 'homegrown' ? 'GF/M' : 'GF'}
+                      </th>
+                      <th className="col-goals" title={selectedProgram === 'homegrown' ? "Goals Against per Match" : "Goals Against"}>
+                        {selectedProgram === 'homegrown' ? 'GA/M' : 'GA'}
+                      </th>
+                      <th className="col-goals" title={selectedProgram === 'homegrown' ? "Goal Diff per Match" : "Goal Differential"}>
+                        {selectedProgram === 'homegrown' ? 'GD/M' : 'GD'}
+                      </th>
                       <th className="col-pts">Pts</th>
                       <th className="col-ppm" title="Points Per Match">PPM</th>
                       <th className="col-wpm" title="Wins Per Match">WPM</th>
@@ -316,9 +322,17 @@ function StandingsPage() {
                           </td>
                           <td className="col-gp">{row.gp}</td>
                           <td className="col-record">{row.w}-{row.d}-{row.l}</td>
-                          <td className="col-goals">{row.gf}</td>
-                          <td className="col-goals">{row.ga}</td>
-                          <td className="col-goals">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
+                          <td className="col-goals">
+                            {selectedProgram === 'homegrown' ? row.gf.toFixed(2) : row.gf}
+                          </td>
+                          <td className="col-goals">
+                            {selectedProgram === 'homegrown' ? row.ga.toFixed(2) : row.ga}
+                          </td>
+                          <td className="col-goals">
+                            {selectedProgram === 'homegrown'
+                              ? (row.gd > 0 ? `+${row.gd.toFixed(2)}` : row.gd.toFixed(2))
+                              : (row.gd > 0 ? `+${row.gd}` : row.gd)}
+                          </td>
                           <td className="col-pts">{row.pts}</td>
                           <td className="col-ppm">{typeof row.ppm === 'number' ? row.ppm.toFixed(3) : row.ppm}</td>
                           <td className="col-wpm">{typeof row.wpm === 'number' ? row.wpm.toFixed(3) : row.wpm}</td>

@@ -192,12 +192,14 @@ public class GetStandings
             var w  = desktopCells.Count > 1 && int.TryParse(desktopCells[1].TextContent?.Trim(), out var w_)  ? w_  : 0;
             var l  = desktopCells.Count > 2 && int.TryParse(desktopCells[2].TextContent?.Trim(), out var l_)  ? l_  : 0;
             var d  = desktopCells.Count > 3 && int.TryParse(desktopCells[3].TextContent?.Trim(), out var d_)  ? d_  : 0;
-            var gf = desktopCells.Count > 4 && int.TryParse(desktopCells[4].TextContent?.Trim(), out var gf_) ? gf_ : 0;
-            var ga = desktopCells.Count > 5 && int.TryParse(desktopCells[5].TextContent?.Trim(), out var ga_) ? ga_ : 0;
+            var gf = desktopCells.Count > 4 && decimal.TryParse(desktopCells[4].TextContent?.Trim(),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var gf_) ? gf_ : 0m;
+            var ga = desktopCells.Count > 5 && decimal.TryParse(desktopCells[5].TextContent?.Trim(),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var ga_) ? ga_ : 0m;
 
-            var wpm  = gp > 0 ? Math.Round((decimal)w        / gp, 3) : 0m;
-            var gdpm = gp > 0 ? Math.Round((decimal)(gf - ga) / gp, 3) : 0m;
-            var gpm  = gp > 0 ? Math.Round((decimal)gf        / gp, 3) : 0m;
+            var wpm  = gp > 0 ? Math.Round((decimal)w  / gp, 3) : 0m;
+            var gdpm = gp > 0 ? Math.Round((gf - ga) / gp, 3) : 0m;
+            var gpm  = gp > 0 ? Math.Round(gf        / gp, 3) : 0m;
 
             return new StandingRowDto
             {
@@ -240,9 +242,9 @@ public class GetStandings
         public int W { get; set; }
         public int D { get; set; }
         public int L { get; set; }
-        public int GF { get; set; }
-        public int GA { get; set; }
-        public int GD { get; set; }
+        public decimal GF { get; set; }
+        public decimal GA { get; set; }
+        public decimal GD { get; set; }
         public int Pts { get; set; }
         public decimal PPM { get; set; }
         public decimal WPM { get; set; }
