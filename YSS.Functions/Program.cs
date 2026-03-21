@@ -65,6 +65,7 @@ var host = new HostBuilder()
         services.AddScoped<TriggerIngestion>();
         services.AddScoped<ScheduledIngestion>();
         services.AddScoped<WeeklyIngestion>();
+        services.AddScoped<GetPowerRankings>();
 
         // Add HTTP client factory
         services.AddHttpClient<Modular11Client>();

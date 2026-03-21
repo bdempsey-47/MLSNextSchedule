@@ -132,6 +132,36 @@
   font-weight: 500;
 }
 
+/* Tabs */
+.analytics-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.analytics-tabs button {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.analytics-tabs button:hover {
+  color: var(--color-text);
+}
+
+.analytics-tabs button.active {
+  color: var(--color-primary, #0a1628);
+  border-bottom-color: var(--color-primary, #0a1628);
+}
+
 /* Analytics table */
 .analytics-table-wrapper {
   background: var(--color-surface);
@@ -239,6 +269,30 @@
 .analytics-table .col-form {
   min-width: 140px;
 }
+
+.analytics-table .col-elo {
+  width: 100px;
+  text-align: center;
+}
+
+.analytics-table .col-delta {
+  width: 90px;
+  text-align: center;
+}
+
+.elo-rating {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.elo-delta {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.elo-delta.positive { color: #16a34a; }
+.elo-delta.negative { color: #dc2626; }
+.elo-delta.neutral  { color: var(--color-text-secondary); }
 
 .limited-data-note {
   display: block;

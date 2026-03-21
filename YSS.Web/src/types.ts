@@ -79,6 +79,17 @@ export interface StandingsGroup {
   standings: StandingRow[]
 }
 
+export interface PowerRanking {
+  rank: number
+  teamName: string
+  logoUrl?: string
+  regionName: string
+  regionNames: string[]
+  eloRating: number
+  eloDelta: number
+  gp: number
+}
+
 export interface TeamAnalytics {
   teamName: string
   logoUrl?: string

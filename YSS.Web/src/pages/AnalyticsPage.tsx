@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
-import { Program, AgeGroup, TeamAnalytics } from '../types'
+import { Program, AgeGroup, TeamAnalytics, PowerRanking } from '../types'
 import '../components/SeasonSelector.css'
 import './AnalyticsPage.css'
+
+type AnalyticsTab = 'momentum' | 'powerrankings'
 
 function AnalyticsPage() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -15,9 +17,14 @@ function AnalyticsPage() {
 
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>(urlParams.get('ageGroup') || '')
   const [selectedRegion, setSelectedRegion]     = useState<string>(urlParams.get('region') || '')
+  const [activeTab, setActiveTab] = useState<AnalyticsTab>(() => {
+    const t = urlParams.get('tab')
+    return t === 'powerrankings' ? 'powerrankings' : 'momentum'
+  })
 
   const [ageGroups, setAgeGroups]   = useState<AgeGroup[]>([])
   const [allTeams, setAllTeams]     = useState<TeamAnalytics[]>([])
+  const [powerRankings, setPowerRankings] = useState<PowerRanking[]>([])
   const [loading, setLoading]       = useState(false)
   const [error, setError]           = useState<string>('')
 
@@ -27,8 +34,9 @@ function AnalyticsPage() {
     params.set('program', selectedProgram)
     if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
     if (selectedRegion)   params.set('region', selectedRegion)
+    if (activeTab !== 'momentum') params.set('tab', activeTab)
     history.replaceState(null, '', `?${params.toString()}`)
-  }, [selectedProgram, selectedAgeGroup, selectedRegion])
+  }, [selectedProgram, selectedAgeGroup, selectedRegion, activeTab])
 
   // Fetch age groups on mount
   useEffect(() => {
@@ -103,19 +111,78 @@ function AnalyticsPage() {
     fetchAnalytics()
   }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
+  // Fetch power rankings when tab is powerrankings and program + ageGroup selected
+  useEffect(() => {
+    if (activeTab !== 'powerrankings' || !selectedAgeGroup) {
+      setPowerRankings([])
+      return
+    }
+
+    const fetchPowerRankings = async () => {
+      try {
+        setLoading(true)
+        setError('')
+
+        const apiBase = import.meta.env.VITE_API_BASE_URL
+        if (!apiBase) {
+          setError('API not configured')
+          setLoading(false)
+          return
+        }
+
+        const params = new URLSearchParams()
+        params.set('program', selectedProgram)
+        params.set('ageGroup', selectedAgeGroup)
+
+        const response = await fetch(`${apiBase}/powerrankings?${params.toString()}`)
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+        const data: any[] = await response.json()
+        const rankings: PowerRanking[] = data.map((t: any) => ({
+          rank:        t.Rank        ?? t.rank        ?? 0,
+          teamName:    t.TeamName    ?? t.teamName    ?? '',
+          logoUrl:     t.LogoUrl     ?? t.logoUrl,
+          regionName:  t.RegionName  ?? t.regionName  ?? '',
+          regionNames: t.RegionNames ?? t.regionNames ?? [],
+          eloRating:   t.EloRating   ?? t.eloRating   ?? 0,
+          eloDelta:    t.EloDelta    ?? t.eloDelta    ?? 0,
+          gp:          t.GP          ?? t.gp          ?? 0,
+        }))
+
+        setPowerRankings(rankings)
+      } catch (err) {
+        console.error('Error fetching power rankings:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load power rankings')
+        setPowerRankings([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPowerRankings()
+  }, [activeTab, selectedProgram, selectedAgeGroup])
+
   const handleProgramChange = (programs: Program[]) => {
     setSelectedProgram(programs[0] || 'homegrown')
     setAllTeams([])
+    setPowerRankings([])
     setSelectedRegion('')
   }
 
-  // Region options derived from all teams fetched (before region filter applied client-side)
-  const regionOptions = [...new Set(allTeams.flatMap(t => t.regionNames))].sort((a, b) => a.localeCompare(b))
+  // Region options derived from current tab's data
+  const regionSource = activeTab === 'powerrankings' ? powerRankings : allTeams
+  const regionOptions = [...new Set(regionSource.flatMap(t => t.regionNames))].sort((a, b) => a.localeCompare(b))
 
   // Apply region filter client-side on the current data
   const displayedTeams = selectedRegion
     ? allTeams.filter(t => t.regionNames.includes(selectedRegion))
     : allTeams
+
+  const displayedRankings = selectedRegion
+    ? powerRankings
+        .filter(t => t.regionNames.includes(selectedRegion))
+        .map((t, idx) => ({ ...t, rank: idx + 1 }))
+    : powerRankings
 
   const isFiltersComplete = selectedProgram && selectedAgeGroup
 
@@ -170,6 +237,23 @@ function AnalyticsPage() {
 
       </div>
 
+      {isFiltersComplete && (
+        <div className="analytics-tabs">
+          <button
+            className={activeTab === 'momentum' ? 'active' : ''}
+            onClick={() => setActiveTab('momentum')}
+          >
+            Momentum
+          </button>
+          <button
+            className={activeTab === 'powerrankings' ? 'active' : ''}
+            onClick={() => setActiveTab('powerrankings')}
+          >
+            Power Rankings
+          </button>
+        </div>
+      )}
+
       {!isFiltersComplete && !loading && (
         <div className="no-results">
           <p>Select an age group to view analytics</p>
@@ -186,17 +270,18 @@ function AnalyticsPage() {
       {loading && (
         <div className="analytics-loading">
           <div className="analytics-spinner" />
-          <p>Loading analytics…</p>
+          <p>Loading {activeTab === 'powerrankings' ? 'power rankings' : 'analytics'}…</p>
         </div>
       )}
 
-      {isFiltersComplete && !loading && allTeams.length === 0 && !error && (
+      {/* Momentum Tab */}
+      {activeTab === 'momentum' && isFiltersComplete && !loading && allTeams.length === 0 && !error && (
         <div className="no-results">
           <p>No analytics data available yet</p>
         </div>
       )}
 
-      {displayedTeams.length > 0 && (
+      {activeTab === 'momentum' && displayedTeams.length > 0 && (
         <div className="analytics-table-wrapper">
           <table className="analytics-table">
             <thead>
@@ -250,6 +335,60 @@ function AnalyticsPage() {
                     {team.gp < 5 && (
                       <span className="limited-data-note">⚠ {team.gp} match{team.gp !== 1 ? 'es' : ''}</span>
                     )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Power Rankings Tab */}
+      {activeTab === 'powerrankings' && isFiltersComplete && !loading && powerRankings.length === 0 && !error && (
+        <div className="no-results">
+          <p>No power rankings data available yet</p>
+        </div>
+      )}
+
+      {activeTab === 'powerrankings' && displayedRankings.length > 0 && (
+        <div className="analytics-table-wrapper">
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="col-rank">#</th>
+                <th className="col-team">Team</th>
+                <th className="col-region">Region</th>
+                <th className="col-gp">GP</th>
+                <th className="col-elo">ELO Rating</th>
+                <th className="col-delta">Δ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayedRankings.map((team, idx) => (
+                <tr key={`${team.teamName}-${idx}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
+                  <td className="col-rank">{team.rank}</td>
+                  <td className="col-team">
+                    <div className="team-cell-inner">
+                      {team.logoUrl && (
+                        <img src={team.logoUrl} alt={team.teamName} className="analytics-team-logo" />
+                      )}
+                      <span className="analytics-team-name">{team.teamName}</span>
+                    </div>
+                  </td>
+                  <td className="col-region">
+                    {team.regionNames.length > 0
+                      ? team.regionNames.join(', ')
+                      : team.regionName}
+                  </td>
+                  <td className="col-gp">{team.gp}</td>
+                  <td className="col-elo">
+                    <span className="elo-rating">{team.eloRating}</span>
+                  </td>
+                  <td className="col-delta">
+                    <span className={`elo-delta ${team.eloDelta > 2 ? 'positive' : team.eloDelta < -2 ? 'negative' : 'neutral'}`}>
+                      {team.eloDelta > 2 ? '↗' : team.eloDelta < -2 ? '↘' : '→'}{' '}
+                      {team.eloDelta > 0 ? '+' : ''}{team.eloDelta.toFixed(1)}
+                    </span>
                   </td>
                 </tr>
               ))}
