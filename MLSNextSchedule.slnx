@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="YSS.Data/YSS.Data.csproj" />
+  <Project Path="YSS.Ingestion/YSS.Ingestion.csproj" />
+  <Project Path="YSS.Functions/YSS.Functions.csproj" />
+  <Project Path="YSS.Tests/YSS.Tests.csproj" />
+  <Project Path="YSS.Verification/YSS.Verification.csproj" />
+</Solution>
