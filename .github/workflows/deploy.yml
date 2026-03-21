@@ -26,10 +26,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore MLSNextSchedule.slnx
 
       - name: Build solution
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build MLSNextSchedule.slnx --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test YSS.Tests/YSS.Tests.csproj --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
@@ -67,7 +67,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore MLSNextSchedule.slnx
 
       - name: Build Azure Functions
         run: dotnet build ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }} --configuration Release --no-restore
