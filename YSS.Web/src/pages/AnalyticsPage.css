@@ -313,6 +313,101 @@
   line-height: 1;
 }
 
+/* ELO info button */
+.elo-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--color-text-secondary);
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 4px;
+  padding: 0;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.elo-info-btn:hover {
+  background: var(--color-text-secondary);
+  color: var(--color-surface);
+}
+
+/* ELO info modal */
+.elo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.elo-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.elo-modal h3 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+
+.elo-modal h4 {
+  margin: 16px 0 8px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.elo-modal p {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.elo-modal ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.elo-modal li {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.elo-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.elo-modal-close:hover {
+  color: var(--color-text);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .analytics-page {

@@ -18,6 +18,34 @@ interface CombinedTeamRow {
   eloDelta: number | null
 }
 
+function EloInfoModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="elo-modal-backdrop" onClick={onClose}>
+      <div className="elo-modal" onClick={e => e.stopPropagation()}>
+        <button className="elo-modal-close" onClick={onClose}>×</button>
+        <h3>How ELO Rating Works</h3>
+        <p>
+          ELO is a rating system that measures relative team strength based on match results.
+          Every team starts at <strong>1500</strong>. After each match, the winner gains points
+          and the loser loses points.
+        </p>
+        <h4>Key factors</h4>
+        <ul>
+          <li><strong>Upset bonus:</strong> Beating a higher-rated team earns more points than beating a lower-rated one.</li>
+          <li><strong>Margin of victory:</strong> A 1-goal win uses a 1.0x multiplier, 2-goal win uses 1.5x, and 3+ goals uses 1.75x.</li>
+          <li><strong>Rolling window:</strong> Only matches from the last 12 months are included.</li>
+          <li><strong>Minimum games:</strong> Teams need at least 3 matches to appear in rankings.</li>
+        </ul>
+        <h4>Reading the table</h4>
+        <ul>
+          <li><strong>ELO</strong> — Current rating. Higher is better. 1500 is average.</li>
+          <li><strong>Δ (Delta)</strong> — Net rating change over the last 5 matches. Green = trending up, red = trending down.</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
 function AnalyticsPage() {
   const urlParams = new URLSearchParams(window.location.search)
 
@@ -34,6 +62,7 @@ function AnalyticsPage() {
   const [powerRankings, setPowerRankings] = useState<PowerRanking[]>([])
   const [loading, setLoading]       = useState(false)
   const [error, setError]           = useState<string>('')
+  const [showEloInfo, setShowEloInfo] = useState(false)
 
   // Sync URL params
   useEffect(() => {
@@ -156,7 +185,7 @@ function AnalyticsPage() {
   // Build ELO lookup by team name
   const eloByTeam = new Map(powerRankings.map(pr => [pr.teamName, pr]))
 
-  // Combine momentum + ELO into unified rows, apply region filter
+  // Combine momentum + ELO into unified rows, apply region filter, sort by ELO
   const displayedTeams: CombinedTeamRow[] = (selectedRegion
     ? allTeams.filter(t => t.regionNames.includes(selectedRegion))
     : allTeams
@@ -174,6 +203,12 @@ function AnalyticsPage() {
       eloRating: elo?.eloRating ?? null,
       eloDelta: elo?.eloDelta ?? null,
     }
+  }).sort((a, b) => {
+    // Teams with ELO first, sorted descending; teams without ELO at the bottom by momentum
+    if (a.eloRating != null && b.eloRating != null) return b.eloRating - a.eloRating
+    if (a.eloRating != null) return -1
+    if (b.eloRating != null) return 1
+    return b.momentumScore - a.momentumScore
   })
 
   const isFiltersComplete = selectedProgram && selectedAgeGroup
@@ -267,7 +302,7 @@ function AnalyticsPage() {
                 <th className="col-sos" title="Strength of Schedule">SOS</th>
                 <th className="col-last5">Last 5</th>
                 <th className="col-momentum">Momentum</th>
-                <th className="col-elo">ELO</th>
+                <th className="col-elo">ELO <button className="elo-info-btn" onClick={() => setShowEloInfo(true)} title="How ELO works">?</button></th>
                 <th className="col-delta">Δ</th>
               </tr>
             </thead>
@@ -328,6 +363,8 @@ function AnalyticsPage() {
           </table>
         </div>
       )}
+
+      {showEloInfo && <EloInfoModal onClose={() => setShowEloInfo(false)} />}
     </div>
   )
 }
