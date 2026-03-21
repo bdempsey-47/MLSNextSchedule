@@ -5,7 +5,18 @@ import { Program, AgeGroup, TeamAnalytics, PowerRanking } from '../types'
 import '../components/SeasonSelector.css'
 import './AnalyticsPage.css'
 
-type AnalyticsTab = 'momentum' | 'powerrankings'
+interface CombinedTeamRow {
+  teamName: string
+  logoUrl?: string
+  regionName: string
+  regionNames: string[]
+  gp: number
+  sos: number
+  last5: string[]
+  momentumScore: number
+  eloRating: number | null
+  eloDelta: number | null
+}
 
 function AnalyticsPage() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -17,10 +28,6 @@ function AnalyticsPage() {
 
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>(urlParams.get('ageGroup') || '')
   const [selectedRegion, setSelectedRegion]     = useState<string>(urlParams.get('region') || '')
-  const [activeTab, setActiveTab] = useState<AnalyticsTab>(() => {
-    const t = urlParams.get('tab')
-    return t === 'powerrankings' ? 'powerrankings' : 'momentum'
-  })
 
   const [ageGroups, setAgeGroups]   = useState<AgeGroup[]>([])
   const [allTeams, setAllTeams]     = useState<TeamAnalytics[]>([])
@@ -34,9 +41,8 @@ function AnalyticsPage() {
     params.set('program', selectedProgram)
     if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
     if (selectedRegion)   params.set('region', selectedRegion)
-    if (activeTab !== 'momentum') params.set('tab', activeTab)
     history.replaceState(null, '', `?${params.toString()}`)
-  }, [selectedProgram, selectedAgeGroup, selectedRegion, activeTab])
+  }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
   // Fetch age groups on mount
   useEffect(() => {
@@ -53,15 +59,16 @@ function AnalyticsPage() {
       .catch(err => console.error('Error fetching age groups:', err))
   }, [])
 
-  // Fetch analytics when program + ageGroup selected
+  // Fetch both analytics + power rankings in parallel when program + ageGroup selected
   useEffect(() => {
     if (!selectedAgeGroup) {
       setAllTeams([])
+      setPowerRankings([])
       setError('')
       return
     }
 
-    const fetchAnalytics = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
         setError('')
@@ -73,16 +80,24 @@ function AnalyticsPage() {
           return
         }
 
-        const params = new URLSearchParams()
-        params.set('program', selectedProgram)
-        params.set('ageGroup', selectedAgeGroup)
-        if (selectedRegion) params.set('region', selectedRegion)
+        const analyticsParams = new URLSearchParams()
+        analyticsParams.set('program', selectedProgram)
+        analyticsParams.set('ageGroup', selectedAgeGroup)
+        if (selectedRegion) analyticsParams.set('region', selectedRegion)
 
-        const response = await fetch(`${apiBase}/analytics?${params.toString()}`)
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        const prParams = new URLSearchParams()
+        prParams.set('program', selectedProgram)
+        prParams.set('ageGroup', selectedAgeGroup)
 
-        const data: any[] = await response.json()
-        const teams: TeamAnalytics[] = data.map((t: any) => ({
+        const [analyticsRes, prRes] = await Promise.all([
+          fetch(`${apiBase}/analytics?${analyticsParams.toString()}`),
+          fetch(`${apiBase}/powerrankings?${prParams.toString()}`)
+        ])
+
+        if (!analyticsRes.ok) throw new Error(`Analytics HTTP ${analyticsRes.status}`)
+
+        const analyticsData: any[] = await analyticsRes.json()
+        const teams: TeamAnalytics[] = analyticsData.map((t: any) => ({
           teamName:      t.TeamName      ?? t.teamName      ?? '',
           logoUrl:       t.LogoUrl       ?? t.logoUrl,
           regionName:    t.RegionName    ?? t.regionName    ?? '',
@@ -93,8 +108,24 @@ function AnalyticsPage() {
           gp:            t.GP            ?? t.gp            ?? 0,
           sos:           t.Sos           ?? t.sos           ?? 0,
         }))
-
         setAllTeams(teams)
+
+        if (prRes.ok) {
+          const prData: any[] = await prRes.json()
+          const rankings: PowerRanking[] = prData.map((t: any) => ({
+            rank:        t.Rank        ?? t.rank        ?? 0,
+            teamName:    t.TeamName    ?? t.teamName    ?? '',
+            logoUrl:     t.LogoUrl     ?? t.logoUrl,
+            regionName:  t.RegionName  ?? t.regionName  ?? '',
+            regionNames: t.RegionNames ?? t.regionNames ?? [],
+            eloRating:   t.EloRating   ?? t.eloRating   ?? 0,
+            eloDelta:    t.EloDelta    ?? t.eloDelta    ?? 0,
+            gp:          t.GP          ?? t.gp          ?? 0,
+          }))
+          setPowerRankings(rankings)
+        } else {
+          setPowerRankings([])
+        }
 
         if (selectedRegion && !teams.some(t => t.regionNames.includes(selectedRegion))) {
           setSelectedRegion('')
@@ -103,64 +134,14 @@ function AnalyticsPage() {
         console.error('Error fetching analytics:', err)
         setError(err instanceof Error ? err.message : 'Failed to load analytics')
         setAllTeams([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAnalytics()
-  }, [selectedProgram, selectedAgeGroup, selectedRegion])
-
-  // Fetch power rankings when tab is powerrankings and program + ageGroup selected
-  useEffect(() => {
-    if (activeTab !== 'powerrankings' || !selectedAgeGroup) {
-      setPowerRankings([])
-      return
-    }
-
-    const fetchPowerRankings = async () => {
-      try {
-        setLoading(true)
-        setError('')
-
-        const apiBase = import.meta.env.VITE_API_BASE_URL
-        if (!apiBase) {
-          setError('API not configured')
-          setLoading(false)
-          return
-        }
-
-        const params = new URLSearchParams()
-        params.set('program', selectedProgram)
-        params.set('ageGroup', selectedAgeGroup)
-
-        const response = await fetch(`${apiBase}/powerrankings?${params.toString()}`)
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-
-        const data: any[] = await response.json()
-        const rankings: PowerRanking[] = data.map((t: any) => ({
-          rank:        t.Rank        ?? t.rank        ?? 0,
-          teamName:    t.TeamName    ?? t.teamName    ?? '',
-          logoUrl:     t.LogoUrl     ?? t.logoUrl,
-          regionName:  t.RegionName  ?? t.regionName  ?? '',
-          regionNames: t.RegionNames ?? t.regionNames ?? [],
-          eloRating:   t.EloRating   ?? t.eloRating   ?? 0,
-          eloDelta:    t.EloDelta    ?? t.eloDelta    ?? 0,
-          gp:          t.GP          ?? t.gp          ?? 0,
-        }))
-
-        setPowerRankings(rankings)
-      } catch (err) {
-        console.error('Error fetching power rankings:', err)
-        setError(err instanceof Error ? err.message : 'Failed to load power rankings')
         setPowerRankings([])
       } finally {
         setLoading(false)
       }
     }
 
-    fetchPowerRankings()
-  }, [activeTab, selectedProgram, selectedAgeGroup])
+    fetchData()
+  }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
   const handleProgramChange = (programs: Program[]) => {
     setSelectedProgram(programs[0] || 'homegrown')
@@ -169,20 +150,31 @@ function AnalyticsPage() {
     setSelectedRegion('')
   }
 
-  // Region options derived from current tab's data
-  const regionSource = activeTab === 'powerrankings' ? powerRankings : allTeams
-  const regionOptions = [...new Set(regionSource.flatMap(t => t.regionNames))].sort((a, b) => a.localeCompare(b))
+  // Region options derived from all teams fetched
+  const regionOptions = [...new Set(allTeams.flatMap(t => t.regionNames))].sort((a, b) => a.localeCompare(b))
 
-  // Apply region filter client-side on the current data
-  const displayedTeams = selectedRegion
+  // Build ELO lookup by team name
+  const eloByTeam = new Map(powerRankings.map(pr => [pr.teamName, pr]))
+
+  // Combine momentum + ELO into unified rows, apply region filter
+  const displayedTeams: CombinedTeamRow[] = (selectedRegion
     ? allTeams.filter(t => t.regionNames.includes(selectedRegion))
     : allTeams
-
-  const displayedRankings = selectedRegion
-    ? powerRankings
-        .filter(t => t.regionNames.includes(selectedRegion))
-        .map((t, idx) => ({ ...t, rank: idx + 1 }))
-    : powerRankings
+  ).map(team => {
+    const elo = eloByTeam.get(team.teamName)
+    return {
+      teamName: team.teamName,
+      logoUrl: team.logoUrl,
+      regionName: team.regionName,
+      regionNames: team.regionNames,
+      gp: team.gp,
+      sos: team.sos,
+      last5: team.last8.slice(0, 5),
+      momentumScore: team.momentumScore,
+      eloRating: elo?.eloRating ?? null,
+      eloDelta: elo?.eloDelta ?? null,
+    }
+  })
 
   const isFiltersComplete = selectedProgram && selectedAgeGroup
 
@@ -237,23 +229,6 @@ function AnalyticsPage() {
 
       </div>
 
-      {isFiltersComplete && (
-        <div className="analytics-tabs">
-          <button
-            className={activeTab === 'momentum' ? 'active' : ''}
-            onClick={() => setActiveTab('momentum')}
-          >
-            Momentum
-          </button>
-          <button
-            className={activeTab === 'powerrankings' ? 'active' : ''}
-            onClick={() => setActiveTab('powerrankings')}
-          >
-            Power Rankings
-          </button>
-        </div>
-      )}
-
       {!isFiltersComplete && !loading && (
         <div className="no-results">
           <p>Select an age group to view analytics</p>
@@ -270,18 +245,17 @@ function AnalyticsPage() {
       {loading && (
         <div className="analytics-loading">
           <div className="analytics-spinner" />
-          <p>Loading {activeTab === 'powerrankings' ? 'power rankings' : 'analytics'}…</p>
+          <p>Loading analytics…</p>
         </div>
       )}
 
-      {/* Momentum Tab */}
-      {activeTab === 'momentum' && isFiltersComplete && !loading && allTeams.length === 0 && !error && (
+      {isFiltersComplete && !loading && allTeams.length === 0 && !error && (
         <div className="no-results">
           <p>No analytics data available yet</p>
         </div>
       )}
 
-      {activeTab === 'momentum' && displayedTeams.length > 0 && (
+      {displayedTeams.length > 0 && (
         <div className="analytics-table-wrapper">
           <table className="analytics-table">
             <thead>
@@ -291,9 +265,10 @@ function AnalyticsPage() {
                 <th className="col-region">Region</th>
                 <th className="col-gp">GP</th>
                 <th className="col-sos" title="Strength of Schedule">SOS</th>
-                <th className="col-last8">Last 8</th>
+                <th className="col-last5">Last 5</th>
                 <th className="col-momentum">Momentum</th>
-                <th className="col-form">Form</th>
+                <th className="col-elo">ELO</th>
+                <th className="col-delta">Δ</th>
               </tr>
             </thead>
             <tbody>
@@ -315,10 +290,10 @@ function AnalyticsPage() {
                   </td>
                   <td className="col-gp">{team.gp}</td>
                   <td className="col-sos">{team.sos.toFixed(2)}</td>
-                  <td className="col-last8">
+                  <td className="col-last5">
                     <div className="last5-badges">
-                      {team.last8.map((result, i) => (
-                        <span key={i} className={`result-badge ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'} ${i >= 5 ? 'deemphasized' : ''}`}>
+                      {team.last5.map((result, i) => (
+                        <span key={i} className={`result-badge ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'}`}>
                           {result}
                         </span>
                       ))}
@@ -330,65 +305,22 @@ function AnalyticsPage() {
                       {team.momentumScore.toFixed(1)}
                     </span>
                   </td>
-                  <td className="col-form">
-                    {team.momentumLabel}
-                    {team.gp < 5 && (
-                      <span className="limited-data-note">⚠ {team.gp} match{team.gp !== 1 ? 'es' : ''}</span>
+                  <td className="col-elo">
+                    {team.eloRating != null ? (
+                      <span className="elo-rating">{team.eloRating}</span>
+                    ) : (
+                      <span className="elo-na">—</span>
                     )}
                   </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Power Rankings Tab */}
-      {activeTab === 'powerrankings' && isFiltersComplete && !loading && powerRankings.length === 0 && !error && (
-        <div className="no-results">
-          <p>No power rankings data available yet</p>
-        </div>
-      )}
-
-      {activeTab === 'powerrankings' && displayedRankings.length > 0 && (
-        <div className="analytics-table-wrapper">
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th className="col-rank">#</th>
-                <th className="col-team">Team</th>
-                <th className="col-region">Region</th>
-                <th className="col-gp">GP</th>
-                <th className="col-elo">ELO Rating</th>
-                <th className="col-delta">Δ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedRankings.map((team, idx) => (
-                <tr key={`${team.teamName}-${idx}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
-                  <td className="col-rank">{team.rank}</td>
-                  <td className="col-team">
-                    <div className="team-cell-inner">
-                      {team.logoUrl && (
-                        <img src={team.logoUrl} alt={team.teamName} className="analytics-team-logo" />
-                      )}
-                      <span className="analytics-team-name">{team.teamName}</span>
-                    </div>
-                  </td>
-                  <td className="col-region">
-                    {team.regionNames.length > 0
-                      ? team.regionNames.join(', ')
-                      : team.regionName}
-                  </td>
-                  <td className="col-gp">{team.gp}</td>
-                  <td className="col-elo">
-                    <span className="elo-rating">{team.eloRating}</span>
-                  </td>
                   <td className="col-delta">
-                    <span className={`elo-delta ${team.eloDelta > 2 ? 'positive' : team.eloDelta < -2 ? 'negative' : 'neutral'}`}>
-                      {team.eloDelta > 2 ? '↗' : team.eloDelta < -2 ? '↘' : '→'}{' '}
-                      {team.eloDelta > 0 ? '+' : ''}{team.eloDelta.toFixed(1)}
-                    </span>
+                    {team.eloDelta != null ? (
+                      <span className={`elo-delta ${team.eloDelta > 2 ? 'positive' : team.eloDelta < -2 ? 'negative' : 'neutral'}`}>
+                        {team.eloDelta > 2 ? '↗' : team.eloDelta < -2 ? '↘' : '→'}{' '}
+                        {team.eloDelta > 0 ? '+' : ''}{team.eloDelta.toFixed(1)}
+                      </span>
+                    ) : (
+                      <span className="elo-na">—</span>
+                    )}
                   </td>
                 </tr>
               ))}
