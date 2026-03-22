@@ -68,17 +68,15 @@ public class GetMatches
                 var isHomegrown = normalizedPrograms.Contains("homegrown");
                 var isAcademy = normalizedPrograms.Contains("academy");
 
-                var academyCompetitions = new[] { "AD Showcase", "AD" };
-
                 _logger.LogInformation("Filtering by programs: {Programs}", string.Join(", ", programs));
 
                 matches = matches.Where(m =>
                     (isAcademy && (
                         m.Region.Division.TournamentId == 35 ||
-                        academyCompetitions.Contains(m.Competition.Name))) ||
+                        m.Competition.Name.StartsWith("AD"))) ||
                     (isHomegrown && (
                         new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
-                        !academyCompetitions.Contains(m.Competition.Name))));
+                        !m.Competition.Name.StartsWith("AD"))));
             }
 
             // Map seasons to combined date range

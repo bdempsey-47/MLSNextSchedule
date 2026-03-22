@@ -41,7 +41,6 @@ public class GetTeams
             // Filter by programs (match GetMatches.cs pattern: competition-based + tournament-based)
             if (programs.Any())
             {
-                var academyCompetitions = new[] { "AD Showcase", "AD" };
                 var isAcademy = programs.Any(p => p.ToLower() == "academy");
                 var isHomegrown = programs.Any(p => p.ToLower() == "homegrown");
 
@@ -49,9 +48,9 @@ public class GetTeams
                     .Include(m => m.Competition)
                     .Where(m =>
                         (isAcademy && (m.Region.Division.TournamentId == 35 ||
-                            academyCompetitions.Contains(m.Competition.Name))) ||
+                            m.Competition.Name.StartsWith("AD"))) ||
                         (isHomegrown && (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
-                            !academyCompetitions.Contains(m.Competition.Name))));
+                            !m.Competition.Name.StartsWith("AD"))));
             }
 
             // Filter by seasons

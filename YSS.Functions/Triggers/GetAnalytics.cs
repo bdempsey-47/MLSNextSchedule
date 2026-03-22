@@ -41,8 +41,6 @@ public class GetAnalytics
             if (!isHomegrown && !isAcademy)
                 return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
 
-            var academyCompetitions = new[] { "AD Showcase", "AD" };
-
             // Load completed matches for this program + age group
             var query = _context.Matches
                 .Include(m => m.HomeTeam)
@@ -53,8 +51,8 @@ public class GetAnalytics
                 .Include(m => m.Competition)
                 .Where(m =>
                     (isAcademy
-                        ? (m.Region.Division.TournamentId == 35 || academyCompetitions.Contains(m.Competition.Name))
-                        : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !academyCompetitions.Contains(m.Competition.Name))) &&
+                        ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
+                        : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD");
 

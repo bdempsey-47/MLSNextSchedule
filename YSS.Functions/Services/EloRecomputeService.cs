@@ -9,7 +9,8 @@ public class EloRecomputeService
     private readonly AppDbContext _context;
     private readonly ILogger<EloRecomputeService> _logger;
 
-    private static readonly string[] AcademyCompetitions = { "AD Showcase", "AD" };
+    // No longer used for filtering (program is now on Team entity), kept for reference
+    // Academy competitions all start with "AD" (AD, AD Showcase, AD Group Play)
 
     public EloRecomputeService(AppDbContext context, ILogger<EloRecomputeService> logger)
     {

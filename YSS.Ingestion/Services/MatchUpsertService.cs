@@ -143,7 +143,7 @@ public class MatchUpsertService
 
     private static string DeriveProgram(int tournamentId, string competitionName)
     {
-        if (competitionName == "AD Showcase" || competitionName == "AD") return "AG";
+        if (competitionName.StartsWith("AD")) return "AG";
         if (tournamentId == 35) return "AG";
         return "HG";
     }

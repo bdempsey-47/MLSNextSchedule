@@ -41,8 +41,6 @@ public class GetPowerRankings
             if (!isHomegrown && !isAcademy)
                 return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
 
-            var academyCompetitions = new[] { "AD Showcase", "AD" };
-
             var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
             // Load matches to build per-team metadata (GP, regions, recent deltas)
@@ -55,8 +53,8 @@ public class GetPowerRankings
                 .Include(m => m.Competition)
                 .Where(m =>
                     (isAcademy
-                        ? (m.Region.Division.TournamentId == 35 || academyCompetitions.Contains(m.Competition.Name))
-                        : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !academyCompetitions.Contains(m.Competition.Name))) &&
+                        ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
+                        : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD" &&
                     m.MatchDateUtc >= oneYearAgo)
