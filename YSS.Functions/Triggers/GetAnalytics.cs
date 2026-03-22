@@ -58,9 +58,9 @@ public class GetAnalytics
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD");
 
-            if (!string.IsNullOrEmpty(region))
-                query = query.Where(m => m.Region.Name == region);
-
+            // Don't filter by region here — load ALL matches so SOS, momentum,
+            // and last-N calculations include cross-region FEST showcase games.
+            // Region filtering happens client-side on the displayed list.
             var matches = await query.ToListAsync();
 
             _logger.LogInformation("GetAnalytics: {Count} completed matches found", matches.Count);

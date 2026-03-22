@@ -112,7 +112,6 @@ function AnalyticsPage() {
         const analyticsParams = new URLSearchParams()
         analyticsParams.set('program', selectedProgram)
         analyticsParams.set('ageGroup', selectedAgeGroup)
-        if (selectedRegion) analyticsParams.set('region', selectedRegion)
 
         const prParams = new URLSearchParams()
         prParams.set('program', selectedProgram)
@@ -170,7 +169,7 @@ function AnalyticsPage() {
     }
 
     fetchData()
-  }, [selectedProgram, selectedAgeGroup, selectedRegion])
+  }, [selectedProgram, selectedAgeGroup])
 
   const handleProgramChange = (programs: Program[]) => {
     setSelectedProgram(programs[0] || 'homegrown')
