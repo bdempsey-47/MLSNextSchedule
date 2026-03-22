@@ -70,8 +70,9 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(t => t.Id);
             entity.Property(t => t.Name).HasMaxLength(200).IsRequired();
+            entity.Property(t => t.Program).HasMaxLength(2).IsRequired();
             entity.Property(t => t.LogoUrl).HasMaxLength(500);
-            entity.HasIndex(t => t.Name).IsUnique();
+            entity.HasIndex(t => new { t.Name, t.Program }).IsUnique();
         });
 
         // Venue entity configuration

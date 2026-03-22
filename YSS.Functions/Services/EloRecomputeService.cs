@@ -27,6 +27,11 @@ public class EloRecomputeService
 
         var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
+        // Load team program lookup
+        var teamPrograms = await _context.Teams
+            .Select(t => new { t.Id, t.Program })
+            .ToDictionaryAsync(t => t.Id, t => t.Program, ct);
+
         // Load all completed matches with scores in the rolling window
         var allMatches = await _context.Matches
             .Include(m => m.Region).ThenInclude(r => r.Division)
@@ -50,22 +55,36 @@ public class EloRecomputeService
 
         _logger.LogInformation("Loaded {Count} completed matches for ELO computation", allMatches.Count);
 
-        // Build ELO inputs from all matches (one unified computation across all programs/age groups)
-        var eloInputs = new List<EloCalculator.EloMatchInput>();
+        // Build ELO inputs partitioned by program (AG vs HG get separate ELO pools)
+        var agInputs = new List<EloCalculator.EloMatchInput>();
+        var hgInputs = new List<EloCalculator.EloMatchInput>();
 
         foreach (var m in allMatches)
         {
             if (!TryParseScore(m.Score!, out var homeScore, out var awayScore))
                 continue;
 
-            eloInputs.Add(new EloCalculator.EloMatchInput(
-                m.HomeTeamId, m.AwayTeamId, homeScore, awayScore, m.MatchDateUtc));
+            var input = new EloCalculator.EloMatchInput(
+                m.HomeTeamId, m.AwayTeamId, homeScore, awayScore, m.MatchDateUtc);
+
+            // Determine program from home team (both teams in a match share the same program)
+            var program = teamPrograms.GetValueOrDefault(m.HomeTeamId, "HG");
+            if (program == "AG")
+                agInputs.Add(input);
+            else
+                hgInputs.Add(input);
         }
 
-        _logger.LogInformation("Built {Count} ELO inputs from parsed matches", eloInputs.Count);
+        _logger.LogInformation("Built {AgCount} AG and {HgCount} HG ELO inputs", agInputs.Count, hgInputs.Count);
 
-        // Compute ratings
-        var results = EloCalculator.ComputeRankings(eloInputs);
+        // Compute ratings separately per program pool
+        var agResults = EloCalculator.ComputeRankings(agInputs);
+        var hgResults = EloCalculator.ComputeRankings(hgInputs);
+
+        // Merge results
+        var results = new Dictionary<int, EloCalculator.EloTeamState>();
+        foreach (var kvp in agResults) results[kvp.Key] = kvp.Value;
+        foreach (var kvp in hgResults) results[kvp.Key] = kvp.Value;
 
         // Batch-update team ratings
         var teams = await _context.Teams.ToListAsync(ct);

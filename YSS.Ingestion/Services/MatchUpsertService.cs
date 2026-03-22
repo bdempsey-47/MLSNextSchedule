@@ -16,7 +16,7 @@ public class MatchUpsertService
     private readonly ILogger<MatchUpsertService> _logger;
 
     // Per-run in-memory caches — avoids repeated DB lookups for the same reference entities
-    private readonly Dictionary<string, Team> _teamCache = new();
+    private readonly Dictionary<(string Name, string Program), Team> _teamCache = new();
     private readonly Dictionary<string, Venue> _venueCache = new();
     private readonly Dictionary<int, Division> _divisionCache = new();
     private readonly Dictionary<(int DivisionId, string Name), Region> _regionCache = new();
@@ -68,8 +68,9 @@ public class MatchUpsertService
                 if (existingMatch != null)
                 {
                     // Update all mutable fields on existing match
-                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
-                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
+                    var program = DeriveProgram(parsedMatch.TournamentId, parsedMatch.Competition);
+                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, program, ct);
+                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, program, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
                     var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, ct);
                     var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
@@ -91,8 +92,9 @@ public class MatchUpsertService
                 else
                 {
                     // Create new match with lookup-or-create for reference entities
-                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, ct);
-                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, ct);
+                    var program = DeriveProgram(parsedMatch.TournamentId, parsedMatch.Competition);
+                    var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, program, ct);
+                    var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, program, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
                     var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, ct);
                     var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
@@ -139,38 +141,46 @@ public class MatchUpsertService
             newMatches, updatedMatches, duplicateMatches);
     }
 
-    private async Task<Team> LookupOrCreateTeamAsync(string name, string? logoUrl, CancellationToken ct)
+    private static string DeriveProgram(int tournamentId, string competitionName)
     {
-        if (_teamCache.TryGetValue(name, out var cached))
+        if (competitionName == "AD Showcase" || competitionName == "AD") return "AG";
+        if (tournamentId == 35) return "AG";
+        return "HG";
+    }
+
+    private async Task<Team> LookupOrCreateTeamAsync(string name, string? logoUrl, string program, CancellationToken ct)
+    {
+        var cacheKey = (name, program);
+        if (_teamCache.TryGetValue(cacheKey, out var cached))
         {
             if (logoUrl != null && cached.LogoUrl != logoUrl)
             {
                 cached.LogoUrl = logoUrl;
                 await _dbContext.SaveChangesAsync(ct);
-                _logger.LogDebug("Updated logo for team: {TeamName}", name);
+                _logger.LogDebug("Updated logo for team: {TeamName} ({Program})", name, program);
             }
             return cached;
         }
 
         var team = await _dbContext.Teams
-            .Where(t => t.Name == name.Trim())
+            .Where(t => t.Name == name.Trim() && t.Program == program)
             .FirstOrDefaultAsync(ct);
 
         if (team == null)
         {
-            team = new Team { Name = name.Trim(), LogoUrl = logoUrl };
+            team = new Team { Name = name.Trim(), Program = program, LogoUrl = logoUrl };
             await _dbContext.Teams.AddAsync(team, ct);
             await _dbContext.SaveChangesAsync(ct);
-            _logger.LogDebug("Created new team: {TeamName}", name);
+            _logger.LogDebug("Created new team: {TeamName} ({Program})", name, program);
         }
         else if (logoUrl != null && team.LogoUrl != logoUrl)
         {
             team.LogoUrl = logoUrl;
             await _dbContext.SaveChangesAsync(ct);
-            _logger.LogDebug("Updated logo for team: {TeamName}", name);
+            _logger.LogDebug("Updated logo for team: {TeamName} ({Program})", name, program);
         }
 
-        _teamCache[name] = team;
+        _teamCache[cacheKey] = team;
         return team;
     }
 

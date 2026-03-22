@@ -346,8 +346,8 @@ public class FunctionsIntegrationTests : IDisposable
         _dbContext.Competitions.Add(ad);
 
         // Create teams
-        var dragon = new Team { Name = "Dragon FC" };
-        var phoenix = new Team { Name = "Phoenix United" };
+        var dragon = new Team { Name = "Dragon FC", Program = "AG" };
+        var phoenix = new Team { Name = "Phoenix United", Program = "AG" };
         _dbContext.Teams.AddRange(dragon, phoenix);
 
         // Create venue
@@ -395,8 +395,8 @@ public class FunctionsIntegrationTests : IDisposable
         var division = _dbContext.Divisions.FirstOrDefault() ?? new Division { LeagueId = league.Id, Name = "Homegrown", TournamentId = 12 };
         var region = _dbContext.Regions.FirstOrDefault() ?? new Region { DivisionId = division.Id, Name = "NorthEast" };
         var competition = _dbContext.Competitions.FirstOrDefault() ?? new Competition { Name = "AD" };
-        var homeTeam = _dbContext.Teams.FirstOrDefault() ?? new Team { Name = "Team A" };
-        var awayTeam = _dbContext.Teams.Skip(1).FirstOrDefault() ?? new Team { Name = "Team B" };
+        var homeTeam = _dbContext.Teams.FirstOrDefault() ?? new Team { Name = "Team A", Program = "AG" };
+        var awayTeam = _dbContext.Teams.Skip(1).FirstOrDefault() ?? new Team { Name = "Team B", Program = "AG" };
         var venue = _dbContext.Venues.FirstOrDefault() ?? new Venue { Name = "Venue A" };
 
         if (ageGroup.Id == 0) _dbContext.Add(ageGroup);

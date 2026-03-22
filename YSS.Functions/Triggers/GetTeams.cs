@@ -38,20 +38,20 @@ public class GetTeams
             if (!string.IsNullOrEmpty(league))
                 matchQuery = matchQuery.Where(m => m.Region.Division.League.Name == league);
 
-            // Filter by programs
+            // Filter by programs (match GetMatches.cs pattern: competition-based + tournament-based)
             if (programs.Any())
             {
-                var tournamentIds = new List<int>();
-                foreach (var program in programs)
-                {
-                    if (program.ToLower() == "homegrown")
-                        tournamentIds.Add(12);
-                    else if (program.ToLower() == "academy")
-                        tournamentIds.Add(35);
-                }
-                
-                if (tournamentIds.Any())
-                    matchQuery = matchQuery.Where(m => tournamentIds.Contains(m.Region.Division.TournamentId));
+                var academyCompetitions = new[] { "AD Showcase", "AD" };
+                var isAcademy = programs.Any(p => p.ToLower() == "academy");
+                var isHomegrown = programs.Any(p => p.ToLower() == "homegrown");
+
+                matchQuery = matchQuery
+                    .Include(m => m.Competition)
+                    .Where(m =>
+                        (isAcademy && (m.Region.Division.TournamentId == 35 ||
+                            academyCompetitions.Contains(m.Competition.Name))) ||
+                        (isHomegrown && (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
+                            !academyCompetitions.Contains(m.Competition.Name))));
             }
 
             // Filter by seasons
@@ -73,7 +73,7 @@ public class GetTeams
             var teams = await _context.Teams
                 .Where(t => homeTeamIds.Contains(t.Id) || awayTeamIds.Contains(t.Id))
                 .OrderBy(t => t.Name)
-                .Select(t => new { t.Id, t.Name })
+                .Select(t => new { t.Id, t.Name, t.Program })
                 .ToListAsync();
 
             _logger.LogInformation("GetTeams returning {Count} teams (programs={Programs}, seasons={Seasons}, region={Region})",

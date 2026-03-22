@@ -18,6 +18,7 @@ export interface Match {
 export interface Team {
   id: number
   name: string
+  program?: string  // "AG" | "HG"
   logoUrl?: string
   eloRating?: number
 }

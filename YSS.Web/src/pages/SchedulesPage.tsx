@@ -5,7 +5,7 @@ import ProgramSelector from '../components/ProgramSelector'
 import SeasonSelector from '../components/SeasonSelector'
 import MatchList from '../components/MatchList'
 import FilterBar from '../components/FilterBar'
-import { Match, Program, Season, PowerRanking } from '../types'
+import { Match, Program, Season } from '../types'
 import { mockMatches } from '../mockData'
 
 function SchedulesPage() {
@@ -24,7 +24,6 @@ function SchedulesPage() {
   const [selectedTeam, setSelectedTeam] = useState<string>(urlParams.get('team') || '')
   const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(urlParams.getAll('ageGroup'))
   const [matches, setMatches] = useState<Match[]>([])
-  const [eloByTeamName, setEloByTeamName] = useState<Map<string, number>>(new Map())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
 
@@ -32,38 +31,6 @@ function SchedulesPage() {
   useEffect(() => {
     fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups)
   }, [selectedSeasons, selectedPrograms])
-
-  // Fetch program-scoped ELO ratings when we have a single program + age groups
-  useEffect(() => {
-    if (selectedPrograms.length !== 1 || matches.length === 0) {
-      setEloByTeamName(new Map())
-      return
-    }
-
-    const apiBase = import.meta.env.VITE_API_BASE_URL
-    if (!apiBase) return
-
-    // Get unique age groups from current matches
-    const ageGroups = [...new Set(matches.map(m => m.ageGroup.name))]
-
-    Promise.all(
-      ageGroups.map(ag =>
-        fetch(`${apiBase}/powerrankings?program=${selectedPrograms[0]}&ageGroup=${ag}`)
-          .then(r => r.ok ? r.json() : [])
-          .catch(() => [])
-      )
-    ).then(results => {
-      const lookup = new Map<string, number>()
-      for (const rankings of results) {
-        for (const pr of rankings) {
-          const name = pr.TeamName ?? pr.teamName
-          const elo = pr.EloRating ?? pr.eloRating
-          if (name && elo) lookup.set(name, elo)
-        }
-      }
-      setEloByTeamName(lookup)
-    })
-  }, [matches, selectedPrograms])
 
   // Keep URL in sync with filter state so the page can be bookmarked or shared
   useEffect(() => {
@@ -110,12 +77,14 @@ function SchedulesPage() {
     homeTeam: {
       id: apiData.HomeTeam?.Id || apiData.homeTeam?.id,
       name: apiData.HomeTeam?.Name || apiData.homeTeam?.name,
+      program: apiData.HomeTeam?.Program || apiData.homeTeam?.program || undefined,
       logoUrl: apiData.HomeTeam?.LogoUrl || apiData.homeTeam?.logoUrl || undefined,
       eloRating: apiData.HomeTeam?.EloRating || apiData.homeTeam?.eloRating || undefined
     },
     awayTeam: {
       id: apiData.AwayTeam?.Id || apiData.awayTeam?.id,
       name: apiData.AwayTeam?.Name || apiData.awayTeam?.name,
+      program: apiData.AwayTeam?.Program || apiData.awayTeam?.program || undefined,
       logoUrl: apiData.AwayTeam?.LogoUrl || apiData.awayTeam?.logoUrl || undefined,
       eloRating: apiData.AwayTeam?.EloRating || apiData.awayTeam?.eloRating || undefined
     },
@@ -307,14 +276,7 @@ function SchedulesPage() {
 
       {matches.length > 0 && (
         <MatchList
-          matches={eloByTeamName.size > 0
-            ? matches.map(m => ({
-                ...m,
-                homeTeam: { ...m.homeTeam, eloRating: eloByTeamName.get(m.homeTeam.name) },
-                awayTeam: { ...m.awayTeam, eloRating: eloByTeamName.get(m.awayTeam.name) },
-              }))
-            : matches
-          }
+          matches={matches}
           programs={selectedPrograms}
           onBadgeClick={handleBadgeClick}
         />
