@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using YSS.Data;
+using YSS.Data.Entities;
 
 namespace YSS.Functions.Services;
 
@@ -9,9 +10,6 @@ public class EloRecomputeService
     private readonly AppDbContext _context;
     private readonly ILogger<EloRecomputeService> _logger;
 
-    // No longer used for filtering (program is now on Team entity), kept for reference
-    // Academy competitions all start with "AD" (AD, AD Showcase, AD Group Play)
-
     public EloRecomputeService(AppDbContext context, ILogger<EloRecomputeService> logger)
     {
         _context = context;
@@ -19,12 +17,11 @@ public class EloRecomputeService
     }
 
     /// <summary>
-    /// Recompute ELO ratings for all teams across all programs and age groups,
-    /// then batch-update the Team.EloRating column.
+    /// Recompute ELO ratings per (program, ageGroup) pool and store in TeamAgeGroupElos table.
     /// </summary>
     public async Task RecomputeAllAsync(CancellationToken ct)
     {
-        _logger.LogInformation("Starting ELO recomputation");
+        _logger.LogInformation("Starting ELO recomputation (per age group)");
 
         var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
@@ -48,66 +45,79 @@ public class EloRecomputeService
                 m.AwayTeamId,
                 m.Score,
                 m.MatchDateUtc,
-                TournamentId = m.Region.Division.TournamentId,
-                CompetitionName = m.Competition.Name,
+                m.AgeGroupId,
                 AgeGroupName = m.AgeGroup.Name
             })
             .ToListAsync(ct);
 
         _logger.LogInformation("Loaded {Count} completed matches for ELO computation", allMatches.Count);
 
-        // Build ELO inputs partitioned by program (AG vs HG get separate ELO pools)
-        var agInputs = new List<EloCalculator.EloMatchInput>();
-        var hgInputs = new List<EloCalculator.EloMatchInput>();
+        // Partition matches by (program, ageGroupId) — each pool gets its own ELO computation
+        var pools = new Dictionary<(string Program, int AgeGroupId), List<EloCalculator.EloMatchInput>>();
 
         foreach (var m in allMatches)
         {
             if (!TryParseScore(m.Score!, out var homeScore, out var awayScore))
                 continue;
 
-            var input = new EloCalculator.EloMatchInput(
-                m.HomeTeamId, m.AwayTeamId, homeScore, awayScore, m.MatchDateUtc);
-
-            // Determine program from home team (both teams in a match share the same program)
             var program = teamPrograms.GetValueOrDefault(m.HomeTeamId, "HG");
-            if (program == "AG")
-                agInputs.Add(input);
-            else
-                hgInputs.Add(input);
+            var key = (program, m.AgeGroupId);
+
+            if (!pools.ContainsKey(key))
+                pools[key] = new List<EloCalculator.EloMatchInput>();
+
+            pools[key].Add(new EloCalculator.EloMatchInput(
+                m.HomeTeamId, m.AwayTeamId, homeScore, awayScore, m.MatchDateUtc));
         }
 
-        _logger.LogInformation("Built {AgCount} AG and {HgCount} HG ELO inputs", agInputs.Count, hgInputs.Count);
+        _logger.LogInformation("Built {PoolCount} ELO pools across programs and age groups", pools.Count);
 
-        // Compute ratings separately per program pool
-        var agResults = EloCalculator.ComputeRankings(agInputs);
-        var hgResults = EloCalculator.ComputeRankings(hgInputs);
+        // Compute ELO per pool and collect all (teamId, ageGroupId) → rating
+        var allRatings = new Dictionary<(int TeamId, int AgeGroupId), int>();
 
-        // Merge results
-        var results = new Dictionary<int, EloCalculator.EloTeamState>();
-        foreach (var kvp in agResults) results[kvp.Key] = kvp.Value;
-        foreach (var kvp in hgResults) results[kvp.Key] = kvp.Value;
+        foreach (var (key, inputs) in pools)
+        {
+            var results = EloCalculator.ComputeRankings(inputs);
+            foreach (var (teamId, state) in results)
+            {
+                allRatings[(teamId, key.AgeGroupId)] = (int)Math.Round(state.Rating);
+            }
+        }
 
-        // Batch-update team ratings
-        var teams = await _context.Teams.ToListAsync(ct);
+        // Load existing TeamAgeGroupElo rows
+        var existing = await _context.TeamAgeGroupElos.ToListAsync(ct);
+        var existingLookup = existing.ToDictionary(e => (e.TeamId, e.AgeGroupId));
+
+        var created = 0;
         var updated = 0;
 
-        foreach (var team in teams)
+        foreach (var ((teamId, ageGroupId), rating) in allRatings)
         {
-            var newRating = results.TryGetValue(team.Id, out var state)
-                ? (int)Math.Round(state.Rating)
-                : 1500;
-
-            if (team.EloRating != newRating)
+            if (existingLookup.TryGetValue((teamId, ageGroupId), out var elo))
             {
-                team.EloRating = newRating;
-                updated++;
+                if (elo.EloRating != rating)
+                {
+                    elo.EloRating = rating;
+                    updated++;
+                }
+            }
+            else
+            {
+                _context.TeamAgeGroupElos.Add(new TeamAgeGroupElo
+                {
+                    TeamId = teamId,
+                    AgeGroupId = ageGroupId,
+                    EloRating = rating
+                });
+                created++;
             }
         }
 
         await _context.SaveChangesAsync(ct);
 
-        _logger.LogInformation("ELO recomputation complete: {Updated} teams updated out of {Total}",
-            updated, teams.Count);
+        _logger.LogInformation(
+            "ELO recomputation complete: {Created} created, {Updated} updated across {Pools} pools",
+            created, updated, pools.Count);
     }
 
     private static bool TryParseScore(string score, out int homeScore, out int awayScore)

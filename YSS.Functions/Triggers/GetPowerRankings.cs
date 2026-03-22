@@ -43,7 +43,7 @@ public class GetPowerRankings
 
             var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
-            // Load matches to build per-team metadata (GP, regions, recent deltas)
+            // Load matches for this program + ageGroup to build metadata and deltas
             var matches = await _context.Matches
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
@@ -63,14 +63,12 @@ public class GetPowerRankings
 
             _logger.LogInformation("GetPowerRankings: {Count} completed matches found", matches.Count);
 
-            // Build per-team metadata (GP, regions) and compute deltas from recent matches
+            // Build per-team metadata (GP, regions)
             var teamInfo = new Dictionary<int, TeamInfo>();
-            // Track recent match results for delta calculation (last 5 matches per team)
-            var teamRecentMatches = new Dictionary<int, List<(DateTime Date, int HomeTeamId, int AwayTeamId, int HomeScore, int AwayScore)>>();
 
             foreach (var match in matches)
             {
-                if (!TryParseScore(match.Score!, out var homeScore, out var awayScore))
+                if (!TryParseScore(match.Score!, out _, out _))
                     continue;
 
                 if (!teamInfo.ContainsKey(match.HomeTeamId))
@@ -82,20 +80,9 @@ public class GetPowerRankings
                     teamInfo[match.AwayTeamId] = new TeamInfo(match.AwayTeam.Name, match.AwayTeam.LogoUrl, match.Region.Name);
                 teamInfo[match.AwayTeamId].RegionNames.Add(match.Region.Name);
                 teamInfo[match.AwayTeamId].GP++;
-
-                var entry = (match.MatchDateUtc, match.HomeTeamId, match.AwayTeamId, homeScore, awayScore);
-
-                if (!teamRecentMatches.ContainsKey(match.HomeTeamId))
-                    teamRecentMatches[match.HomeTeamId] = new();
-                teamRecentMatches[match.HomeTeamId].Add(entry);
-
-                if (!teamRecentMatches.ContainsKey(match.AwayTeamId))
-                    teamRecentMatches[match.AwayTeamId] = new();
-                teamRecentMatches[match.AwayTeamId].Add(entry);
             }
 
-            // Compute recent ELO deltas by replaying last 5 matches per team using EloCalculator
-            // We use the full match set to compute accurate ELO, then take delta from last 5
+            // Compute on-the-fly ELO for deltas (same pool as stored, just need RecentDeltas)
             var eloInputs = new List<EloCalculator.EloMatchInput>();
             foreach (var match in matches)
             {
@@ -104,29 +91,33 @@ public class GetPowerRankings
             }
             var eloResults = EloCalculator.ComputeRankings(eloInputs);
 
-            // Use stored Team.EloRating as the authoritative rating, with on-the-fly deltas
+            // Load stored per-age-group ELO ratings
+            var ageGroupEntity = matches.FirstOrDefault()?.AgeGroup;
+            var storedElos = ageGroupEntity != null
+                ? await _context.TeamAgeGroupElos
+                    .Where(e => e.AgeGroupId == ageGroupEntity.Id)
+                    .ToDictionaryAsync(e => e.TeamId, e => e.EloRating)
+                : new Dictionary<int, int>();
+
+            // Build rankings using stored ELO with on-the-fly deltas
             var rankings = teamInfo
                 .Where(kvp => kvp.Value.GP >= 3)
                 .Select(kvp =>
                 {
                     var teamId = kvp.Key;
                     var info = kvp.Value;
-                    // Read stored ELO from the team entity
-                    var storedElo = matches
-                        .Where(m => m.HomeTeamId == teamId || m.AwayTeamId == teamId)
-                        .Select(m => m.HomeTeamId == teamId ? m.HomeTeam.EloRating : m.AwayTeam.EloRating)
-                        .FirstOrDefault();
+                    var elo = storedElos.GetValueOrDefault(teamId, 1500);
                     var delta = eloResults.TryGetValue(teamId, out var state)
                         ? Math.Round(state.RecentDeltas.Sum(), 1)
                         : 0.0;
                     return new PowerRankingDto
                     {
-                        Rank        = 0, // assigned after sorting
+                        Rank        = 0,
                         TeamName    = info.Name,
                         LogoUrl     = info.LogoUrl,
                         RegionName  = info.PrimaryRegion,
                         RegionNames = info.RegionNames.OrderBy(x => x).ToList(),
-                        EloRating   = storedElo,
+                        EloRating   = elo,
                         EloDelta    = delta,
                         GP          = info.GP
                     };
@@ -134,7 +125,6 @@ public class GetPowerRankings
                 .OrderByDescending(r => r.EloRating)
                 .ToList();
 
-            // Assign ranks
             for (int i = 0; i < rankings.Count; i++)
                 rankings[i].Rank = i + 1;
 

@@ -133,6 +133,22 @@ public class GetMatches
 
             _logger.LogInformation("GetMatches returning {Count} results", results.Count);
 
+            // Load per-age-group ELO ratings for all teams in the result set
+            var teamIds = results.SelectMany(m => new[] { m.HomeTeamId, m.AwayTeamId }).Distinct().ToList();
+            var ageGroupIds = results.Select(m => m.AgeGroupId).Distinct().ToList();
+            var eloLookup = await _context.TeamAgeGroupElos
+                .Where(e => teamIds.Contains(e.TeamId) && ageGroupIds.Contains(e.AgeGroupId))
+                .ToDictionaryAsync(e => (e.TeamId, e.AgeGroupId), e => e.EloRating);
+
+            // Overlay per-age-group ELO onto teams before serialization
+            foreach (var match in results)
+            {
+                if (eloLookup.TryGetValue((match.HomeTeamId, match.AgeGroupId), out var homeElo))
+                    match.HomeTeam.EloRating = homeElo;
+                if (eloLookup.TryGetValue((match.AwayTeamId, match.AgeGroupId), out var awayElo))
+                    match.AwayTeam.EloRating = awayElo;
+            }
+
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
             response.Headers.Add("Access-Control-Allow-Origin", "*");
             response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");

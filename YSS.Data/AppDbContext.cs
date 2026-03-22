@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Region> Regions { get; set; }
     public DbSet<Competition> Competitions { get; set; }
     public DbSet<AgeGroup> AgeGroups { get; set; }
+    public DbSet<TeamAgeGroupElo> TeamAgeGroupElos { get; set; }
     public DbSet<RawIngestionLog> RawIngestionLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -132,6 +133,23 @@ public class AppDbContext : DbContext
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Name).HasMaxLength(50).IsRequired();
             entity.HasIndex(a => a.Name).IsUnique();
+        });
+
+        // TeamAgeGroupElo entity configuration
+        modelBuilder.Entity<TeamAgeGroupElo>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.TeamId, e.AgeGroupId }).IsUnique();
+
+            entity.HasOne(e => e.Team)
+                .WithMany()
+                .HasForeignKey(e => e.TeamId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.AgeGroup)
+                .WithMany()
+                .HasForeignKey(e => e.AgeGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // RawIngestionLog entity configuration
