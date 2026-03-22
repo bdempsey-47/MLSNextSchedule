@@ -77,12 +77,14 @@ function SchedulesPage() {
     homeTeam: {
       id: apiData.HomeTeam?.Id || apiData.homeTeam?.id,
       name: apiData.HomeTeam?.Name || apiData.homeTeam?.name,
-      logoUrl: apiData.HomeTeam?.LogoUrl || apiData.homeTeam?.logoUrl || undefined
+      logoUrl: apiData.HomeTeam?.LogoUrl || apiData.homeTeam?.logoUrl || undefined,
+      eloRating: apiData.HomeTeam?.EloRating || apiData.homeTeam?.eloRating || undefined
     },
     awayTeam: {
       id: apiData.AwayTeam?.Id || apiData.awayTeam?.id,
       name: apiData.AwayTeam?.Name || apiData.awayTeam?.name,
-      logoUrl: apiData.AwayTeam?.LogoUrl || apiData.awayTeam?.logoUrl || undefined
+      logoUrl: apiData.AwayTeam?.LogoUrl || apiData.awayTeam?.logoUrl || undefined,
+      eloRating: apiData.AwayTeam?.EloRating || apiData.awayTeam?.eloRating || undefined
     },
     matchDateUtc: apiData.MatchDateUtc || apiData.matchDateUtc,
     venue: {
