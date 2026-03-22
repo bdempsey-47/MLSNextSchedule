@@ -41,10 +41,7 @@ public class GetPowerRankings
             if (!isHomegrown && !isAcademy)
                 return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
 
-            var tournamentIds = isHomegrown ? new[] { 12 } : new[] { 35 };
-            var festCompetitions = isHomegrown
-                ? new[] { "HD Showcase", "Pro Player Pathway", "Best Of" }
-                : new[] { "AD Showcase" };
+            var academyCompetitions = new[] { "AD Showcase", "AD" };
 
             var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
@@ -56,8 +53,9 @@ public class GetPowerRankings
                     .ThenInclude(r => r.Division)
                 .Include(m => m.Competition)
                 .Where(m =>
-                    (tournamentIds.Contains(m.Region.Division.TournamentId) ||
-                     (m.Region.Division.TournamentId == 75 && festCompetitions.Contains(m.Competition.Name))) &&
+                    (isAcademy
+                        ? (m.Region.Division.TournamentId == 35 || academyCompetitions.Contains(m.Competition.Name))
+                        : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !academyCompetitions.Contains(m.Competition.Name))) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD" &&
                     m.MatchDateUtc >= oneYearAgo)

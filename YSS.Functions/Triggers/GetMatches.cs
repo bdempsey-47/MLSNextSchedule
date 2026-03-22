@@ -59,37 +59,26 @@ public class GetMatches
                 matches = matches.Where(m => m.Region.Division.League.Name == league);
             }
 
-            // Filter by programs (homegrown=12, academy=35, FEST=75 split by competition)
+            // Filter by programs using competition name to split showcase matches:
+            // Academy = tournament 35 OR "AD Showcase"/"AD" competition (any tournament)
+            // Homegrown = tournament 12/75 matches that aren't "AD Showcase"/"AD"
             if (programs.Any())
             {
                 var normalizedPrograms = programs.Select(p => p.ToLower()).ToList();
                 var isHomegrown = normalizedPrograms.Contains("homegrown");
                 var isAcademy = normalizedPrograms.Contains("academy");
 
-                var tournamentIds = new List<int>();
-                if (isHomegrown) tournamentIds.Add(12);
-                if (isAcademy) tournamentIds.Add(35);
+                var academyCompetitions = new[] { "AD Showcase", "AD" };
 
-                // FEST (tournament 75) has both AD Showcase and HD Showcase
-                var includeFest = isHomegrown || isAcademy;
-                var festCompetitions = new List<string>();
-                if (isHomegrown) { festCompetitions.Add("HD Showcase"); festCompetitions.Add("Pro Player Pathway"); festCompetitions.Add("Best Of"); }
-                if (isAcademy) festCompetitions.Add("AD Showcase");
+                _logger.LogInformation("Filtering by programs: {Programs}", string.Join(", ", programs));
 
-                if (includeFest)
-                {
-                    _logger.LogInformation("Filtering by programs: {Programs} (TournamentIds={Ids}, FEST competitions={Comps})",
-                        string.Join(", ", programs), string.Join(", ", tournamentIds), string.Join(", ", festCompetitions));
-                    matches = matches.Where(m =>
-                        tournamentIds.Contains(m.Region.Division.TournamentId) ||
-                        (m.Region.Division.TournamentId == 75 && festCompetitions.Contains(m.Competition.Name)));
-                }
-                else if (tournamentIds.Any())
-                {
-                    _logger.LogInformation("Filtering by programs: {Programs} (TournamentIds={Ids})",
-                        string.Join(", ", programs), string.Join(", ", tournamentIds));
-                    matches = matches.Where(m => tournamentIds.Contains(m.Region.Division.TournamentId));
-                }
+                matches = matches.Where(m =>
+                    (isAcademy && (
+                        m.Region.Division.TournamentId == 35 ||
+                        academyCompetitions.Contains(m.Competition.Name))) ||
+                    (isHomegrown && (
+                        new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
+                        !academyCompetitions.Contains(m.Competition.Name))));
             }
 
             // Map seasons to combined date range
