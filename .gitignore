@@ -109,3 +109,6 @@ coverage.json
 
 # Deprecated files archive
 deprecated/
+
+# Project instructions (sensitive config details)
+CLAUDE.md

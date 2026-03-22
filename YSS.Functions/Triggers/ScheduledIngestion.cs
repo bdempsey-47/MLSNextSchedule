@@ -1,6 +1,7 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using YSS.Functions.Models;
+using YSS.Functions.Services;
 using YSS.Ingestion.Services;
 
 namespace YSS.Functions.Triggers;
@@ -10,17 +11,20 @@ public class ScheduledIngestion
     private readonly IngestionOrchestrator _orchestrator;
     private readonly Modular11Settings _settings;
     private readonly List<TournamentSeason> _seasons;
+    private readonly EloRecomputeService _eloService;
     private readonly ILogger _logger;
 
     public ScheduledIngestion(
         IngestionOrchestrator orchestrator,
         Modular11Settings settings,
         List<TournamentSeason> seasons,
+        EloRecomputeService eloService,
         ILoggerFactory loggerFactory)
     {
         _orchestrator = orchestrator;
         _settings = settings;
         _seasons = seasons;
+        _eloService = eloService;
         _logger = loggerFactory.CreateLogger<ScheduledIngestion>();
     }
 
@@ -72,6 +76,16 @@ public class ScheduledIngestion
                 _logger.LogError(ex, "Error during {Label} ingestion for season {SeasonLabel}", label, season.Label);
                 throw;
             }
+        }
+
+        // Recompute ELO ratings after ingestion
+        try
+        {
+            await _eloService.RecomputeAllAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during ELO recomputation after {Label} ingestion", label);
         }
 
         _logger.LogInformation("{Label} ingestion complete", label);

@@ -19,6 +19,7 @@ export interface Team {
   id: number
   name: string
   logoUrl?: string
+  eloRating?: number
 }
 
 export interface Venue {

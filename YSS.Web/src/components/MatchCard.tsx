@@ -76,9 +76,16 @@ const addToCalendar = (match: Match) => {
 const getInitials = (name: string) =>
   name.split(' ').map(w => w[0]).slice(0, 3).join('').toUpperCase()
 
+const getWinProbability = (ratingA: number, ratingB: number) =>
+  1 / (1 + Math.pow(10, (ratingB - ratingA) / 400))
+
 export default function MatchCard({ match, program, onBadgeClick }: MatchCardProps) {
   const isScored = match.score && match.score !== 'TBD'
   const isAcademy = program === 'academy'
+  const homeElo = match.homeTeam.eloRating
+  const awayElo = match.awayTeam.eloRating
+  const showElo = homeElo && awayElo && homeElo !== 1500 && awayElo !== 1500
+  const homeWinPct = showElo ? Math.round(getWinProbability(homeElo!, awayElo!) * 100) : null
 
   return (
     <div className="match-card">
@@ -125,6 +132,7 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
           >
             {match.homeTeam.name}
           </span>
+          {showElo && <span className="team-elo" title="ELO Rating">{homeElo}</span>}
         </div>
 
         <div className={`match-score ${isScored ? 'scored' : 'tbd'}`}>
@@ -134,7 +142,14 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
               <span className="score-label">Final</span>
             </>
           ) : (
-            <span className="score-tbd">VS</span>
+            <>
+              <span className="score-tbd">VS</span>
+              {homeWinPct != null && (
+                <span className="win-probability" title="Win probability based on ELO ratings">
+                  {homeWinPct}–{100 - homeWinPct}
+                </span>
+              )}
+            </>
           )}
         </div>
 
@@ -156,6 +171,7 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
           >
             {match.awayTeam.name}
           </span>
+          {showElo && <span className="team-elo" title="ELO Rating">{awayElo}</span>}
         </div>
       </div>
 
