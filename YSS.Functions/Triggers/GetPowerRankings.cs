@@ -35,15 +35,16 @@ public class GetPowerRankings
             if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(ageGroup))
                 return await BadRequest(req, "Missing required parameters: program, ageGroup");
 
-            var tournamentIds = program.ToLower() switch
-            {
-                "homegrown" => new[] { 12, 75 },
-                "academy"   => new[] { 35 },
-                _           => Array.Empty<int>()
-            };
+            var isHomegrown = program.ToLower() == "homegrown";
+            var isAcademy = program.ToLower() == "academy";
 
-            if (tournamentIds.Length == 0)
+            if (!isHomegrown && !isAcademy)
                 return await BadRequest(req, "Invalid program. Use 'homegrown' or 'academy'");
+
+            var tournamentIds = isHomegrown ? new[] { 12 } : new[] { 35 };
+            var festCompetitions = isHomegrown
+                ? new[] { "HD Showcase", "Pro Player Pathway", "Best Of" }
+                : new[] { "AD Showcase" };
 
             var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
@@ -53,8 +54,10 @@ public class GetPowerRankings
                 .Include(m => m.AgeGroup)
                 .Include(m => m.Region)
                     .ThenInclude(r => r.Division)
+                .Include(m => m.Competition)
                 .Where(m =>
-                    tournamentIds.Contains(m.Region.Division.TournamentId) &&
+                    (tournamentIds.Contains(m.Region.Division.TournamentId) ||
+                     (m.Region.Division.TournamentId == 75 && festCompetitions.Contains(m.Competition.Name))) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD" &&
                     m.MatchDateUtc >= oneYearAgo)

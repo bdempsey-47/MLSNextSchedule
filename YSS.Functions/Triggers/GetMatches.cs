@@ -59,24 +59,34 @@ public class GetMatches
                 matches = matches.Where(m => m.Region.Division.League.Name == league);
             }
 
-            // Filter by programs (homegrown=12, academy=35)
+            // Filter by programs (homegrown=12, academy=35, FEST=75 split by competition)
             if (programs.Any())
             {
+                var normalizedPrograms = programs.Select(p => p.ToLower()).ToList();
+                var isHomegrown = normalizedPrograms.Contains("homegrown");
+                var isAcademy = normalizedPrograms.Contains("academy");
+
                 var tournamentIds = new List<int>();
-                foreach (var program in programs)
+                if (isHomegrown) tournamentIds.Add(12);
+                if (isAcademy) tournamentIds.Add(35);
+
+                // FEST (tournament 75) has both AD Showcase and HD Showcase
+                var includeFest = isHomegrown || isAcademy;
+                var festCompetitions = new List<string>();
+                if (isHomegrown) { festCompetitions.Add("HD Showcase"); festCompetitions.Add("Pro Player Pathway"); festCompetitions.Add("Best Of"); }
+                if (isAcademy) festCompetitions.Add("AD Showcase");
+
+                if (includeFest)
                 {
-                    if (program.ToLower() == "homegrown")
-                    {
-                        tournamentIds.Add(12);
-                        tournamentIds.Add(75);  // FEST (Pro Player Pathway)
-                    }
-                    else if (program.ToLower() == "academy")
-                        tournamentIds.Add(35);
+                    _logger.LogInformation("Filtering by programs: {Programs} (TournamentIds={Ids}, FEST competitions={Comps})",
+                        string.Join(", ", programs), string.Join(", ", tournamentIds), string.Join(", ", festCompetitions));
+                    matches = matches.Where(m =>
+                        tournamentIds.Contains(m.Region.Division.TournamentId) ||
+                        (m.Region.Division.TournamentId == 75 && festCompetitions.Contains(m.Competition.Name)));
                 }
-                
-                if (tournamentIds.Any())
+                else if (tournamentIds.Any())
                 {
-                    _logger.LogInformation("Filtering by programs: {Programs} (TournamentIds={Ids})", 
+                    _logger.LogInformation("Filtering by programs: {Programs} (TournamentIds={Ids})",
                         string.Join(", ", programs), string.Join(", ", tournamentIds));
                     matches = matches.Where(m => tournamentIds.Contains(m.Region.Division.TournamentId));
                 }
