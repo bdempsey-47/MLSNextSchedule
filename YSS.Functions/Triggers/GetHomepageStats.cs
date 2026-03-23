@@ -46,7 +46,20 @@ public class GetHomepageStats
                 .ToListAsync();
 
             var totalTeams = await _context.Teams.CountAsync();
-            var totalRegions = await _context.Regions.CountAsync();
+
+            // Count only real geographic regions — exclude single-letter groups (A-Z),
+            // tournament brackets (Playoff, Finals, Consolation, NEXT Pro),
+            // MLS Academy, and "Pro Player Pathway" duplicates of existing regions
+            var totalRegions = await _context.Regions
+                .Where(r => r.Name.Length > 1)                          // exclude A, B, C, ...
+                .Where(r => !r.Name.EndsWith("(Pro Player Pathway)"))   // dupes of real regions
+                .Where(r => r.Name != "MLS Academy")
+                .Where(r => r.Name != "Consolation")
+                .Where(r => r.Name != "Playoff")
+                .Where(r => r.Name != "Playoffs")
+                .Where(r => r.Name != "Finals")
+                .Where(r => r.Name != "NEXT Pro")
+                .CountAsync();
 
             // === 1. Top 5 ELO per program per age group ===
             var academyTopElo = BuildTopElo(eloData, allMatches, "AG");
