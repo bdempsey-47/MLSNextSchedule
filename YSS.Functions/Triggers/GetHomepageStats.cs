@@ -28,14 +28,14 @@ public class GetHomepageStats
 
             var oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
-            // Load all data we need in parallel
-            var eloTask = _context.TeamAgeGroupElos
+            // Load all data sequentially (DbContext is not thread-safe)
+            var eloData = await _context.TeamAgeGroupElos
                 .Include(e => e.Team)
                 .Include(e => e.AgeGroup)
                 .Where(e => e.EloRating != 1500)
                 .ToListAsync();
 
-            var matchesTask = _context.Matches
+            var allMatches = await _context.Matches
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Include(m => m.AgeGroup)
@@ -45,13 +45,8 @@ public class GetHomepageStats
                 .Where(m => m.MatchDateUtc >= oneYearAgo)
                 .ToListAsync();
 
-            var totalTeamsTask = _context.Teams.CountAsync();
-            var totalRegionsTask = _context.Regions.CountAsync();
-
-            await Task.WhenAll(eloTask, matchesTask, totalTeamsTask, totalRegionsTask);
-
-            var eloData = eloTask.Result;
-            var allMatches = matchesTask.Result;
+            var totalTeams = await _context.Teams.CountAsync();
+            var totalRegions = await _context.Regions.CountAsync();
 
             // === 1. Top 5 ELO per program per age group ===
             var academyTopElo = BuildTopElo(eloData, allMatches, "AG");
@@ -71,8 +66,8 @@ public class GetHomepageStats
             var quickStats = new QuickStatsDto
             {
                 TotalMatches = allMatches.Count,
-                TotalTeams = totalTeamsTask.Result,
-                TotalRegions = totalRegionsTask.Result,
+                TotalTeams = totalTeams,
+                TotalRegions = totalRegions,
                 CompletedMatches = completedMatches
             };
 
