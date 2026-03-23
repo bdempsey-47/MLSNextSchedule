@@ -190,15 +190,15 @@ function HomePage() {
 
               <div className="elo-leaderboards">
                 <EloTable
-                  title="Academy Top 5"
-                  data={stats!.academyTopElo[eloTab] ?? []}
-                  program="academy"
+                  title="MLS Next Homegrown Top 5"
+                  data={stats!.homegrownTopElo[eloTab] ?? []}
+                  program="homegrown"
                   ageGroup={eloTab}
                 />
                 <EloTable
-                  title="Homegrown Top 5"
-                  data={stats!.homegrownTopElo[eloTab] ?? []}
-                  program="homegrown"
+                  title="MLS Next Academy Top 5"
+                  data={stats!.academyTopElo[eloTab] ?? []}
+                  program="academy"
                   ageGroup={eloTab}
                 />
               </div>
@@ -235,7 +235,7 @@ function HomePage() {
           {/* FEST Region Dominance */}
           {stats && (stats.festHomegrownRegions.length > 0 || stats.festAcademyRegions.length > 0) && (
             <div className="home-section">
-              <h3 className="section-title">FEST - Most Dominant Regions</h3>
+              <h3 className="section-title">2025 MLS Next Fest - Most Dominant Regions</h3>
               <div className="fest-tables">
                 {stats.festHomegrownRegions.length > 0 && (
                   <FestTable title="Homegrown" data={stats.festHomegrownRegions} />

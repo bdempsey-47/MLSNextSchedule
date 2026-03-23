@@ -322,7 +322,7 @@ public class GetHomepageStats
                     maxEloDiff = eloDiff;
                     var winner = homeWon ? m.HomeTeam : m.AwayTeam;
                     var loser = homeWon ? m.AwayTeam : m.HomeTeam;
-                    var program = winner.Program == "AG" ? "Academy" : "Homegrown";
+                    var program = winner.Program == "AG" ? "MLS Next Academy" : "MLS Next Homegrown";
 
                     biggestUpset = new UpsetDto
                     {
@@ -380,7 +380,7 @@ public class GetHomepageStats
 
             if (best.match != null && best.combined > 3000) // both teams have some ELO history
             {
-                var program = best.match.HomeTeam.Program == "AG" ? "Academy" : "Homegrown";
+                var program = best.match.HomeTeam.Program == "AG" ? "MLS Next Academy" : "MLS Next Homegrown";
                 result[group.Key] = new MatchOfWeekDto
                 {
                     HomeTeamName = best.match.HomeTeam.Name,
@@ -419,7 +419,7 @@ public class GetHomepageStats
 
             if (best.match != null && best.combined > 3000)
             {
-                var program = best.match.HomeTeam.Program == "AG" ? "Academy" : "Homegrown";
+                var program = best.match.HomeTeam.Program == "AG" ? "MLS Next Academy" : "MLS Next Homegrown";
                 result[group.Key] = new MatchOfWeekDto
                 {
                     HomeTeamName = best.match.HomeTeam.Name,
