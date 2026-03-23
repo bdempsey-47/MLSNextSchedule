@@ -103,3 +103,65 @@ export interface TeamAnalytics {
   gp: number
   sos: number
 }
+
+// Homepage Stats types
+export interface HomepageStats {
+  academyTopElo: Record<string, MiniRanking[]>
+  homegrownTopElo: Record<string, MiniRanking[]>
+  festHomegrownRegions: RegionDominance[]
+  festAcademyRegions: RegionDominance[]
+  biggestUpsets: Record<string, UpsetInfo>
+  matchesOfTheWeek: Record<string, MatchOfWeek>
+  quickStats: QuickStats
+}
+
+export interface MiniRanking {
+  rank: number
+  teamName: string
+  logoUrl?: string
+  regionName: string
+  eloRating: number
+  eloDelta: number
+}
+
+export interface RegionDominance {
+  rank: number
+  regionName: string
+  wins: number
+  losses: number
+  goalsFor: number
+  goalsAgainst: number
+  goalDifference: number
+}
+
+export interface UpsetInfo {
+  winnerName: string
+  winnerLogoUrl?: string
+  winnerElo: number
+  loserName: string
+  loserLogoUrl?: string
+  loserElo: number
+  score: string
+  eloDiff: number
+  matchDate: string
+  program: string
+}
+
+export interface MatchOfWeek {
+  homeTeamName: string
+  homeLogoUrl?: string
+  homeElo: number
+  awayTeamName: string
+  awayLogoUrl?: string
+  awayElo: number
+  matchDate: string
+  combinedElo: number
+  program: string
+}
+
+export interface QuickStats {
+  totalMatches: number
+  totalTeams: number
+  totalRegions: number
+  completedMatches: number
+}

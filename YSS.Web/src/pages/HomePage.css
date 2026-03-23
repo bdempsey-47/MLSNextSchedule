@@ -1,14 +1,12 @@
 .home-page {
   flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
   padding: 40px 24px;
-  min-height: calc(100vh - 64px);
 }
 
 .home-container {
-  max-width: 900px;
+  max-width: 1100px;
   width: 100%;
 }
 
@@ -59,17 +57,9 @@
   transform: translateY(-4px);
 }
 
-.home-card.schedules-card:hover {
-  border-color: #3b82f6;
-}
-
-.home-card.standings-card:hover {
-  border-color: #10b981;
-}
-
-.home-card.analytics-card:hover {
-  border-color: #8b5cf6;
-}
+.home-card.schedules-card:hover { border-color: #3b82f6; }
+.home-card.standings-card:hover { border-color: #10b981; }
+.home-card.analytics-card:hover { border-color: #8b5cf6; }
 
 .card-icon {
   font-size: 3rem;
@@ -90,6 +80,380 @@
   line-height: 1.5;
 }
 
+/* Quick Stats Bar */
+.quick-stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 48px 0 0;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Loading */
+.home-loading {
+  margin: 48px 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Sections */
+.home-section {
+  margin-top: 48px;
+  text-align: left;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Age Group Tabs */
+.age-tabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.age-tab {
+  padding: 8px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.age-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.age-tab.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+/* ELO Leaderboards */
+.elo-leaderboards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.elo-table-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.elo-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.elo-table-header h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.view-all-link {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+.elo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.elo-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.elo-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text);
+}
+
+.elo-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rank-cell {
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  width: 32px;
+}
+
+.team-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.team-logo-sm {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.region-cell {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.elo-cell {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.delta-cell {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+}
+
+.delta-cell.positive { color: var(--color-success); }
+.delta-cell.negative { color: var(--color-error); }
+td.positive { color: var(--color-success); font-weight: 600; }
+td.negative { color: var(--color-error); font-weight: 600; }
+
+/* Spotlight Row (Upset + MotW) */
+.spotlight-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.spotlight-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  text-align: center;
+}
+
+.spotlight-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.spotlight-program {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.matchup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.matchup-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.matchup-team.winner .team-name {
+  color: var(--color-success);
+}
+
+.matchup-team.loser .team-name {
+  color: var(--color-text-secondary);
+}
+
+.team-logo-md {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.matchup .team-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+  word-break: break-word;
+}
+
+.elo-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.matchup-score {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.matchup-vs {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.upset-diff {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+
+.motw-combined {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.spotlight-date {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.no-data-msg {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: 16px;
+}
+
+/* FEST Region Dominance Tables */
+.fest-tables {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.fest-table-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.fest-table-wrapper h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  padding: 14px 16px;
+  margin: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.fest-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.fest-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.fest-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text);
+}
+
+.fest-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .home-page {
     padding: 24px 16px;
@@ -120,5 +484,44 @@
 
   .home-card h3 {
     font-size: 1.25rem;
+  }
+
+  .quick-stats-bar {
+    gap: 12px;
+    margin-top: 36px;
+  }
+
+  .stat-pill {
+    padding: 12px 18px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .elo-leaderboards {
+    grid-template-columns: 1fr;
+  }
+
+  .spotlight-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fest-tables {
+    grid-template-columns: 1fr;
+  }
+
+  .age-tabs {
+    justify-content: flex-start;
+    padding-bottom: 4px;
+  }
+
+  .matchup {
+    gap: 10px;
+  }
+
+  .team-logo-md {
+    width: 28px;
+    height: 28px;
   }
 }

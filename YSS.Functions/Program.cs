@@ -66,6 +66,7 @@ var host = new HostBuilder()
         services.AddScoped<ScheduledIngestion>();
         services.AddScoped<WeeklyIngestion>();
         services.AddScoped<GetPowerRankings>();
+        services.AddScoped<GetHomepageStats>();
         services.AddScoped<YSS.Functions.Services.EloRecomputeService>();
 
         // Add HTTP client factory
