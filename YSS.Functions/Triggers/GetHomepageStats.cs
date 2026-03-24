@@ -54,6 +54,7 @@ public class GetHomepageStats
                 .Where(r => r.Name.Length > 1)                          // exclude A, B, C, ...
                 .Where(r => !r.Name.EndsWith("(Pro Player Pathway)"))   // dupes of real regions
                 .Where(r => r.Name != "MLS Academy")
+                .Where(r => r.Name != "FEST")
                 .Where(r => r.Name != "Consolation")
                 .Where(r => r.Name != "Playoff")
                 .Where(r => r.Name != "Playoffs")
