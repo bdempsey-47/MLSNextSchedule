@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
-import { Program, AgeGroup, StandingsGroup, Match } from '../types'
+import { Program, AgeGroup, StandingsGroup, QoPRanking, Match } from '../types'
 import '../components/SeasonSelector.css'
 import './StandingsPage.css'
+
+type StandingsType = 'standings' | 'qop'
 
 function StandingsPage() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -18,6 +20,8 @@ function StandingsPage() {
 
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
   const [allGroups, setAllGroups] = useState<StandingsGroup[]>([])
+  const [qopRankings, setQopRankings] = useState<QoPRanking[]>([])
+  const [standingsType, setStandingsType] = useState<StandingsType>('standings')
   const [ageGroupsLoading, setAgeGroupsLoading] = useState(true)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string>('')
@@ -58,6 +62,8 @@ function StandingsPage() {
   useEffect(() => {
     if (!selectedAgeGroup) {
       setAllGroups([])
+      setQopRankings([])
+      setStandingsType('standings')
       setError('')
       return
     }
@@ -81,39 +87,60 @@ function StandingsPage() {
         const response = await fetch(`${apiBase}/standings?${params.toString()}`)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
-        const data: any[] = await response.json()
+        const data = await response.json()
+        const type: StandingsType = (data.Type ?? data.type) === 'qop' ? 'qop' : 'standings'
+        setStandingsType(type)
 
-        const groups: StandingsGroup[] = data.map((g: any) => ({
-          regionName: g.RegionName ?? g.regionName,
-          standings: (g.Standings ?? g.standings ?? []).map((row: any) => ({
-            rank:     row.Rank     ?? row.rank     ?? 0,
-            teamName: row.TeamName ?? row.teamName ?? '',
-            logoUrl:  row.LogoUrl  ?? row.logoUrl,
-            gp:       row.GP       ?? row.gp       ?? 0,
-            w:        row.W        ?? row.w        ?? 0,
-            d:        row.D        ?? row.d        ?? 0,
-            l:        row.L        ?? row.l        ?? 0,
-            gf:       row.GF       ?? row.gf       ?? 0,
-            ga:       row.GA       ?? row.ga       ?? 0,
-            gd:       row.GD       ?? row.gd       ?? 0,
-            pts:      row.Pts      ?? row.pts      ?? 0,
-            ppm:      row.PPM      ?? row.ppm      ?? 0,
-            wpm:      row.WPM      ?? row.wpm      ?? 0,
-            gdpm:     row.GDPM     ?? row.gdpm     ?? 0,
-            gpm:      row.GPM      ?? row.gpm      ?? 0,
+        if (type === 'qop') {
+          const rankings = (data.Rankings ?? data.rankings ?? []).map((r: any): QoPRanking => ({
+            rank:          r.Rank          ?? r.rank          ?? 0,
+            teamName:      r.TeamName      ?? r.teamName      ?? '',
+            logoUrl:       r.LogoUrl       ?? r.logoUrl,
+            divisionName:  r.DivisionName  ?? r.divisionName  ?? '',
+            matchesPlayed: r.MatchesPlayed ?? r.matchesPlayed ?? 0,
+            attScore:      r.AttScore      ?? r.attScore      ?? 0,
+            defScore:      r.DefScore      ?? r.defScore      ?? 0,
+            qualityOfPlay: r.QualityOfPlay ?? r.qualityOfPlay ?? 0,
+            qualification: r.Qualification ?? r.qualification,
           }))
-        }))
-
-        setAllGroups(groups)
-
-        // If the region from URL is no longer present in the new data, clear it
-        if (selectedRegion && !groups.some(g => g.regionName === selectedRegion)) {
+          setQopRankings(rankings)
+          setAllGroups([])
           setSelectedRegion('')
+        } else {
+          const groupsData = data.Groups ?? data.groups ?? []
+          const groups: StandingsGroup[] = groupsData.map((g: any) => ({
+            regionName: g.RegionName ?? g.regionName,
+            standings: (g.Standings ?? g.standings ?? []).map((row: any) => ({
+              rank:     row.Rank     ?? row.rank     ?? 0,
+              teamName: row.TeamName ?? row.teamName ?? '',
+              logoUrl:  row.LogoUrl  ?? row.logoUrl,
+              gp:       row.GP       ?? row.gp       ?? 0,
+              w:        row.W        ?? row.w        ?? 0,
+              d:        row.D        ?? row.d        ?? 0,
+              l:        row.L        ?? row.l        ?? 0,
+              gf:       row.GF       ?? row.gf       ?? 0,
+              ga:       row.GA       ?? row.ga       ?? 0,
+              gd:       row.GD       ?? row.gd       ?? 0,
+              pts:      row.Pts      ?? row.pts      ?? 0,
+              ppm:      row.PPM      ?? row.ppm      ?? 0,
+              wpm:      row.WPM      ?? row.wpm      ?? 0,
+              gdpm:     row.GDPM     ?? row.gdpm     ?? 0,
+              gpm:      row.GPM      ?? row.gpm      ?? 0,
+            }))
+          }))
+
+          setAllGroups(groups)
+          setQopRankings([])
+
+          if (selectedRegion && !groups.some(g => g.regionName === selectedRegion)) {
+            setSelectedRegion('')
+          }
         }
       } catch (err) {
         console.error('Error fetching standings:', err)
         setError(err instanceof Error ? err.message : 'Failed to load standings')
         setAllGroups([])
+        setQopRankings([])
       } finally {
         setLoading(false)
       }
@@ -125,6 +152,8 @@ function StandingsPage() {
   const handleProgramChange = (programs: Program[]) => {
     setSelectedProgram(programs[0] || 'homegrown')
     setAllGroups([])
+    setQopRankings([])
+    setStandingsType('standings')
     setSelectedRegion('')
     setExpandedTeam(null)
     setTeamMatchesCache({})
@@ -233,21 +262,23 @@ function StandingsPage() {
               </select>
             </div>
 
-            <div className="standings-filter-group">
-              <label htmlFor="region-select">Region</label>
-              <select
-                id="region-select"
-                value={selectedRegion}
-                onChange={e => setSelectedRegion(e.target.value)}
-                className="standings-filter-select"
-                disabled={regionOptions.length === 0}
-              >
-                <option value="">All regions</option>
-                {regionOptions.map(name => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </select>
-            </div>
+            {standingsType !== 'qop' && (
+              <div className="standings-filter-group">
+                <label htmlFor="region-select">Region</label>
+                <select
+                  id="region-select"
+                  value={selectedRegion}
+                  onChange={e => setSelectedRegion(e.target.value)}
+                  className="standings-filter-select"
+                  disabled={regionOptions.length === 0}
+                >
+                  <option value="">All regions</option>
+                  {regionOptions.map(name => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {!isFiltersComplete && !loading && (
@@ -270,12 +301,65 @@ function StandingsPage() {
             </div>
           )}
 
-          {isFiltersComplete && !loading && allGroups.length === 0 && !error && (
+          {isFiltersComplete && !loading && allGroups.length === 0 && qopRankings.length === 0 && !error && (
             <div className="no-results">
               <p>No standings available yet</p>
             </div>
           )}
 
+          {/* QoP Rankings Table (U13/U14) */}
+          {standingsType === 'qop' && qopRankings.length > 0 && (
+            <div className="standings-group">
+              <h3 className="standings-region-heading">Quality of Play Rankings</h3>
+              <div className="standings-table-wrapper">
+                <table className="standings-table qop-table">
+                  <thead>
+                    <tr>
+                      <th className="col-rank">#</th>
+                      <th className="col-team">Team</th>
+                      <th className="col-division">Division</th>
+                      <th className="col-mp">MP</th>
+                      <th className="col-att">Att</th>
+                      <th className="col-def">Def</th>
+                      <th className="col-qop">QoP</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {qopRankings.map((r, idx) => (
+                      <tr
+                        key={`${r.rank}-${r.teamName}`}
+                        className={`${idx % 2 === 0 ? 'even' : 'odd'}${r.qualification ? ` qop-${r.qualification}` : ''}`}
+                      >
+                        <td className="col-rank">{r.rank}</td>
+                        <td className="col-team">
+                          {r.logoUrl && (
+                            <img src={r.logoUrl} alt={r.teamName} className="standings-team-logo" />
+                          )}
+                          <span className="standings-team-name">{r.teamName}</span>
+                          {r.qualification && (
+                            <span className={`qop-badge qop-badge-${r.qualification}`}>
+                              {r.qualification === 'championship' ? 'C' : 'P'}
+                            </span>
+                          )}
+                        </td>
+                        <td className="col-division">{r.divisionName}</td>
+                        <td className="col-mp">{r.matchesPlayed}</td>
+                        <td className="col-att">{r.attScore.toFixed(2)}</td>
+                        <td className="col-def">{r.defScore.toFixed(2)}</td>
+                        <td className="col-qop">{r.qualityOfPlay.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="qop-legend">
+                <span className="qop-legend-item"><span className="qop-badge qop-badge-championship">C</span> Championship Qualified</span>
+                <span className="qop-legend-item"><span className="qop-badge qop-badge-premier">P</span> Premier Qualified</span>
+              </div>
+            </div>
+          )}
+
+          {/* Standard Standings (U15+) */}
           {displayedGroups.map(group => (
             <div key={group.regionName} className="standings-group">
               <h3 className="standings-region-heading">{group.regionName}</h3>

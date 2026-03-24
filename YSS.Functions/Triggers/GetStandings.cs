@@ -86,14 +86,26 @@ public class GetStandings
 
             _logger.LogInformation("Modular11 response size: {Length} chars", html.Length);
 
-            var groups = ParseStandings(html);
-            _logger.LogInformation("Parsed {Count} standing groups", groups.Count);
+            var isQoP = html.Contains("Quality of Play");
 
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
             response.Headers.Add("Access-Control-Allow-Origin", "*");
             response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
             response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
-            await response.WriteAsJsonAsync(groups);
+
+            if (isQoP)
+            {
+                var rankings = ParseQoPRankings(html);
+                _logger.LogInformation("Parsed {Count} QoP rankings", rankings.Count);
+                await response.WriteAsJsonAsync(new { Type = "qop", Rankings = rankings });
+            }
+            else
+            {
+                var groups = ParseStandings(html);
+                _logger.LogInformation("Parsed {Count} standing groups", groups.Count);
+                await response.WriteAsJsonAsync(new { Type = "standings", Groups = groups });
+            }
+
             return response;
         }
         catch (Exception ex)
@@ -225,6 +237,121 @@ public class GetStandings
             _logger.LogWarning(ex, "Failed to parse a team row");
             return null;
         }
+    }
+
+    private List<QoPRankingDto> ParseQoPRankings(string html)
+    {
+        var context  = BrowsingContext.New(Configuration.Default);
+        var document = context.OpenAsync(req => req.Content(html)).Result;
+
+        // Extract division headings in DOM order for group → division mapping
+        var headingElements = document.QuerySelectorAll(".container-group-text p[data-title]");
+        var divisionNames = headingElements
+            .Select(el => el.GetAttribute("data-title")?.Trim() ?? "")
+            .Where(n => !string.IsNullOrWhiteSpace(n))
+            .ToList();
+
+        // Group team rows by js-group, preserving first-occurrence order
+        var teamRows = document.QuerySelectorAll(".form_row.main_row[js-group]");
+        var groupOrder = new List<string>();
+        var rowsByGroup = new Dictionary<string, List<IElement>>();
+
+        foreach (var row in teamRows)
+        {
+            var groupId = row.GetAttribute("js-group") ?? "";
+            if (!rowsByGroup.ContainsKey(groupId))
+            {
+                rowsByGroup[groupId] = new List<IElement>();
+                groupOrder.Add(groupId);
+            }
+            rowsByGroup[groupId].Add(row);
+        }
+
+        var result = new List<QoPRankingDto>();
+        var globalRank = 1;
+
+        for (int i = 0; i < groupOrder.Count; i++)
+        {
+            var groupId = groupOrder[i];
+            var divisionName = i < divisionNames.Count ? divisionNames[i] : "";
+
+            foreach (var row in rowsByGroup[groupId])
+            {
+                var dto = ParseQoPRow(row, divisionName, globalRank);
+                if (dto != null)
+                {
+                    result.Add(dto);
+                    globalRank++;
+                }
+            }
+        }
+
+        // Sort by QoP descending for a cross-region national ranking
+        result = result.OrderByDescending(r => r.QualityOfPlay).ToList();
+        for (int i = 0; i < result.Count; i++)
+            result[i].Rank = i + 1;
+
+        return result;
+    }
+
+    private QoPRankingDto? ParseQoPRow(IElement row, string divisionName, int rank)
+    {
+        try
+        {
+            var teamName = row.QuerySelector("p[data-title]")?.GetAttribute("data-title")?.Trim() ?? "";
+            var logoUrl  = row.QuerySelector(".container-img img")?.GetAttribute("src");
+
+            if (string.IsNullOrEmpty(teamName)) return null;
+
+            // QoP data cells use col-sm-3 (not col-sm-1 like standard standings)
+            var dataCells = row.QuerySelectorAll(".col-sm-3.pad-0.hidden-xs").ToList();
+
+            var mp  = dataCells.Count > 0 && int.TryParse(dataCells[0].TextContent?.Trim(), out var mp_) ? mp_ : 0;
+            var att = dataCells.Count > 1 && decimal.TryParse(dataCells[1].TextContent?.Trim(),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var att_) ? att_ : 0m;
+            var def = dataCells.Count > 2 && decimal.TryParse(dataCells[2].TextContent?.Trim(),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var def_) ? def_ : 0m;
+            var qop = dataCells.Count > 3 && decimal.TryParse(dataCells[3].TextContent?.Trim(),
+                System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var qop_) ? qop_ : 0m;
+
+            // Qualification status
+            string? qualification = null;
+            if (row.QuerySelector(".mark-qop-championship") != null)
+                qualification = "championship";
+            else if (row.QuerySelector(".mark-qop-premier") != null)
+                qualification = "premier";
+
+            return new QoPRankingDto
+            {
+                Rank           = rank,
+                TeamName       = teamName,
+                LogoUrl        = logoUrl,
+                DivisionName   = divisionName,
+                MatchesPlayed  = mp,
+                AttScore       = att,
+                DefScore       = def,
+                QualityOfPlay  = qop,
+                Qualification  = qualification,
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to parse a QoP row");
+            return null;
+        }
+    }
+
+    public class QoPRankingDto
+    {
+        public int Rank { get; set; }
+        public string TeamName { get; set; } = string.Empty;
+        public string? LogoUrl { get; set; }
+        public string DivisionName { get; set; } = string.Empty;
+        public int MatchesPlayed { get; set; }
+        public decimal AttScore { get; set; }
+        public decimal DefScore { get; set; }
+        public decimal QualityOfPlay { get; set; }
+        public string? Qualification { get; set; }
     }
 
     public class StandingsGroupDto

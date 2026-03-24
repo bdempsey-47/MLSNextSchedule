@@ -403,6 +403,85 @@
   font-weight: 500;
 }
 
+/* QoP Table Styles */
+.qop-table .col-division {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qop-table .col-mp {
+  width: 45px;
+  text-align: center;
+}
+
+.qop-table .col-att,
+.qop-table .col-def {
+  width: 60px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.qop-table .col-qop {
+  width: 65px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: rgba(200, 16, 46, 0.05);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Qualification row highlights */
+.qop-table tr.qop-championship {
+  border-left: 3px solid #10b981;
+}
+
+.qop-table tr.qop-premier {
+  border-left: 3px solid #3b82f6;
+}
+
+/* Qualification badges */
+.qop-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.qop-badge-championship {
+  background: #10b981;
+}
+
+.qop-badge-premier {
+  background: #3b82f6;
+}
+
+/* QoP Legend */
+.qop-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.qop-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .standings-page {

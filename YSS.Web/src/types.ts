@@ -165,3 +165,15 @@ export interface QuickStats {
   totalRegions: number
   completedMatches: number
 }
+
+export interface QoPRanking {
+  rank: number
+  teamName: string
+  logoUrl?: string
+  divisionName: string
+  matchesPlayed: number
+  attScore: number
+  defScore: number
+  qualityOfPlay: number
+  qualification?: string  // "championship" | "premier" | null
+}
