@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef} from 'react'
 import { Program, Region, AgeGroup, Team } from '../types'
 import { mockMatches } from '../mockData'
 import resetIcon from '../../images/reset_icon.png'
@@ -23,8 +23,10 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
     setTeamSearch(initialTeam)
   }, [initialTeam])
   
-  const [teams, setTeams] = useState<Team[]>([])
-  const [teamsLoading, setTeamsLoading] = useState(false)
+  const [searchSuggestions, setSearchSuggestions] = useState<Team[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
   const [divisions, setDivisions] = useState<any[]>([])
   const [regions, setRegions] = useState<any[]>([])
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
@@ -85,53 +87,6 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
     fetchStaticOptions()
   }, [])
 
-  // Re-fetch teams whenever program, season, or region changes — list must reflect current context
-  useEffect(() => {
-    const controller = new AbortController()
-
-    // Clear stale list immediately so old suggestions never flash while the new fetch is in flight
-    setTeams([])
-    setTeamsLoading(true)
-
-    const fetchTeams = async () => {
-      const apiBase = import.meta.env.VITE_API_BASE_URL
-      if (!apiBase) {
-        setTeams(Array.from(new Set(
-          mockMatches.flatMap(m => [m.homeTeam, m.awayTeam])
-        )).sort((a, b) => a.name.localeCompare(b.name)))
-        setTeamsLoading(false)
-        return
-      }
-      try {
-        const params = new URLSearchParams()
-        programs.forEach(p => params.append('program', p === 'homegrown' ? 'Homegrown' : 'Academy'))
-        seasons.forEach(s => params.append('season', s))
-        if (region)  params.set('region', region)
-        console.log(`🔍 fetchTeams → programs=${programs.join('+')} seasons=${seasons.join('+')} region=${region || '(all)'}`)
-        const teamsRes = await fetch(`${apiBase}/teams?${params.toString()}`, { signal: controller.signal })
-        if (teamsRes.ok) {
-          const teamsData = await teamsRes.json()
-          const mapped = teamsData.map((t: any) => ({
-            id: t.Id || t.id,
-            name: t.Name || t.name
-          })).sort((a: Team, b: Team) => a.name.localeCompare(b.name))
-          console.log(`✅ fetchTeams → ${mapped.length} teams loaded`)
-          setTeams(mapped)
-        }
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.error('Error fetching teams:', err)
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setTeamsLoading(false)
-        }
-      }
-    }
-
-    fetchTeams()
-    return () => controller.abort()
-  }, [programs, seasons, region])
 
   // Fetch regions when programs change
   useEffect(() => {
@@ -173,6 +128,71 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
     fetchRegions()
   }, [programs])
 
+  // When user types in team search, debounce and call the API
+useEffect(() => {
+  // Clear the previous debounce timer
+  if (debounceTimerRef.current) {
+    clearTimeout(debounceTimerRef.current)
+  }
+
+  // If input is too short, clear suggestions
+  if (teamSearch.length < 2) {
+    setSearchSuggestions([])
+    setSearchLoading(false)
+    return
+  }
+
+  // Abort any in-flight request
+  if (abortControllerRef.current) {
+    abortControllerRef.current.abort()
+  }
+
+  // Set up new debounce (300ms)
+  const timer = setTimeout(async () => {
+    const apiBase = import.meta.env.VITE_API_BASE_URL
+    if (!apiBase) {
+      // Fallback to mock data if no API
+      setSearchSuggestions(Array.from(new Set(
+        mockMatches.flatMap(m => [m.homeTeam, m.awayTeam])
+      )).filter(t => t.name.toLowerCase().includes(teamSearch.toLowerCase())).sort((a, b) => a.name.localeCompare(b.name)))
+      return
+    }
+
+    setSearchLoading(true)
+    const newController = new AbortController()
+    abortControllerRef.current = newController
+
+    try {
+      const response = await fetch(
+        `${apiBase}/search-teams?q=${encodeURIComponent(teamSearch)}`,
+        { signal: newController.signal }
+      )
+      
+      if (response.ok) {
+        const results = await response.json()
+        // Transform the response to match Team type
+        const teams = results.map((t: any) => ({
+          id: t.Id || t.id,
+          name: t.Name || t.name
+        }))
+        setSearchSuggestions(teams)
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Error searching teams:', err)
+      }
+    } finally {
+      setSearchLoading(false)
+    }
+  }, 300) // 300ms debounce
+
+  debounceTimerRef.current = timer
+
+  return () => {
+    clearTimeout(timer)
+  }
+}, [teamSearch])
+
   // Notify parent when team filter changes; region and ageGroups are controlled by parent
   useEffect(() => {
     onFiltersChange(region, teamSearch, selectedAgeGroups)
@@ -184,13 +204,6 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
       : [...selectedAgeGroups, ageGroup]
     onFiltersChange(region, teamSearch, next)
   }
-
-  // Filter team suggestions based on current input
-  const filteredSuggestions = teamSearch.length > 0
-    ? teams.filter(team =>
-        team.name.toLowerCase().includes(teamSearch.toLowerCase())
-      )
-    : teams
 
   const handleSelectTeam = (teamName: string) => {
     setTeamSearch(teamName)
@@ -230,7 +243,7 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
           <input
             id="team-search"
             type="text"
-            placeholder={loading || teamsLoading ? "Loading teams..." : "Team name..."}
+            placeholder={loading ? "Loading filters..." : "Team name..."}
             value={teamSearch}
             onChange={(e) => {
               setTeamSearch(e.target.value)
@@ -251,9 +264,9 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
               ×
             </button>
           )}
-          {showSuggestions && !teamsLoading && filteredSuggestions.length > 0 && (
+          {showSuggestions && !searchLoading && searchSuggestions.length > 0 && (
             <div className="autocomplete-suggestions">
-              {filteredSuggestions.map((team) => (
+              {searchSuggestions.map((team) => (
                 <div
                   key={`${team.id}-${team.name}`}
                   className="suggestion-item"

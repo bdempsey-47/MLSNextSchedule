@@ -22,6 +22,8 @@ var host = new HostBuilder()
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(connectionString));
 
+        services.AddHttpClient<SearchTeams>();
+
         // Register ingestion services
         var modular11Config = config.GetSection("Modular11");
         var ageGroupsStr = modular11Config["AgeGroups"] ?? "";
