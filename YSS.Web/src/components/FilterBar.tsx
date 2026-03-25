@@ -20,7 +20,9 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
   // Keep the text input in sync when parent sets the team externally
   // (e.g. clicking a team name on a match card)
   useEffect(() => {
-    setTeamSearch(initialTeam)
+    if (initialTeam !== teamSearch) {
+      setTeamSearch(initialTeam)
+    }
   }, [initialTeam])
   
   const [searchSuggestions, setSearchSuggestions] = useState<Team[]>([])
@@ -135,8 +137,8 @@ useEffect(() => {
     clearTimeout(debounceTimerRef.current)
   }
 
-  // If input is too short, clear suggestions
-  if (teamSearch.length < 2) {
+  // If input is too short or suggestions are dismissed, clear suggestions
+  if (teamSearch.length < 2 || !showSuggestions) {
     setSearchSuggestions([])
     setSearchLoading(false)
     return
