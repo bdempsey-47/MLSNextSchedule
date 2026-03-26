@@ -111,13 +111,13 @@ namespace YSS.Functions.Triggers
                     //Extract just the fields you need (Id, Name, Program)
                     if (item.TryGetProperty("Id", out var id) &&
                         item.TryGetProperty("Name", out var name) &&
-                        item.TryGetProperty("Program", out var program))
+                        item.TryGetProperty("Program", out var prog))
                     {
                         teams.Add(new
                         {
                             Id = id.GetString(),
                             Name = name.GetString(),
-                            Program = program.GetString()
+                            Program = prog.GetString()
                         });
                     }
                 }
