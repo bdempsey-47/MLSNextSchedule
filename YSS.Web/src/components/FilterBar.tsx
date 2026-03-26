@@ -21,6 +21,7 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
   // (e.g. clicking a team name on a match card)
   useEffect(() => {
     if (initialTeam !== teamSearch) {
+      parentSyncRef.current = true
       setTeamSearch(initialTeam)
     }
   }, [initialTeam])
@@ -28,6 +29,7 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
   const [searchSuggestions, setSearchSuggestions] = useState<Team[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const parentSyncRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const [divisions, setDivisions] = useState<any[]>([])
   const [regions, setRegions] = useState<any[]>([])
@@ -137,8 +139,14 @@ useEffect(() => {
     clearTimeout(debounceTimerRef.current)
   }
 
-  // If input is too short or suggestions are dismissed, clear suggestions
-  if (teamSearch.length < 2 || !showSuggestions) {
+  // Skip search when change came from parent sync (not user typing)
+  if (parentSyncRef.current) {
+    parentSyncRef.current = false
+    return
+  }
+
+  // If input is too short, clear suggestions
+  if (teamSearch.length < 2) {
     setSearchSuggestions([])
     setSearchLoading(false)
     return
