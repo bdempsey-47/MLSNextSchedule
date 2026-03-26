@@ -17,7 +17,7 @@ namespace YSS.Functions.Triggers
         private readonly ILogger<SearchTeams> _logger;
         private readonly string _searchApiKey;
         private readonly string _searchServiceName = "yss-ai-search-prod";
-        private readonly string _indexName = "search-teamnames";
+        private readonly string _indexName = "search-teamname";
 
         public SearchTeams(HttpClient httpClient, ILogger<SearchTeams> logger, IConfiguration config)
         {
