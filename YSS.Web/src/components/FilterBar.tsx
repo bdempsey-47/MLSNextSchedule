@@ -134,6 +134,8 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
 
   // When user types in team search, debounce and call the API
 useEffect(() => {
+  console.log('[SearchEffect] fired', { teamSearch, parentSync: parentSyncRef.current, showSuggestions })
+
   // Clear the previous debounce timer
   if (debounceTimerRef.current) {
     clearTimeout(debounceTimerRef.current)
@@ -141,12 +143,14 @@ useEffect(() => {
 
   // Skip search when change came from parent sync (not user typing)
   if (parentSyncRef.current) {
+    console.log('[SearchEffect] skipping — parent sync')
     parentSyncRef.current = false
     return
   }
 
   // If input is too short, clear suggestions
   if (teamSearch.length < 2) {
+    console.log('[SearchEffect] skipping — too short')
     setSearchSuggestions([])
     setSearchLoading(false)
     return
@@ -172,19 +176,23 @@ useEffect(() => {
     const newController = new AbortController()
     abortControllerRef.current = newController
 
+    console.log('[SearchEffect] fetching', `${apiBase}/search-teams?q=${encodeURIComponent(teamSearch)}`)
     try {
       const response = await fetch(
         `${apiBase}/search-teams?q=${encodeURIComponent(teamSearch)}`,
         { signal: newController.signal }
       )
-      
+
+      console.log('[SearchEffect] response status', response.status)
       if (response.ok) {
         const results = await response.json()
+        console.log('[SearchEffect] results', results)
         // Transform the response to match Team type
         const teams = results.map((t: any) => ({
           id: t.Id || t.id,
           name: t.Name || t.name
         }))
+        console.log('[SearchEffect] setting suggestions', teams)
         setSearchSuggestions(teams)
       }
     } catch (err: any) {
