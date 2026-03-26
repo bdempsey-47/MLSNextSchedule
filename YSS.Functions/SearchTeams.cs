@@ -44,6 +44,7 @@ namespace YSS.Functions.Triggers
             }
 
             var query = searchQuery.ToString().Trim();
+            var program = req.Query["program"];
 
             // Minimum 2 characters to avoid overly broad queries
             if (query.Length < 2)
@@ -60,6 +61,12 @@ namespace YSS.Functions.Triggers
             {
                 Search = $"{query}*" // Wildcard search for partial matches
             };
+
+            // Filter by program (AG=Academy, HG=Homegrown) if provided
+            if (!string.IsNullOrWhiteSpace(program))
+            {
+                searchRequest.Filter = $"Program eq '{program}'";
+            }
 
             var searchUrl = $"https://{_searchServiceName}.search.windows.net/indexes/{_indexName}/docs/search?api-version=2024-07-01";
 
@@ -131,8 +138,12 @@ namespace YSS.Functions.Triggers
             [JsonPropertyName("search")]
             public required string Search { get; set; }  
 
-            [JsonPropertyName("queryType")] 
+            [JsonPropertyName("queryType")]
             public string QueryType { get; set; } = "full"; //Enables wildcard and fuzzy search
+
+            [JsonPropertyName("filter")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+            public string? Filter { get; set; }
         }
     }
 

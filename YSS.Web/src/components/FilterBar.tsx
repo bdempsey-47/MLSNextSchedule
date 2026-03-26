@@ -176,10 +176,16 @@ useEffect(() => {
     const newController = new AbortController()
     abortControllerRef.current = newController
 
-    console.log('[SearchEffect] fetching', `${apiBase}/search-teams?q=${encodeURIComponent(teamSearch)}`)
+    const params = new URLSearchParams({ q: teamSearch })
+    // Map frontend program names to search index codes
+    if (programs.length === 1) {
+      params.set('program', programs[0] === 'homegrown' ? 'HG' : 'AG')
+    }
+
+    console.log('[SearchEffect] fetching', `${apiBase}/search-teams?${params}`)
     try {
       const response = await fetch(
-        `${apiBase}/search-teams?q=${encodeURIComponent(teamSearch)}`,
+        `${apiBase}/search-teams?${params}`,
         { signal: newController.signal }
       )
 
