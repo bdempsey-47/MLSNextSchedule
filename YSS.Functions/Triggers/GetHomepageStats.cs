@@ -340,19 +340,18 @@ public class GetHomepageStats
                 if (eloDiff > maxEloDiff)
                 {
                     maxEloDiff = eloDiff;
-                    var winner = homeWon ? m.HomeTeam : m.AwayTeam;
-                    var loser = homeWon ? m.AwayTeam : m.HomeTeam;
-                    var program = winner.Program == "AG" ? "MLS Next Academy" : "MLS Next Homegrown";
+                    var program = m.HomeTeam.Program == "AG" ? "MLS Next Academy" : "MLS Next Homegrown";
 
                     biggestUpset = new UpsetDto
                     {
-                        WinnerName = winner.Name,
-                        WinnerLogoUrl = winner.LogoUrl,
-                        WinnerElo = winnerElo,
-                        LoserName = loser.Name,
-                        LoserLogoUrl = loser.LogoUrl,
-                        LoserElo = loserElo,
+                        HomeTeamName = m.HomeTeam.Name,
+                        HomeLogoUrl = m.HomeTeam.LogoUrl,
+                        HomeElo = homeElo,
+                        AwayTeamName = m.AwayTeam.Name,
+                        AwayLogoUrl = m.AwayTeam.LogoUrl,
+                        AwayElo = awayElo,
                         Score = m.Score!,
+                        HomeWon = homeWon,
                         EloDiff = eloDiff,
                         MatchDate = m.MatchDateUtc.ToString("yyyy-MM-dd"),
                         Program = program
@@ -513,13 +512,14 @@ public class GetHomepageStats
 
     public class UpsetDto
     {
-        public string WinnerName { get; set; } = string.Empty;
-        public string? WinnerLogoUrl { get; set; }
-        public int WinnerElo { get; set; }
-        public string LoserName { get; set; } = string.Empty;
-        public string? LoserLogoUrl { get; set; }
-        public int LoserElo { get; set; }
+        public string HomeTeamName { get; set; } = string.Empty;
+        public string? HomeLogoUrl { get; set; }
+        public int HomeElo { get; set; }
+        public string AwayTeamName { get; set; } = string.Empty;
+        public string? AwayLogoUrl { get; set; }
+        public int AwayElo { get; set; }
         public string Score { get; set; } = string.Empty;
+        public bool HomeWon { get; set; }
         public int EloDiff { get; set; }
         public string MatchDate { get; set; } = string.Empty;
         public string Program { get; set; } = string.Empty;

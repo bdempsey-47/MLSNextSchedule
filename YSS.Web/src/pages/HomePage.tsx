@@ -31,13 +31,14 @@ function transformRegionDominance(r: any): RegionDominance {
 
 function transformUpset(u: any): UpsetInfo {
   return {
-    winnerName:    u.WinnerName    ?? u.winnerName    ?? '',
-    winnerLogoUrl: u.WinnerLogoUrl ?? u.winnerLogoUrl,
-    winnerElo:     u.WinnerElo     ?? u.winnerElo     ?? 0,
-    loserName:     u.LoserName     ?? u.loserName     ?? '',
-    loserLogoUrl:  u.LoserLogoUrl  ?? u.loserLogoUrl,
-    loserElo:      u.LoserElo      ?? u.loserElo      ?? 0,
+    homeTeamName:  u.HomeTeamName  ?? u.homeTeamName  ?? '',
+    homeLogoUrl:   u.HomeLogoUrl   ?? u.homeLogoUrl,
+    homeElo:       u.HomeElo       ?? u.homeElo       ?? 0,
+    awayTeamName:  u.AwayTeamName  ?? u.awayTeamName  ?? '',
+    awayLogoUrl:   u.AwayLogoUrl   ?? u.awayLogoUrl,
+    awayElo:       u.AwayElo       ?? u.awayElo       ?? 0,
     score:         u.Score         ?? u.score         ?? '',
+    homeWon:       u.HomeWon       ?? u.homeWon       ?? false,
     eloDiff:       u.EloDiff       ?? u.eloDiff       ?? 0,
     matchDate:     u.MatchDate     ?? u.matchDate     ?? '',
     program:       u.Program       ?? u.program       ?? '',
@@ -304,16 +305,16 @@ function UpsetCard({ upset }: { upset: UpsetInfo }) {
       <div className="spotlight-label">Biggest Upset (Last 30 Days)</div>
       <div className="spotlight-program">{upset.program}</div>
       <div className="matchup">
-        <div className="matchup-team winner">
-          {upset.winnerLogoUrl && <img src={upset.winnerLogoUrl} alt="" className="team-logo-md" />}
-          <span className="team-name">{upset.winnerName}</span>
-          <span className="elo-badge">{upset.winnerElo}</span>
+        <div className={`matchup-team ${upset.homeWon ? 'winner' : 'loser'}`}>
+          {upset.homeLogoUrl && <img src={upset.homeLogoUrl} alt="" className="team-logo-md" />}
+          <span className="team-name">{upset.homeTeamName}</span>
+          <span className="elo-badge">{upset.homeElo}</span>
         </div>
         <div className="matchup-score">{upset.score}</div>
-        <div className="matchup-team loser">
-          {upset.loserLogoUrl && <img src={upset.loserLogoUrl} alt="" className="team-logo-md" />}
-          <span className="team-name">{upset.loserName}</span>
-          <span className="elo-badge">{upset.loserElo}</span>
+        <div className={`matchup-team ${!upset.homeWon ? 'winner' : 'loser'}`}>
+          {upset.awayLogoUrl && <img src={upset.awayLogoUrl} alt="" className="team-logo-md" />}
+          <span className="team-name">{upset.awayTeamName}</span>
+          <span className="elo-badge">{upset.awayElo}</span>
         </div>
       </div>
       <div className="upset-diff">+{upset.eloDiff} ELO gap</div>

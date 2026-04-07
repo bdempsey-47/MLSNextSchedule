@@ -135,13 +135,14 @@ export interface RegionDominance {
 }
 
 export interface UpsetInfo {
-  winnerName: string
-  winnerLogoUrl?: string
-  winnerElo: number
-  loserName: string
-  loserLogoUrl?: string
-  loserElo: number
+  homeTeamName: string
+  homeLogoUrl?: string
+  homeElo: number
+  awayTeamName: string
+  awayLogoUrl?: string
+  awayElo: number
   score: string
+  homeWon: boolean
   eloDiff: number
   matchDate: string
   program: string
