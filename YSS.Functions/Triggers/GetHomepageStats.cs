@@ -300,7 +300,8 @@ public class GetHomepageStats
         List<Data.Entities.Match> allMatches,
         List<Data.Entities.TeamAgeGroupElo> eloData)
     {
-        var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+        var now = DateTime.UtcNow;
+        var thirtyDaysAgo = now.AddDays(-30);
 
         // Build ELO lookup: (teamId, ageGroupId) -> rating
         var eloLookup = eloData.ToDictionary(
@@ -308,7 +309,8 @@ public class GetHomepageStats
             e => e.EloRating);
 
         var completedRecent = allMatches
-            .Where(m => !string.IsNullOrEmpty(m.Score) && m.Score != "TBD" && m.MatchDateUtc >= thirtyDaysAgo)
+            .Where(m => !string.IsNullOrEmpty(m.Score) && m.Score != "TBD"
+                        && m.MatchDateUtc >= thirtyDaysAgo && m.MatchDateUtc <= now)
             .ToList();
 
         var result = new Dictionary<string, UpsetDto>();
@@ -329,7 +331,11 @@ public class GetHomepageStats
                 var homeWon = hs > aws;
                 var winnerElo = homeWon ? homeElo : awayElo;
                 var loserElo = homeWon ? awayElo : homeElo;
-                var eloDiff = loserElo - winnerElo; // positive = upset (underdog won)
+
+                // Only upset if lower-ELO team won (underdog victory)
+                if (winnerElo >= loserElo) continue;
+
+                var eloDiff = loserElo - winnerElo; // positive = upset magnitude
 
                 if (eloDiff > maxEloDiff)
                 {
