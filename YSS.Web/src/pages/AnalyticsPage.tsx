@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
-import { Program, AgeGroup, TeamAnalytics, PowerRanking } from '../types'
+import { Program, AgeGroup, TeamAnalytics, PowerRanking, Match } from '../types'
 import '../components/SeasonSelector.css'
 import './AnalyticsPage.css'
 
@@ -64,6 +64,10 @@ function AnalyticsPage() {
   const [error, setError]           = useState<string>('')
   const [showEloInfo, setShowEloInfo] = useState(false)
 
+  const [expandedTeam, setExpandedTeam]           = useState<string | null>(null)
+  const [teamMatchesCache, setTeamMatchesCache]   = useState<Record<string, Match[]>>({})
+  const [teamMatchesLoading, setTeamMatchesLoading] = useState<string | null>(null)
+
   // Sync URL params
   useEffect(() => {
     const params = new URLSearchParams()
@@ -108,6 +112,9 @@ function AnalyticsPage() {
           setLoading(false)
           return
         }
+
+        setExpandedTeam(null)
+        setTeamMatchesCache({})
 
         const analyticsParams = new URLSearchParams()
         analyticsParams.set('program', selectedProgram)
@@ -176,6 +183,44 @@ function AnalyticsPage() {
     setAllTeams([])
     setPowerRankings([])
     setSelectedRegion('')
+    setExpandedTeam(null)
+    setTeamMatchesCache({})
+  }
+
+  const handleTeamClick = async (teamName: string) => {
+    if (expandedTeam === teamName) { setExpandedTeam(null); return }
+    setExpandedTeam(teamName)
+    if (teamMatchesCache[teamName]) return
+
+    try {
+      setTeamMatchesLoading(teamName)
+      const apiBase = import.meta.env.VITE_API_BASE_URL
+      const params = new URLSearchParams()
+      params.set('program', selectedProgram)
+      params.set('ageGroup', selectedAgeGroup)
+      params.set('team', teamName)
+      const res = await fetch(`${apiBase}/matches?${params.toString()}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data: any[] = await res.json()
+      const matches: Match[] = data.map((m: any) => ({
+        matchId:      m.matchId      ?? m.MatchId,
+        matchDateUtc: m.matchDateUtc ?? m.MatchDateUtc,
+        score:        m.score        ?? m.Score        ?? null,
+        gender:       m.gender       ?? m.Gender       ?? '',
+        homeTeam:    { id: m.HomeTeam?.Id    || m.homeTeam?.id    || 0, name: m.HomeTeam?.Name    || m.homeTeam?.name    || '', logoUrl: m.HomeTeam?.LogoUrl || m.homeTeam?.logoUrl },
+        awayTeam:    { id: m.AwayTeam?.Id    || m.awayTeam?.id    || 0, name: m.AwayTeam?.Name    || m.awayTeam?.name    || '', logoUrl: m.AwayTeam?.LogoUrl || m.awayTeam?.logoUrl },
+        venue:       { id: m.Venue?.Id       || m.venue?.id       || 0, name: m.Venue?.Name       || m.venue?.name       || '' },
+        ageGroup:    { id: m.AgeGroup?.Id    || m.ageGroup?.id    || 0, name: m.AgeGroup?.Name    || m.ageGroup?.name    || '' },
+        region:      { id: m.Region?.Id      || m.region?.id      || 0, name: m.Region?.Name      || m.region?.name      || '' },
+        competition: { id: m.Competition?.Id || m.competition?.id || 0, name: m.Competition?.Name || m.competition?.name || '' },
+      }))
+      setTeamMatchesCache(prev => ({ ...prev, [teamName]: matches }))
+    } catch (e) {
+      console.error('Failed to fetch team matches', e)
+      setTeamMatchesCache(prev => ({ ...prev, [teamName]: [] }))
+    } finally {
+      setTeamMatchesLoading(null)
+    }
   }
 
   // Region options derived from all teams fetched
@@ -307,56 +352,100 @@ function AnalyticsPage() {
             </thead>
             <tbody>
               {displayedTeams.map((team, idx) => (
-                <tr key={`${team.teamName}-${idx}`} className={idx % 2 === 0 ? 'even' : 'odd'}>
-                  <td className="col-rank">{idx + 1}</td>
-                  <td className="col-team">
-                    <div className="team-cell-inner">
-                      {team.logoUrl && (
-                        <img src={team.logoUrl} alt={team.teamName} className="analytics-team-logo" />
-                      )}
-                      <span className="analytics-team-name">{team.teamName}</span>
-                    </div>
-                  </td>
-                  <td className="col-region">
-                    {team.regionNames.length > 0
-                      ? team.regionNames.join(', ')
-                      : team.regionName}
-                  </td>
-                  <td className="col-gp">{team.gp}</td>
-                  <td className="col-sos">{team.sos.toFixed(2)}</td>
-                  <td className="col-last5">
-                    <div className="last5-badges">
-                      {team.last5.map((result, i) => (
-                        <span key={i} className={`result-badge ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'}`}>
-                          {result}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="col-momentum">
-                    <span className="momentum-badge">
-                      <span className="momentum-arrow">{getMomentumArrow(team.momentumScore)}</span>
-                      {team.momentumScore.toFixed(1)}
-                    </span>
-                  </td>
-                  <td className="col-elo">
-                    {team.eloRating != null ? (
-                      <span className="elo-rating">{team.eloRating}</span>
-                    ) : (
-                      <span className="elo-na">—</span>
-                    )}
-                  </td>
-                  <td className="col-delta">
-                    {team.eloDelta != null ? (
-                      <span className={`elo-delta ${team.eloDelta > 2 ? 'positive' : team.eloDelta < -2 ? 'negative' : 'neutral'}`}>
-                        {team.eloDelta > 2 ? '↗' : team.eloDelta < -2 ? '↘' : '→'}{' '}
-                        {team.eloDelta > 0 ? '+' : ''}{team.eloDelta.toFixed(1)}
+                <React.Fragment key={`${team.teamName}-${idx}`}>
+                  <tr
+                    className={`${idx % 2 === 0 ? 'even' : 'odd'} analytics-team-row${expandedTeam === team.teamName ? ' expanded' : ''}`}
+                    onClick={() => handleTeamClick(team.teamName)}
+                  >
+                    <td className="col-rank">{idx + 1}</td>
+                    <td className="col-team">
+                      <div className="team-cell-inner">
+                        <span className={`analytics-chevron${expandedTeam === team.teamName ? ' open' : ''}`}>▶</span>
+                        {team.logoUrl && (
+                          <img src={team.logoUrl} alt={team.teamName} className="analytics-team-logo" />
+                        )}
+                        <span className="analytics-team-name">{team.teamName}</span>
+                      </div>
+                    </td>
+                    <td className="col-region">
+                      {team.regionNames.length > 0
+                        ? team.regionNames.join(', ')
+                        : team.regionName}
+                    </td>
+                    <td className="col-gp">{team.gp}</td>
+                    <td className="col-sos">{team.sos.toFixed(2)}</td>
+                    <td className="col-last5">
+                      <div className="last5-badges">
+                        {team.last5.map((result, i) => (
+                          <span key={i} className={`result-badge ${result === 'W' ? 'win' : result === 'D' ? 'draw' : 'loss'}`}>
+                            {result}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="col-momentum">
+                      <span className="momentum-badge">
+                        <span className="momentum-arrow">{getMomentumArrow(team.momentumScore)}</span>
+                        {team.momentumScore.toFixed(1)}
                       </span>
-                    ) : (
-                      <span className="elo-na">—</span>
-                    )}
-                  </td>
-                </tr>
+                    </td>
+                    <td className="col-elo">
+                      {team.eloRating != null ? (
+                        <span className="elo-rating">{team.eloRating}</span>
+                      ) : (
+                        <span className="elo-na">—</span>
+                      )}
+                    </td>
+                    <td className="col-delta">
+                      {team.eloDelta != null ? (
+                        <span className={`elo-delta ${team.eloDelta > 2 ? 'positive' : team.eloDelta < -2 ? 'negative' : 'neutral'}`}>
+                          {team.eloDelta > 2 ? '↗' : team.eloDelta < -2 ? '↘' : '→'}{' '}
+                          {team.eloDelta > 0 ? '+' : ''}{team.eloDelta.toFixed(1)}
+                        </span>
+                      ) : (
+                        <span className="elo-na">—</span>
+                      )}
+                    </td>
+                  </tr>
+
+                  {expandedTeam === team.teamName && (
+                    <tr className="team-matches-expansion">
+                      <td colSpan={9}>
+                        {teamMatchesLoading === team.teamName ? (
+                          <div className="team-matches-loading">
+                            <div className="analytics-spinner small" /> Loading matches…
+                          </div>
+                        ) : (teamMatchesCache[team.teamName] ?? []).filter(m => m.score && m.score !== 'TBD').length === 0 ? (
+                          <div className="team-matches-empty">No completed matches found</div>
+                        ) : (
+                          <ul className="team-matches-list">
+                            {(teamMatchesCache[team.teamName] ?? [])
+                              .filter(m => m.score && m.score !== 'TBD')
+                              .sort((a, b) => new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime())
+                              .map(m => {
+                                const date = new Date(m.matchDateUtc).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                return (
+                                  <li key={m.matchId} className="team-match-row">
+                                    <span className="match-date">{date}</span>
+                                    <span className="match-region">{m.region.name}</span>
+                                    <span className="match-home">
+                                      <span className="match-name">{m.homeTeam.name.trim()}</span>
+                                      {m.homeTeam.logoUrl && <img src={m.homeTeam.logoUrl} alt="" className="match-logo" />}
+                                    </span>
+                                    <span className="match-score">{m.score}</span>
+                                    <span className="match-away">
+                                      {m.awayTeam.logoUrl && <img src={m.awayTeam.logoUrl} alt="" className="match-logo" />}
+                                      <span className="match-name">{m.awayTeam.name.trim()}</span>
+                                    </span>
+                                  </li>
+                                )
+                              })}
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

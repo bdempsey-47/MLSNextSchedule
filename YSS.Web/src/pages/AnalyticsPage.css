@@ -408,6 +408,137 @@
   color: var(--color-text);
 }
 
+/* Clickable team rows + drill-down */
+.analytics-team-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.analytics-team-row:hover {
+  background: rgba(10, 22, 40, 0.06) !important;
+}
+.analytics-team-row.expanded {
+  background: rgba(10, 22, 40, 0.04) !important;
+}
+
+.analytics-chevron {
+  font-size: 0.6rem;
+  color: var(--color-text-secondary);
+  margin-right: 4px;
+  display: inline-block;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.analytics-chevron.open {
+  transform: rotate(90deg);
+}
+
+.analytics-spinner.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.team-matches-expansion td {
+  padding: 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.team-matches-loading,
+.team-matches-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.team-matches-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team-match-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+.team-match-row:last-child {
+  border-bottom: none;
+}
+
+.match-date {
+  position: absolute;
+  left: 0;
+  width: 48px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  padding-top: 2px;
+}
+
+.match-region {
+  position: absolute;
+  right: 0;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.match-home,
+.match-away {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 160px;
+  min-width: 0;
+}
+
+.match-home {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.match-away {
+  justify-content: flex-start;
+}
+
+.match-name {
+  font-size: 0.8rem;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.match-logo {
+  width: auto;
+  max-width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.match-score {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  min-width: 36px;
+  text-align: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .analytics-page {
