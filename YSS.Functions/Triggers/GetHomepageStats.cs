@@ -129,7 +129,7 @@ public class GetHomepageStats
 
         var grouped = eloData
             .Where(e => e.Team.Program == program)
-            .GroupBy(e => e.AgeGroup.Name);
+            .GroupBy(e => NormalizeAgeGroup(e.AgeGroup.Name));
 
         foreach (var group in grouped)
         {
@@ -192,7 +192,7 @@ public class GetHomepageStats
             .Where(m => isAcademy
                 ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
                 : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD")))
-            .GroupBy(m => m.AgeGroup.Name);
+            .GroupBy(m => NormalizeAgeGroup(m.AgeGroup.Name));
 
         foreach (var group in programMatches)
         {
@@ -315,7 +315,7 @@ public class GetHomepageStats
 
         var result = new Dictionary<string, UpsetDto>();
 
-        foreach (var group in completedRecent.GroupBy(m => m.AgeGroup.Name))
+        foreach (var group in completedRecent.GroupBy(m => NormalizeAgeGroup(m.AgeGroup.Name)))
         {
             UpsetDto? biggestUpset = null;
             var maxEloDiff = 0;
@@ -385,7 +385,7 @@ public class GetHomepageStats
 
         var result = new Dictionary<string, MatchOfWeekDto>();
 
-        foreach (var group in upcoming.GroupBy(m => m.AgeGroup.Name))
+        foreach (var group in upcoming.GroupBy(m => NormalizeAgeGroup(m.AgeGroup.Name)))
         {
             var best = group
                 .Select(m =>
@@ -421,7 +421,7 @@ public class GetHomepageStats
             .OrderByDescending(m => m.MatchDateUtc)
             .ToList();
 
-        foreach (var group in recentCompleted.GroupBy(m => m.AgeGroup.Name))
+        foreach (var group in recentCompleted.GroupBy(m => NormalizeAgeGroup(m.AgeGroup.Name)))
         {
             if (result.ContainsKey(group.Key)) continue;
 
@@ -467,6 +467,9 @@ public class GetHomepageStats
         return int.TryParse(parts[0].Trim(), out homeScore) &&
                int.TryParse(parts[1].Trim(), out awayScore);
     }
+
+    private static string NormalizeAgeGroup(string name) =>
+        name == "U18/U19" ? "U18/19" : name;
 
     // === Helper class ===
     private class RegionStats
