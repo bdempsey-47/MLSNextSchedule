@@ -468,8 +468,13 @@ public class GetHomepageStats
                int.TryParse(parts[1].Trim(), out awayScore);
     }
 
-    private static string NormalizeAgeGroup(string name) =>
-        name == "U18/U19" ? "U18/19" : name;
+    private static string NormalizeAgeGroup(string name) => name switch
+    {
+        "U19"     => "U18/19",
+        "U18/U19" => "U18/19",
+        "U18-19"  => "U18/19",
+        _         => name
+    };
 
     // === Helper class ===
     private class RegionStats
