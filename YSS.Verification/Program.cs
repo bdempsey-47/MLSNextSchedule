@@ -133,22 +133,22 @@ Console.WriteLine("\n=== All ingestion runs complete ===");
 // --- NJ Cup ingestion helper ---
 static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configuration.IConfiguration config)
 {
-    using var httpClient = new HttpClient();
+    using var httpClient = new HttpClient(new HttpClientHandler
+    {
+        AutomaticDecompression = System.Net.DecompressionMethods.GZip
+            | System.Net.DecompressionMethods.Deflate
+            | System.Net.DecompressionMethods.Brotli
+    });
     Console.WriteLine("=== NJ Cup Ingestion Mode ===");
 
-    // Azure SQL token from args or environment
-    string? azureToken = args.Length > 1 ? args[1] : null;
-
-    if (string.IsNullOrEmpty(azureToken))
-    {
-        azureToken = Environment.GetEnvironmentVariable("AZURE_SQL_ACCESS_TOKEN");
-    }
+    // Use AzureCliCredential so we get a fresh token per age group — no static token needed.
+    var credential = new Azure.Identity.AzureCliCredential();
+    var connectionString = config.GetConnectionString("DefaultConnection");
+    var isAzure = string.IsNullOrEmpty(connectionString) || connectionString.Contains("windows.net");
 
     const int tournamentId = 84;
     const string divisionName = "NJ Cup Qualifier";
-    var connectionString = config.GetConnectionString("DefaultConnection");
 
-    // Age group mappings (from GetStandings.cs pattern)
     var ageGroups = new Dictionary<string, string>
     {
         ["21"] = "U13",
@@ -159,33 +159,16 @@ static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configur
         ["26"] = "U18/19"
     };
 
-    Action<DbContextOptionsBuilder> configureDb = options =>
-    {
-        if (!string.IsNullOrEmpty(azureToken))
-        {
-            var connection = new SqlConnection(
-                "Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            connection.AccessToken = azureToken;
-            options.UseSqlServer(connection);
-        }
-        else
-        {
-            options.UseSqlServer(connectionString);
-        }
-    };
-
-    var allParsedMatches = new List<ParsedMatch>();
-    var seenMatchIds = new HashSet<string>();
     var parser = new ScheduleParser(LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ScheduleParser>());
+    var seenMatchIds = new HashSet<string>();
+    var totalStored = 0;
 
-    // Loop through each age group
     foreach (var (ageUid, ageGroupName) in ageGroups)
     {
-        Console.WriteLine($"\n{'='} Processing {ageGroupName} (UID={ageUid}) {'='}\n");
+        Console.WriteLine($"\n=== Processing {ageGroupName} (UID={ageUid}) ===\n");
 
-        // Step 1: Fetch and parse get_teams to discover team IDs for this age group
+        // Step 1: Discover team IDs for this age group
         string teamsUrl = $"https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age={ageUid}&UID_gender=1&UID_event=84&list_type=groupplay&open_page=1";
-
         var teamRequest = new HttpRequestMessage(HttpMethod.Get, teamsUrl);
         teamRequest.Headers.Add("x-request-type", "ajax");
         teamRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
@@ -208,17 +191,17 @@ static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configur
 
         if (teamIds.Count == 0)
         {
-            Console.WriteLine($"⚠ {ageGroupName}: No teams found in get_teams response.");
+            Console.WriteLine($"⚠ {ageGroupName}: No teams found.");
             continue;
         }
 
         Console.WriteLine($"✓ {ageGroupName}: Discovered {teamIds.Count} teams");
 
-        // Step 2: Fetch matches for each team in this age group
+        // Step 2: Fetch matches for each team
+        var ageGroupMatches = new List<ParsedMatch>();
         foreach (var teamId in teamIds)
         {
             string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=&age={ageUid}&tournament=84&group=&list_type=groupplay";
-
             var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
             matchRequest.Headers.Add("x-request-type", "ajax");
             matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
@@ -226,73 +209,74 @@ static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configur
 
             try
             {
-                // Throttle requests
-                await Task.Delay(Random.Shared.Next(1000, 3000));
-
+                await Task.Delay(Random.Shared.Next(500, 1500));
                 var matchResponse = await httpClient.SendAsync(matchRequest);
                 matchResponse.EnsureSuccessStatusCode();
                 var matchHtml = await matchResponse.Content.ReadAsStringAsync();
 
                 var parsedMatches = parser.ParseMatches(matchHtml, tournamentId);
-
-                // Override division to NJ Cup Qualifier and set age group
                 foreach (var match in parsedMatches)
                 {
                     match.Division = divisionName;
-                    match.AgeGroup = ageGroupName;  // Override with actual age group
+                    match.AgeGroup = ageGroupName;
+                    if (seenMatchIds.Add(match.MatchId))
+                        ageGroupMatches.Add(match);
                 }
 
-                // Deduplicate by MatchId
-                foreach (var match in parsedMatches)
-                {
-                    if (!seenMatchIds.Contains(match.MatchId))
-                    {
-                        seenMatchIds.Add(match.MatchId);
-                        allParsedMatches.Add(match);
-                    }
-                }
-
-                Console.WriteLine($"  Team {teamId}: {parsedMatches.Count} matches ({seenMatchIds.Count} unique total)");
+                Console.WriteLine($"  Team {teamId}: {parsedMatches.Count} matches");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"  Team {teamId}: ERROR - {ex.Message}");
             }
         }
+
+        if (ageGroupMatches.Count == 0)
+        {
+            Console.WriteLine($"⚠ {ageGroupName}: No matches parsed, skipping upsert.");
+            continue;
+        }
+
+        // Step 3: Get a fresh token and upsert immediately for this age group
+        Console.WriteLine($"\nUpserting {ageGroupMatches.Count} {ageGroupName} matches...");
+        Action<DbContextOptionsBuilder> configureDb = options =>
+        {
+            if (isAzure)
+            {
+                var tokenResult = credential.GetToken(
+                    new Azure.Core.TokenRequestContext(["https://database.windows.net/.default"]),
+                    CancellationToken.None);
+                var connection = new SqlConnection(
+                    "Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                connection.AccessToken = tokenResult.Token;
+                options.UseSqlServer(connection);
+            }
+            else
+            {
+                options.UseSqlServer(connectionString);
+            }
+        };
+
+        var services = new ServiceCollection();
+        services.AddDbContext<AppDbContext>(configureDb);
+        services.AddScoped<MatchUpsertService>();
+        services.AddLogging(b => { b.AddConsole(); b.SetMinimumLevel(LogLevel.Warning); });
+
+        await using var sp = services.BuildServiceProvider();
+        var upsertService = sp.GetRequiredService<MatchUpsertService>();
+        try
+        {
+            await upsertService.UpsertMatchesAsync(ageGroupMatches, "MLS Next", CancellationToken.None);
+            totalStored += ageGroupMatches.Count;
+            Console.WriteLine($"✅ {ageGroupName}: {ageGroupMatches.Count} matches stored.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ {ageGroupName} upsert failed: {ex.Message}");
+        }
     }
 
-    Console.WriteLine($"\n{'='} Summary {'='}\n✓ Collected {allParsedMatches.Count} total matches across all age groups\n");
-
-    if (allParsedMatches.Count == 0)
-    {
-        Console.WriteLine("❌ No matches found. Aborting.");
-        return;
-    }
-
-    // Step 3: Upsert to database
-    Console.WriteLine("Upserting to database...");
-
-    var services = new ServiceCollection();
-    services.AddDbContext<AppDbContext>(configureDb);
-    services.AddScoped<MatchUpsertService>();
-    services.AddLogging(b => { b.AddConsole(); b.SetMinimumLevel(LogLevel.Information); });
-
-    var sp = services.BuildServiceProvider();
-    var upsertService = sp.GetRequiredService<MatchUpsertService>();
-
-    try
-    {
-        await upsertService.UpsertMatchesAsync(allParsedMatches, "MLS Next", CancellationToken.None);
-        Console.WriteLine($"✅ NJ Cup ingestion complete: {allParsedMatches.Count} matches stored.");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ NJ Cup ingestion failed: {ex.Message}");
-    }
-    finally
-    {
-        await sp.DisposeAsync();
-    }
+    Console.WriteLine($"\n=== Done: {totalStored} total matches stored across all age groups ===");
 }
 
 static List<int> ExtractTeamIdsFromGroupPlayHtml(string html)

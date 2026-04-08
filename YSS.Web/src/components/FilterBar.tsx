@@ -307,7 +307,7 @@ useEffect(() => {
       <div className="filter-section">
         <label>Age</label>
         <div className="age-group-checkboxes">
-          {ageGroups.map(ageGroup => (
+          {ageGroups.filter(ag => ag.name !== 'U18/19').map(ageGroup => (
             <label key={ageGroup.id} className="checkbox-label">
               <input
                 type="checkbox"
