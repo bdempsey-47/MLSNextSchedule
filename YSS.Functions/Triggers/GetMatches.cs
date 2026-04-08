@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using YSS.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace YSS.Functions.Triggers;
 
@@ -185,7 +187,17 @@ public class GetMatches
             response.Headers.Add("Access-Control-Allow-Origin", "*");
             response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
             response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
-            await response.WriteAsJsonAsync(results);
+            response.Headers.Add("Content-Type", "application/json");
+
+            // Custom JSON serialization to include [NotMapped] properties
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                ReferenceHandler = ReferenceHandler.IgnoreCycles
+            };
+            var json = JsonSerializer.Serialize(results, jsonOptions);
+            await response.WriteStringAsync(json);
             return response;
         }
         catch (Exception ex)
