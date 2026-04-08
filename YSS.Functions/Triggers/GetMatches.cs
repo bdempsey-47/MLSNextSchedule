@@ -150,6 +150,37 @@ public class GetMatches
                     match.AwayTeam.EloRating = awayElo;
             }
 
+            // Compute ELO ranks for all teams across age groups
+            var allElosForAgeGroups = await _context.TeamAgeGroupElos
+                .Where(e => ageGroupIds.Contains(e.AgeGroupId))
+                .ToListAsync();
+
+            var rankLookup = new Dictionary<(int teamId, int ageGroupId), (int rank, int total)>();
+            foreach (var ageGroupId in ageGroupIds)
+            {
+                var sorted = allElosForAgeGroups
+                    .Where(e => e.AgeGroupId == ageGroupId)
+                    .OrderByDescending(e => e.EloRating)
+                    .ToList();
+                for (int i = 0; i < sorted.Count; i++)
+                    rankLookup[(sorted[i].TeamId, ageGroupId)] = (i + 1, sorted.Count);
+            }
+
+            // Overlay ELO ranks onto teams
+            foreach (var match in results)
+            {
+                if (rankLookup.TryGetValue((match.HomeTeamId, match.AgeGroupId), out var homeRank))
+                {
+                    match.HomeTeam.EloRank = homeRank.rank;
+                    match.HomeTeam.EloTotal = homeRank.total;
+                }
+                if (rankLookup.TryGetValue((match.AwayTeamId, match.AgeGroupId), out var awayRank))
+                {
+                    match.AwayTeam.EloRank = awayRank.rank;
+                    match.AwayTeam.EloTotal = awayRank.total;
+                }
+            }
+
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
             response.Headers.Add("Access-Control-Allow-Origin", "*");
             response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");

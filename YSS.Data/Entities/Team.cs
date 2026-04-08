@@ -1,5 +1,6 @@
 namespace YSS.Data.Entities;
 
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 public class Team
@@ -15,4 +16,11 @@ public class Team
     public ICollection<Match> HomeMatches { get; set; } = new List<Match>();
     [JsonIgnore]
     public ICollection<Match> AwayMatches { get; set; } = new List<Match>();
+
+    // ELO rank (non-persisted, computed at runtime)
+    [NotMapped]
+    public int? EloRank { get; set; }
+
+    [NotMapped]
+    public int? EloTotal { get; set; }
 }

@@ -21,6 +21,8 @@ export interface Team {
   program?: string  // "AG" | "HG"
   logoUrl?: string
   eloRating?: number
+  eloRank?: number
+  eloTotal?: number
 }
 
 export interface Venue {

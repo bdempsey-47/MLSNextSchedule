@@ -132,7 +132,11 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
           >
             {match.homeTeam.name}
           </span>
-          {showElo && <span className="team-elo" title="ELO Rating">{homeElo}</span>}
+          {showElo && (
+            <span className="team-elo" title="ELO Rating">
+              {homeElo}{match.homeTeam.eloRank ? ` · #${match.homeTeam.eloRank}` : ''}
+            </span>
+          )}
         </div>
 
         <div className={`match-score ${isScored ? 'scored' : 'tbd'}`}>
@@ -171,7 +175,11 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
           >
             {match.awayTeam.name}
           </span>
-          {showElo && <span className="team-elo" title="ELO Rating">{awayElo}</span>}
+          {showElo && (
+            <span className="team-elo" title="ELO Rating">
+              {awayElo}{match.awayTeam.eloRank ? ` · #${match.awayTeam.eloRank}` : ''}
+            </span>
+          )}
         </div>
       </div>
 
