@@ -79,14 +79,18 @@ function SchedulesPage() {
       name: apiData.HomeTeam?.Name || apiData.homeTeam?.name,
       program: apiData.HomeTeam?.Program || apiData.homeTeam?.program || undefined,
       logoUrl: apiData.HomeTeam?.LogoUrl || apiData.homeTeam?.logoUrl || undefined,
-      eloRating: apiData.HomeTeam?.EloRating || apiData.homeTeam?.eloRating || undefined
+      eloRating: apiData.HomeTeam?.EloRating || apiData.homeTeam?.eloRating || undefined,
+      eloRank: apiData.HomeTeam?.EloRank || apiData.homeTeam?.eloRank || undefined,
+      eloTotal: apiData.HomeTeam?.EloTotal || apiData.homeTeam?.eloTotal || undefined
     },
     awayTeam: {
       id: apiData.AwayTeam?.Id || apiData.awayTeam?.id,
       name: apiData.AwayTeam?.Name || apiData.awayTeam?.name,
       program: apiData.AwayTeam?.Program || apiData.awayTeam?.program || undefined,
       logoUrl: apiData.AwayTeam?.LogoUrl || apiData.awayTeam?.logoUrl || undefined,
-      eloRating: apiData.AwayTeam?.EloRating || apiData.awayTeam?.eloRating || undefined
+      eloRating: apiData.AwayTeam?.EloRating || apiData.awayTeam?.eloRating || undefined,
+      eloRank: apiData.AwayTeam?.EloRank || apiData.awayTeam?.eloRank || undefined,
+      eloTotal: apiData.AwayTeam?.EloTotal || apiData.awayTeam?.eloTotal || undefined
     },
     matchDateUtc: apiData.MatchDateUtc || apiData.matchDateUtc,
     venue: {
