@@ -73,6 +73,7 @@ public class GetMatches
                 matches = matches.Where(m =>
                     (isAcademy && (
                         m.Region.Division.TournamentId == 35 ||
+                        m.Region.Division.TournamentId == 84 ||
                         m.Competition.Name.StartsWith("AD"))) ||
                     (isHomegrown && (
                         new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
