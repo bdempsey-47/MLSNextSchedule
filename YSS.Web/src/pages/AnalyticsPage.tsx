@@ -284,7 +284,7 @@ function AnalyticsPage() {
             className="analytics-filter-select"
           >
             <option value="">Select an age group</option>
-            {ageGroups.map(ag => (
+            {ageGroups.filter(ag => ag.name !== 'U18/19').map(ag => (
               <option key={ag.id} value={ag.name}>{ag.name}</option>
             ))}
           </select>
