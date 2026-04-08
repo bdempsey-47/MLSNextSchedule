@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AngleSharp;
+using AngleSharp.Dom;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,13 @@ var config = new ConfigurationBuilder()
 if (args.Length > 0 && args[0] == "--fest")
 {
     await RunFestIngestion(args, config);
+    return;
+}
+
+// Check for --njcup mode
+if (args.Length > 0 && args[0] == "--njcup")
+{
+    await RunNjCupIngestion(args, config);
     return;
 }
 
@@ -121,8 +130,218 @@ Console.WriteLine("\n=== All ingestion runs complete ===");
     await sp.DisposeAsync();
 }
 
+// --- NJ Cup ingestion helper ---
+static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configuration.IConfiguration config)
+{
+    using var httpClient = new HttpClient();
+    Console.WriteLine("=== NJ Cup Ingestion Mode ===");
+
+    // Collect session token from args or prompt
+    string sessionToken = args.Length > 1 ? args[1] : string.Empty;
+    string? azureToken = args.Length > 2 ? args[2] : null;
+
+    if (string.IsNullOrEmpty(sessionToken))
+    {
+        Console.Write("Paste the Modular11 session token (_token value): ");
+        sessionToken = Console.ReadLine()?.Trim() ?? string.Empty;
+    }
+    if (string.IsNullOrEmpty(azureToken))
+    {
+        azureToken = Environment.GetEnvironmentVariable("AZURE_SQL_ACCESS_TOKEN");
+    }
+
+    if (string.IsNullOrEmpty(sessionToken))
+    {
+        Console.WriteLine("ERROR: Session token is required.");
+        return;
+    }
+
+    const int tournamentId = 84;
+    const string divisionName = "NJ Cup Qualifier";
+    var connectionString = config.GetConnectionString("DefaultConnection");
+
+    Action<DbContextOptionsBuilder> configureDb = options =>
+    {
+        if (!string.IsNullOrEmpty(azureToken))
+        {
+            var connection = new SqlConnection(
+                "Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            connection.AccessToken = azureToken;
+            options.UseSqlServer(connection);
+        }
+        else
+        {
+            options.UseSqlServer(connectionString);
+        }
+    };
+
+    Console.WriteLine($"\nDiscovering groups and teams from Modular11...");
+
+    // Step 1: Fetch and parse get_teams to discover groups and team IDs
+    string teamsUrl = "https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age=22&UID_gender=1&UID_event=84&list_type=groupplay&open_page=1";
+
+    var teamRequest = new HttpRequestMessage(HttpMethod.Get, teamsUrl);
+    teamRequest.Headers.Add("_token", sessionToken);
+    teamRequest.Headers.Add("x-csrf-token", sessionToken);
+    teamRequest.Headers.Add("x-request-type", "ajax");
+    teamRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+    teamRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+    HttpResponseMessage teamsResponse;
+    try
+    {
+        teamsResponse = await httpClient.SendAsync(teamRequest);
+        teamsResponse.EnsureSuccessStatusCode();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"ERROR fetching get_teams: {ex.Message}");
+        return;
+    }
+
+    var teamsHtml = await teamsResponse.Content.ReadAsStringAsync();
+    var teamIds = ExtractTeamIdsFromGroupPlayHtml(teamsHtml);
+
+    if (teamIds.Count == 0)
+    {
+        Console.WriteLine("ERROR: No teams found in get_teams response.");
+        Console.WriteLine($"HTML preview (first 2000 chars): {teamsHtml.Substring(0, Math.Min(2000, teamsHtml.Length))}");
+        return;
+    }
+
+    Console.WriteLine($"✓ Discovered {teamIds.Count} teams");
+
+    // Step 2: Fetch matches for each team and accumulate
+    var allParsedMatches = new List<ParsedMatch>();
+    var seenMatchIds = new HashSet<string>();
+    var parser = new ScheduleParser(LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ScheduleParser>());
+
+    foreach (var teamId in teamIds)
+    {
+        // Build URL for this team: pagination_data=[teamId], bracket, group from the get_teams discovery
+        // For simplicity, we use a generic call and let Modular11 handle pagination
+        string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=39&age=22&tournament=84&group=1&list_type=groupplay";
+
+        var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
+        matchRequest.Headers.Add("_token", sessionToken);
+        matchRequest.Headers.Add("x-csrf-token", sessionToken);
+        matchRequest.Headers.Add("x-request-type", "ajax");
+        matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+        matchRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+        try
+        {
+            // Throttle requests
+            await Task.Delay(Random.Shared.Next(1000, 3000));
+
+            var matchResponse = await httpClient.SendAsync(matchRequest);
+            matchResponse.EnsureSuccessStatusCode();
+            var matchHtml = await matchResponse.Content.ReadAsStringAsync();
+
+            var parsedMatches = parser.ParseMatches(matchHtml, tournamentId);
+
+            // Override division to NJ Cup Qualifier
+            foreach (var match in parsedMatches)
+            {
+                match.Division = divisionName;
+            }
+
+            // Deduplicate by MatchId
+            foreach (var match in parsedMatches)
+            {
+                if (!seenMatchIds.Contains(match.MatchId))
+                {
+                    seenMatchIds.Add(match.MatchId);
+                    allParsedMatches.Add(match);
+                }
+            }
+
+            Console.WriteLine($"  Team {teamId}: {parsedMatches.Count} matches ({seenMatchIds.Count} unique total)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  Team {teamId}: ERROR - {ex.Message}");
+        }
+    }
+
+    Console.WriteLine($"\n✓ Collected {allParsedMatches.Count} total matches\n");
+
+    // Step 3: Upsert to database
+    Console.WriteLine("Upserting to database...");
+
+    var services = new ServiceCollection();
+    services.AddDbContext<AppDbContext>(configureDb);
+    services.AddScoped<MatchUpsertService>();
+    services.AddLogging(b => { b.AddConsole(); b.SetMinimumLevel(LogLevel.Information); });
+
+    var sp = services.BuildServiceProvider();
+    var upsertService = sp.GetRequiredService<MatchUpsertService>();
+
+    try
+    {
+        await upsertService.UpsertMatchesAsync(allParsedMatches, "MLS Next", CancellationToken.None);
+        Console.WriteLine($"✅ NJ Cup ingestion complete: {allParsedMatches.Count} matches stored.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ NJ Cup ingestion failed: {ex.Message}");
+    }
+    finally
+    {
+        await sp.DisposeAsync();
+    }
+}
+
+static List<int> ExtractTeamIdsFromGroupPlayHtml(string html)
+{
+    var teamIds = new List<int>();
+    try
+    {
+        var context = AngleSharp.BrowsingContext.New(AngleSharp.Configuration.Default);
+        var document = context.OpenAsync(req => req.Content(html)).Result;
+
+        // Try to find team rows via .form_row.main_row[js-group] or similar
+        var teamRows = document.QuerySelectorAll(".form_row.main_row");
+
+        foreach (var row in teamRows)
+        {
+            // Try to extract team ID from data-id, data-team-id, or href
+            var dataId = row.GetAttribute("data-id");
+            if (!string.IsNullOrEmpty(dataId) && int.TryParse(dataId, out var id))
+            {
+                teamIds.Add(id);
+                continue;
+            }
+
+            var dataTeamId = row.GetAttribute("data-team-id");
+            if (!string.IsNullOrEmpty(dataTeamId) && int.TryParse(dataTeamId, out var id2))
+            {
+                teamIds.Add(id2);
+                continue;
+            }
+
+            // Try to find href with team ID pattern
+            var link = row.QuerySelector("a[href*='/team/']");
+            if (link != null)
+            {
+                var href = link.GetAttribute("href") ?? "";
+                var match = System.Text.RegularExpressions.Regex.Match(href, @"/team/(\d+)");
+                if (match.Success && int.TryParse(match.Groups[1].Value, out var id3))
+                {
+                    teamIds.Add(id3);
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"ERROR parsing team IDs: {ex.Message}");
+    }
+    return teamIds.Distinct().ToList();
+}
+
 // --- FEST ingestion helper ---
-static async Task RunFestIngestion(string[] args, IConfiguration config)
+static async Task RunFestIngestion(string[] args, Microsoft.Extensions.Configuration.IConfiguration config)
 {
     Console.WriteLine("=== FEST Ingestion Mode ===");
 

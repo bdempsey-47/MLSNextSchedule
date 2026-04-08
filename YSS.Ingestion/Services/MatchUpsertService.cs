@@ -145,6 +145,7 @@ public class MatchUpsertService
     {
         if (competitionName.StartsWith("AD")) return "AG";
         if (tournamentId == 35) return "AG";
+        if (tournamentId == 84) return "AG";  // NJ Cup Qualifier
         return "HG";
     }
 
@@ -210,12 +211,13 @@ public class MatchUpsertService
         if (_divisionCache.TryGetValue(tournamentId, out var cached))
             return cached;
 
-        // Map tournament ID to division name: 12=Homegrown, 35=Academy, 75=FEST (Homegrown)
+        // Map tournament ID to division name: 12=Homegrown, 35=Academy, 75=FEST (Homegrown), 84=NJ Cup
         var divisionName = tournamentId switch
         {
             12 => "Homegrown",
             35 => "Academy",
             75 => "Homegrown",    // FEST (Pro Player Pathway)
+            84 => "Academy",      // NJ Cup Qualifier
             _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };
 
