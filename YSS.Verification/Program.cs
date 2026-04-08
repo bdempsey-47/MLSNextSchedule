@@ -16,7 +16,7 @@ using YSS.Ingestion.Services;
 // Load configuration
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("local.settings.json", optional: false, reloadOnChange: false)
+    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: false)
     .AddEnvironmentVariables()
     .Build();
 
