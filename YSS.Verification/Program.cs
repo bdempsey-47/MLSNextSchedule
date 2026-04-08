@@ -160,6 +160,17 @@ static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configur
     const string divisionName = "NJ Cup Qualifier";
     var connectionString = config.GetConnectionString("DefaultConnection");
 
+    // Age group mappings (from GetStandings.cs pattern)
+    var ageGroups = new Dictionary<string, string>
+    {
+        ["21"] = "U13",
+        ["22"] = "U14",
+        ["33"] = "U15",
+        ["14"] = "U16",
+        ["15"] = "U17",
+        ["26"] = "U18/19"
+    };
+
     Action<DbContextOptionsBuilder> configureDb = options =>
     {
         if (!string.IsNullOrEmpty(azureToken))
@@ -175,96 +186,104 @@ static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configur
         }
     };
 
-    Console.WriteLine($"\nDiscovering groups and teams from Modular11...");
-
-    // Step 1: Fetch and parse get_teams to discover groups and team IDs
-    string teamsUrl = "https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age=22&UID_gender=1&UID_event=84&list_type=groupplay&open_page=1";
-
-    var teamRequest = new HttpRequestMessage(HttpMethod.Get, teamsUrl);
-    teamRequest.Headers.Add("_token", sessionToken);
-    teamRequest.Headers.Add("x-csrf-token", sessionToken);
-    teamRequest.Headers.Add("x-request-type", "ajax");
-    teamRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
-    teamRequest.Headers.Add("accept", "text/html, */*; q=0.01");
-
-    HttpResponseMessage teamsResponse;
-    try
-    {
-        teamsResponse = await httpClient.SendAsync(teamRequest);
-        teamsResponse.EnsureSuccessStatusCode();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"ERROR fetching get_teams: {ex.Message}");
-        return;
-    }
-
-    var teamsHtml = await teamsResponse.Content.ReadAsStringAsync();
-    var teamIds = ExtractTeamIdsFromGroupPlayHtml(teamsHtml);
-
-    if (teamIds.Count == 0)
-    {
-        Console.WriteLine("ERROR: No teams found in get_teams response.");
-        Console.WriteLine($"HTML preview (first 2000 chars): {teamsHtml.Substring(0, Math.Min(2000, teamsHtml.Length))}");
-        return;
-    }
-
-    Console.WriteLine($"✓ Discovered {teamIds.Count} teams");
-
-    // Step 2: Fetch matches for each team and accumulate
     var allParsedMatches = new List<ParsedMatch>();
     var seenMatchIds = new HashSet<string>();
     var parser = new ScheduleParser(LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ScheduleParser>());
 
-    foreach (var teamId in teamIds)
+    // Loop through each age group
+    foreach (var (ageUid, ageGroupName) in ageGroups)
     {
-        // Build URL for this team: pagination_data=[teamId], bracket, group from the get_teams discovery
-        // For simplicity, we use a generic call and let Modular11 handle pagination
-        string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=39&age=22&tournament=84&group=1&list_type=groupplay";
+        Console.WriteLine($"\n{'='} Processing {ageGroupName} (UID={ageUid}) {'='}\n");
 
-        var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
-        matchRequest.Headers.Add("_token", sessionToken);
-        matchRequest.Headers.Add("x-csrf-token", sessionToken);
-        matchRequest.Headers.Add("x-request-type", "ajax");
-        matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
-        matchRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+        // Step 1: Fetch and parse get_teams to discover team IDs for this age group
+        string teamsUrl = $"https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age={ageUid}&UID_gender=1&UID_event=84&list_type=groupplay&open_page=1";
 
+        var teamRequest = new HttpRequestMessage(HttpMethod.Get, teamsUrl);
+        teamRequest.Headers.Add("_token", sessionToken);
+        teamRequest.Headers.Add("x-csrf-token", sessionToken);
+        teamRequest.Headers.Add("x-request-type", "ajax");
+        teamRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+        teamRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+        HttpResponseMessage teamsResponse;
         try
         {
-            // Throttle requests
-            await Task.Delay(Random.Shared.Next(1000, 3000));
-
-            var matchResponse = await httpClient.SendAsync(matchRequest);
-            matchResponse.EnsureSuccessStatusCode();
-            var matchHtml = await matchResponse.Content.ReadAsStringAsync();
-
-            var parsedMatches = parser.ParseMatches(matchHtml, tournamentId);
-
-            // Override division to NJ Cup Qualifier
-            foreach (var match in parsedMatches)
-            {
-                match.Division = divisionName;
-            }
-
-            // Deduplicate by MatchId
-            foreach (var match in parsedMatches)
-            {
-                if (!seenMatchIds.Contains(match.MatchId))
-                {
-                    seenMatchIds.Add(match.MatchId);
-                    allParsedMatches.Add(match);
-                }
-            }
-
-            Console.WriteLine($"  Team {teamId}: {parsedMatches.Count} matches ({seenMatchIds.Count} unique total)");
+            teamsResponse = await httpClient.SendAsync(teamRequest);
+            teamsResponse.EnsureSuccessStatusCode();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"  Team {teamId}: ERROR - {ex.Message}");
+            Console.WriteLine($"⚠ Skipping {ageGroupName}: Error fetching get_teams - {ex.Message}");
+            continue;
+        }
+
+        var teamsHtml = await teamsResponse.Content.ReadAsStringAsync();
+        var teamIds = ExtractTeamIdsFromGroupPlayHtml(teamsHtml);
+
+        if (teamIds.Count == 0)
+        {
+            Console.WriteLine($"⚠ {ageGroupName}: No teams found in get_teams response.");
+            continue;
+        }
+
+        Console.WriteLine($"✓ {ageGroupName}: Discovered {teamIds.Count} teams");
+
+        // Step 2: Fetch matches for each team in this age group
+        foreach (var teamId in teamIds)
+        {
+            string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=39&age={ageUid}&tournament=84&group=1&list_type=groupplay";
+
+            var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
+            matchRequest.Headers.Add("_token", sessionToken);
+            matchRequest.Headers.Add("x-csrf-token", sessionToken);
+            matchRequest.Headers.Add("x-request-type", "ajax");
+            matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+            matchRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+            try
+            {
+                // Throttle requests
+                await Task.Delay(Random.Shared.Next(1000, 3000));
+
+                var matchResponse = await httpClient.SendAsync(matchRequest);
+                matchResponse.EnsureSuccessStatusCode();
+                var matchHtml = await matchResponse.Content.ReadAsStringAsync();
+
+                var parsedMatches = parser.ParseMatches(matchHtml, tournamentId);
+
+                // Override division to NJ Cup Qualifier and set age group
+                foreach (var match in parsedMatches)
+                {
+                    match.Division = divisionName;
+                    match.AgeGroup = ageGroupName;  // Override with actual age group
+                }
+
+                // Deduplicate by MatchId
+                foreach (var match in parsedMatches)
+                {
+                    if (!seenMatchIds.Contains(match.MatchId))
+                    {
+                        seenMatchIds.Add(match.MatchId);
+                        allParsedMatches.Add(match);
+                    }
+                }
+
+                Console.WriteLine($"  Team {teamId}: {parsedMatches.Count} matches ({seenMatchIds.Count} unique total)");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  Team {teamId}: ERROR - {ex.Message}");
+            }
         }
     }
 
-    Console.WriteLine($"\n✓ Collected {allParsedMatches.Count} total matches\n");
+    Console.WriteLine($"\n{'='} Summary {'='}\n✓ Collected {allParsedMatches.Count} total matches across all age groups\n");
+
+    if (allParsedMatches.Count == 0)
+    {
+        Console.WriteLine("❌ No matches found. Aborting.");
+        return;
+    }
 
     // Step 3: Upsert to database
     Console.WriteLine("Upserting to database...");
@@ -300,43 +319,77 @@ static List<int> ExtractTeamIdsFromGroupPlayHtml(string html)
         var context = AngleSharp.BrowsingContext.New(AngleSharp.Configuration.Default);
         var document = context.OpenAsync(req => req.Content(html)).Result;
 
-        // Try to find team rows via .form_row.main_row[js-group] or similar
+        // Strategy 1: Try .form_row.main_row[js-group] (league standings pattern from GetStandings)
         var teamRows = document.QuerySelectorAll(".form_row.main_row");
 
-        foreach (var row in teamRows)
+        if (teamRows.Length > 0)
         {
-            // Try to extract team ID from data-id, data-team-id, or href
-            var dataId = row.GetAttribute("data-id");
-            if (!string.IsNullOrEmpty(dataId) && int.TryParse(dataId, out var id))
-            {
-                teamIds.Add(id);
-                continue;
-            }
+            Console.WriteLine($"  Found {teamRows.Length} team rows via .form_row.main_row");
 
-            var dataTeamId = row.GetAttribute("data-team-id");
-            if (!string.IsNullOrEmpty(dataTeamId) && int.TryParse(dataTeamId, out var id2))
+            foreach (var row in teamRows)
             {
-                teamIds.Add(id2);
-                continue;
-            }
-
-            // Try to find href with team ID pattern
-            var link = row.QuerySelector("a[href*='/team/']");
-            if (link != null)
-            {
-                var href = link.GetAttribute("href") ?? "";
-                var match = System.Text.RegularExpressions.Regex.Match(href, @"/team/(\d+)");
-                if (match.Success && int.TryParse(match.Groups[1].Value, out var id3))
+                // Try data-id first
+                var dataId = row.GetAttribute("data-id");
+                if (!string.IsNullOrEmpty(dataId) && int.TryParse(dataId, out var id))
                 {
-                    teamIds.Add(id3);
+                    teamIds.Add(id);
+                    continue;
+                }
+
+                // Try data-team-id
+                var dataTeamId = row.GetAttribute("data-team-id");
+                if (!string.IsNullOrEmpty(dataTeamId) && int.TryParse(dataTeamId, out var id2))
+                {
+                    teamIds.Add(id2);
+                    continue;
+                }
+
+                // Try to extract from href (e.g., /team/12345 or /events/event/team/12345)
+                var allLinks = row.QuerySelectorAll("a");
+                foreach (var link in allLinks)
+                {
+                    var href = link.GetAttribute("href") ?? "";
+                    var idMatch = System.Text.RegularExpressions.Regex.Match(href, @"[/\?&](?:team|team_id)[=/](\d+)");
+                    if (idMatch.Success && int.TryParse(idMatch.Groups[1].Value, out var id3))
+                    {
+                        teamIds.Add(id3);
+                        break;  // Found team ID in this row, move to next row
+                    }
                 }
             }
+        }
+
+        // Strategy 2: If no rows found, try to find team IDs anywhere in the page
+        // Look for patterns like pagination_data=[12345] or team id patterns in links
+        if (teamIds.Count == 0)
+        {
+            Console.WriteLine("  No .form_row.main_row found, searching for team patterns in page...");
+
+            var allLinks = document.QuerySelectorAll("a[href*='get_partial_matches_by_team']");
+            foreach (var link in allLinks)
+            {
+                var href = link.GetAttribute("href") ?? "";
+                var match = System.Text.RegularExpressions.Regex.Match(href, @"pagination_data=%5B(\d+)%5D");
+                if (match.Success && int.TryParse(match.Groups[1].Value, out var id))
+                {
+                    teamIds.Add(id);
+                }
+            }
+        }
+
+        // Strategy 3: Look for team names and try to extract IDs from nearby elements
+        if (teamIds.Count == 0)
+        {
+            Console.WriteLine("  No teams found via standard patterns. Checking page structure...");
+            var preview = html.Substring(0, Math.Min(2000, html.Length));
+            Console.WriteLine($"  HTML preview:\n{preview}\n");
         }
     }
     catch (Exception ex)
     {
         Console.WriteLine($"ERROR parsing team IDs: {ex.Message}");
     }
+
     return teamIds.Distinct().ToList();
 }
 
