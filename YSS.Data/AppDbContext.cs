@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<AgeGroup> AgeGroups { get; set; }
     public DbSet<TeamAgeGroupElo> TeamAgeGroupElos { get; set; }
     public DbSet<RawIngestionLog> RawIngestionLogs { get; set; }
+    public DbSet<HomepageSnapshot> HomepageSnapshots { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

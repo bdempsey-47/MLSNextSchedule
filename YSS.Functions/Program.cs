@@ -69,7 +69,9 @@ var host = new HostBuilder()
         services.AddScoped<WeeklyIngestion>();
         services.AddScoped<GetPowerRankings>();
         services.AddScoped<GetHomepageStats>();
+        services.AddScoped<ComputeHomepageSnapshot>();
         services.AddScoped<YSS.Functions.Services.EloRecomputeService>();
+        services.AddScoped<YSS.Functions.Services.HomepageSnapshotService>();
 
         // Add HTTP client factory
         services.AddHttpClient<Modular11Client>();
