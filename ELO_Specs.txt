@@ -1,0 +1,437 @@
+ELO
+
+An **ELO rating system** would be one of the best analytics features you could add to **Youth Soccer Index**. It’s powerful because it only requires:
+
+* Teams
+* Match result
+* Opponent
+* (optionally) home vs away
+
+Which is **exactly the data you have**.
+
+It’s also widely used in sports analytics (chess, soccer models, and sites like FiveThirtyEight).
+
+---
+
+# Concept: ELO Ratings
+
+Each team starts with a rating:
+
+```
+1500
+```
+
+When two teams play:
+
+* If the stronger team wins → small rating change
+* If the weaker team wins → large rating change
+
+The system **automatically learns team strength** over time.
+
+---
+
+# Core Formula
+
+For teams A and B:
+
+```
+Expected Score (A) =
+1 / (1 + 10 ^ ((ELO_B - ELO_A) / 400))
+```
+
+Expected Score ranges between **0 and 1**.
+
+Example:
+
+```
+Team A: 1600
+Team B: 1400
+```
+
+Expected:
+
+```
+A = 0.76
+B = 0.24
+```
+
+Meaning A is expected to win about **76% of the time**.
+
+---
+
+# Actual Score
+
+From match result:
+
+```
+Win  = 1
+Draw = 0.5
+Loss = 0
+```
+
+---
+
+# Rating Update
+
+```
+NewELO = OldELO + K * (Actual - Expected)
+```
+
+Where **K** controls volatility.
+
+Typical values:
+
+```
+K = 20  (stable leagues)
+K = 30  (youth sports / more volatility)
+```
+
+For MLS Next I would recommend:
+
+```
+K = 30
+```
+
+---
+
+# Example
+
+Before match:
+
+```
+Team A: 1600
+Team B: 1400
+```
+
+Expected:
+
+```
+A = 0.76
+B = 0.24
+```
+
+Result: **B wins**
+
+Update:
+
+```
+A_new = 1600 + 30 * (0 - 0.76)
+      = 1577
+
+B_new = 1400 + 30 * (1 - 0.24)
+      = 1423
+```
+
+Big reward for the upset.
+
+---
+
+# Add Home Field Advantage
+
+Most soccer models add:
+
+```
++100 ELO
+```
+
+To the home team during calculation.
+
+Example:
+
+```
+Team A: 1500
+Team B: 1500
+Home: A
+```
+
+Adjusted:
+
+```
+A = 1600
+B = 1500
+```
+
+Now A expected to win ~64%.
+
+This makes predictions more realistic.
+
+---
+
+# Add Goal Margin Bonus
+
+Since you **have scorelines**, you can reward dominant wins.
+
+Multiplier:
+
+```
+margin_multiplier =
+log(goal_diff + 1) * (2.2 / ((elo_diff * 0.001) + 2.2))
+```
+
+This prevents huge inflation from blowouts.
+
+Simpler alternative (recommended for version 1):
+
+```
+goal_diff = abs(home_score - away_score)
+
+multiplier =
+1.0 if diff = 1
+1.5 if diff = 2
+1.75 if diff >= 3
+```
+
+Then:
+
+```
+NewELO = OldELO + (K * multiplier * (Actual - Expected))
+```
+
+---
+
+# What This Enables On Your Website
+
+Once you have ELO you unlock **very cool features**.
+
+### 1. True Power Rankings
+
+Much better than standings.
+
+Example page:
+
+```
+MLS Next U15 Power Rankings
+1. Philadelphia Union Academy — 1732
+2. LAFC Academy — 1718
+3. Dallas Texans — 1690
+```
+
+---
+
+### 2. Match Win Probabilities
+
+For every game:
+
+```
+Union vs NYCFC
+
+Union win: 61%
+Draw: 19%
+NYCFC win: 20%
+```
+
+---
+
+### 3. Biggest Upsets
+
+Automatically detectable.
+
+```
+Top Upsets This Week
+
+NYCFC U16 defeated LA Galaxy U16
+Win probability: 18%
+```
+
+---
+
+### 4. Rising Teams
+
+Track **ELO change over last 30 days**.
+
+Example:
+
+```
+Fastest Rising Teams
+
++74  Austin FC U17
++61  San Jose Earthquakes U16
+```
+
+---
+
+### 5. Club Strength
+
+Aggregate ELO across all ages.
+
+```
+Club Power Index
+
+Philadelphia Union — 1689
+FC Dallas — 1671
+LAFC — 1650
+```
+
+---
+
+# Implementation Algorithm (for your AI Agent)
+
+## Step 1 — Initialize Ratings
+
+```
+for each team
+    elo = 1500
+```
+
+---
+
+## Step 2 — Process Matches Chronologically
+
+Sort by date.
+
+```
+ORDER BY match_date ASC
+```
+
+---
+
+## Step 3 — For Each Match
+
+Pseudocode:
+
+```
+home_elo = get_elo(home_team)
+away_elo = get_elo(away_team)
+
+home_adj = home_elo + 100
+
+expected_home =
+1 / (1 + 10 ^ ((away_elo - home_adj) / 400))
+
+expected_away =
+1 - expected_home
+```
+
+---
+
+## Step 4 — Determine Actual Score
+
+```
+if home_score > away_score
+    actual_home = 1
+    actual_away = 0
+
+if draw
+    actual_home = 0.5
+    actual_away = 0.5
+
+if away_score > home_score
+    actual_home = 0
+    actual_away = 1
+```
+
+---
+
+## Step 5 — Margin Multiplier
+
+```
+goal_diff = abs(home_score - away_score)
+
+if goal_diff == 1
+    multiplier = 1
+
+if goal_diff == 2
+    multiplier = 1.5
+
+if goal_diff >= 3
+    multiplier = 1.75
+```
+
+---
+
+## Step 6 — Update Ratings
+
+```
+K = 30
+
+home_new =
+home_elo + K * multiplier * (actual_home - expected_home)
+
+away_new =
+away_elo + K * multiplier * (actual_away - expected_away)
+```
+
+---
+
+## Step 7 — Store History
+
+Save to table:
+
+```
+elo_history
+-----------
+
+team
+date
+elo
+```
+
+This lets you show **rating charts over time**.
+
+---
+
+# Database Tables for ELO
+
+```
+teams
+-----
+team_id
+team_name
+current_elo
+```
+
+```
+elo_history
+-----------
+team_id
+match_id
+elo_before
+elo_after
+```
+
+---
+
+# Killer Feature
+
+Once you have ELO you can add a **Match Predictor**.
+
+Example page:
+
+```
+Upcoming Matches
+
+LAFC U16 vs Seattle Sounders U16
+
+Win Probability
+LAFC: 54%
+Draw: 21%
+Seattle: 25%
+```
+
+This kind of feature would make **Youth Soccer Index feel like a professional analytics site.**
+
+---
+
+# My Favorite Out-of-the-Box Feature
+
+Something almost nobody does in youth soccer:
+
+### **"Most Dominant Teams in America"**
+
+Filter by:
+
+* Age
+* Region
+* Minimum games
+
+Rank by:
+
+```
+ELO + Goal Differential
+```
+
+Parents and clubs would **eat this up**.
+
+---
+
+If you'd like, I can also show you **one feature that could make Youth Soccer Index go viral in youth soccer circles** (it uses the exact same data you already collect).

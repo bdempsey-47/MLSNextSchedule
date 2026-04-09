@@ -1,0 +1,40 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - button "Open navigation menu" [ref=e6] [cursor=pointer]:
+        - img [ref=e7]
+      - heading "YSI" [level=1] [ref=e8]
+  - navigation [ref=e9]:
+    - generic [ref=e10]:
+      - heading "Navigation" [level=2] [ref=e11]
+      - button "Close menu" [ref=e12] [cursor=pointer]:
+        - img [ref=e13]
+    - list [ref=e16]:
+      - listitem [ref=e17]:
+        - button "Home" [ref=e18] [cursor=pointer]
+      - listitem [ref=e19]:
+        - button "Schedules" [ref=e20] [cursor=pointer]
+      - listitem [ref=e21]:
+        - button "Standings" [ref=e22] [cursor=pointer]
+      - listitem [ref=e23]:
+        - button "Analytics" [ref=e24] [cursor=pointer]
+  - main [ref=e25]:
+    - generic [ref=e28]:
+      - heading "Welcome to YSI" [level=2] [ref=e29]
+      - paragraph [ref=e30]: Youth Soccer Intelligence
+      - generic [ref=e31]:
+        - link "📅 Schedules Browse match schedules and results" [ref=e32] [cursor=pointer]:
+          - /url: /Schedules
+          - generic [ref=e33]: 📅
+          - heading "Schedules" [level=3] [ref=e34]
+          - paragraph [ref=e35]: Browse match schedules and results
+        - link "🏆 Standings View league standings and rankings" [ref=e36] [cursor=pointer]:
+          - /url: /Standings
+          - generic [ref=e37]: 🏆
+          - heading "Standings" [level=3] [ref=e38]
+          - paragraph [ref=e39]: View league standings and rankings
+        - link "📊 Analytics Team form, momentum, and performance metrics" [ref=e40] [cursor=pointer]:
+          - /url: /Analytics
+          - generic [ref=e41]: 📊
+          - heading "Analytics" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Team form, momentum, and performance metrics

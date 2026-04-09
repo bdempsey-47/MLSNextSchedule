@@ -1,0 +1,2 @@
+[     144ms] ReferenceError: $ is not defined
+    at https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B39369%5D&bracket=&age=21&tournament=84&group=&list_type=groupplay:1377:2

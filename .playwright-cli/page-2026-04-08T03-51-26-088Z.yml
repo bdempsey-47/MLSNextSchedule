@@ -1,0 +1,5 @@
+- generic [active] [ref=e1]:
+  - paragraph [ref=e2]: The Event field is required.
+  - paragraph [ref=e3]: The Gender field is required.
+  - paragraph [ref=e4]: The Bracket field is required.
+  - paragraph [ref=e5]: The Age field is required.

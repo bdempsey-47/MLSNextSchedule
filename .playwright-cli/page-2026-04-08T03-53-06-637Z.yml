@@ -1,0 +1,4081 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - tablist [ref=e5]:
+      - listitem [ref=e6]:
+        - link "All" [ref=e7] [cursor=pointer]:
+          - /url: "#Allgroup1"
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: Rank
+          - paragraph [ref=e16]: Male - U13 Group A
+        - generic [ref=e18]:
+          - generic [ref=e19]: PTS
+          - generic [ref=e20]: PPM
+          - generic [ref=e21]: MP
+          - generic [ref=e22]: W
+          - generic [ref=e23]: L
+          - generic [ref=e24]: T
+          - generic [ref=e25]: GF
+          - generic [ref=e26]: GA
+          - generic [ref=e27]: GD
+      - generic [ref=e28]:
+        - generic [ref=e30]:
+          - generic [ref=e32]:
+            - button [active] [ref=e34]
+            - generic [ref=e35]: "1"
+            - generic [ref=e37]:
+              - img [ref=e39]
+              - paragraph [ref=e40]: New England Surf SC
+          - generic [ref=e42]:
+            - generic [ref=e43]: "0"
+            - generic [ref=e44]: "0"
+            - generic [ref=e45]: "0"
+            - generic [ref=e46]: "0"
+            - generic [ref=e47]: "0"
+            - generic [ref=e48]: "0"
+            - generic [ref=e49]: "0"
+            - generic [ref=e50]: "0"
+            - generic [ref=e51]: "0"
+        - generic [ref=e53]:
+          - generic [ref=e55]:
+            - button [ref=e57]
+            - generic [ref=e58]: "2"
+            - generic [ref=e60]:
+              - img [ref=e62]
+              - paragraph [ref=e63]: Long Island Slammers
+          - generic [ref=e65]:
+            - generic [ref=e66]: "0"
+            - generic [ref=e67]: "0"
+            - generic [ref=e68]: "0"
+            - generic [ref=e69]: "0"
+            - generic [ref=e70]: "0"
+            - generic [ref=e71]: "0"
+            - generic [ref=e72]: "0"
+            - generic [ref=e73]: "0"
+            - generic [ref=e74]: "0"
+        - generic [ref=e76]:
+          - generic [ref=e78]:
+            - button [ref=e80]
+            - generic [ref=e81]: "3"
+            - generic [ref=e83]:
+              - img [ref=e85]
+              - paragraph [ref=e86]: Seacoast United Bedford
+          - generic [ref=e88]:
+            - generic [ref=e89]: "0"
+            - generic [ref=e90]: "0"
+            - generic [ref=e91]: "0"
+            - generic [ref=e92]: "0"
+            - generic [ref=e93]: "0"
+            - generic [ref=e94]: "0"
+            - generic [ref=e95]: "0"
+            - generic [ref=e96]: "0"
+            - generic [ref=e97]: "0"
+        - generic [ref=e99]:
+          - generic [ref=e101]:
+            - button [ref=e103]
+            - generic [ref=e104]: "4"
+            - generic [ref=e106]:
+              - img [ref=e108]
+              - paragraph [ref=e109]: New York SC
+          - generic [ref=e111]:
+            - generic [ref=e112]: "0"
+            - generic [ref=e113]: "0"
+            - generic [ref=e114]: "0"
+            - generic [ref=e115]: "0"
+            - generic [ref=e116]: "0"
+            - generic [ref=e117]: "0"
+            - generic [ref=e118]: "0"
+            - generic [ref=e119]: "0"
+            - generic [ref=e120]: "0"
+      - generic [ref=e121]:
+        - generic [ref=e123]:
+          - generic [ref=e124]: Rank
+          - paragraph [ref=e127]: Male - U13 Group B
+        - generic [ref=e129]:
+          - generic [ref=e130]: PTS
+          - generic [ref=e131]: PPM
+          - generic [ref=e132]: MP
+          - generic [ref=e133]: W
+          - generic [ref=e134]: L
+          - generic [ref=e135]: T
+          - generic [ref=e136]: GF
+          - generic [ref=e137]: GA
+          - generic [ref=e138]: GD
+      - generic [ref=e139]:
+        - generic [ref=e141]:
+          - generic [ref=e143]:
+            - button [ref=e145]
+            - generic [ref=e146]: "1"
+            - generic [ref=e148]:
+              - img [ref=e150]
+              - paragraph [ref=e151]: Downtown United Soccer Club
+          - generic [ref=e153]:
+            - generic [ref=e154]: "0"
+            - generic [ref=e155]: "0"
+            - generic [ref=e156]: "0"
+            - generic [ref=e157]: "0"
+            - generic [ref=e158]: "0"
+            - generic [ref=e159]: "0"
+            - generic [ref=e160]: "0"
+            - generic [ref=e161]: "0"
+            - generic [ref=e162]: "0"
+        - generic [ref=e164]:
+          - generic [ref=e166]:
+            - button [ref=e168]
+            - generic [ref=e169]: "2"
+            - generic [ref=e171]:
+              - img [ref=e173]
+              - paragraph [ref=e174]: New England Surf SC
+          - generic [ref=e176]:
+            - generic [ref=e177]: "0"
+            - generic [ref=e178]: "0"
+            - generic [ref=e179]: "0"
+            - generic [ref=e180]: "0"
+            - generic [ref=e181]: "0"
+            - generic [ref=e182]: "0"
+            - generic [ref=e183]: "0"
+            - generic [ref=e184]: "0"
+            - generic [ref=e185]: "0"
+        - generic [ref=e187]:
+          - generic [ref=e189]:
+            - button [ref=e191]
+            - generic [ref=e192]: "3"
+            - generic [ref=e194]:
+              - img [ref=e196]
+              - paragraph [ref=e197]: Long Island Slammers
+          - generic [ref=e199]:
+            - generic [ref=e200]: "0"
+            - generic [ref=e201]: "0"
+            - generic [ref=e202]: "0"
+            - generic [ref=e203]: "0"
+            - generic [ref=e204]: "0"
+            - generic [ref=e205]: "0"
+            - generic [ref=e206]: "0"
+            - generic [ref=e207]: "0"
+            - generic [ref=e208]: "0"
+        - generic [ref=e210]:
+          - generic [ref=e212]:
+            - button [ref=e214]
+            - generic [ref=e215]: "4"
+            - generic [ref=e217]:
+              - img [ref=e219]
+              - paragraph [ref=e220]: Intercontinental Football Academy of New England
+          - generic [ref=e222]:
+            - generic [ref=e223]: "0"
+            - generic [ref=e224]: "0"
+            - generic [ref=e225]: "0"
+            - generic [ref=e226]: "0"
+            - generic [ref=e227]: "0"
+            - generic [ref=e228]: "0"
+            - generic [ref=e229]: "0"
+            - generic [ref=e230]: "0"
+            - generic [ref=e231]: "0"
+      - generic [ref=e232]:
+        - generic [ref=e234]:
+          - generic [ref=e235]: Rank
+          - paragraph [ref=e238]: Male - U13 Group C
+        - generic [ref=e240]:
+          - generic [ref=e241]: PTS
+          - generic [ref=e242]: PPM
+          - generic [ref=e243]: MP
+          - generic [ref=e244]: W
+          - generic [ref=e245]: L
+          - generic [ref=e246]: T
+          - generic [ref=e247]: GF
+          - generic [ref=e248]: GA
+          - generic [ref=e249]: GD
+      - generic [ref=e250]:
+        - generic [ref=e252]:
+          - generic [ref=e254]:
+            - button [ref=e256]
+            - generic [ref=e257]: "1"
+            - generic [ref=e259]:
+              - img [ref=e261]
+              - paragraph [ref=e262]: FC Greater Boston Bolts
+          - generic [ref=e264]:
+            - generic [ref=e265]: "0"
+            - generic [ref=e266]: "0"
+            - generic [ref=e267]: "0"
+            - generic [ref=e268]: "0"
+            - generic [ref=e269]: "0"
+            - generic [ref=e270]: "0"
+            - generic [ref=e271]: "0"
+            - generic [ref=e272]: "0"
+            - generic [ref=e273]: "0"
+        - generic [ref=e275]:
+          - generic [ref=e277]:
+            - button [ref=e279]
+            - generic [ref=e280]: "2"
+            - generic [ref=e282]:
+              - img [ref=e284]
+              - paragraph [ref=e285]: Oakwood Soccer Club
+          - generic [ref=e287]:
+            - generic [ref=e288]: "0"
+            - generic [ref=e289]: "0"
+            - generic [ref=e290]: "0"
+            - generic [ref=e291]: "0"
+            - generic [ref=e292]: "0"
+            - generic [ref=e293]: "0"
+            - generic [ref=e294]: "0"
+            - generic [ref=e295]: "0"
+            - generic [ref=e296]: "0"
+        - generic [ref=e298]:
+          - generic [ref=e300]:
+            - button [ref=e302]
+            - generic [ref=e303]: "3"
+            - generic [ref=e305]:
+              - img [ref=e307]
+              - paragraph [ref=e308]: Metropolitan Oval
+          - generic [ref=e310]:
+            - generic [ref=e311]: "0"
+            - generic [ref=e312]: "0"
+            - generic [ref=e313]: "0"
+            - generic [ref=e314]: "0"
+            - generic [ref=e315]: "0"
+            - generic [ref=e316]: "0"
+            - generic [ref=e317]: "0"
+            - generic [ref=e318]: "0"
+            - generic [ref=e319]: "0"
+        - generic [ref=e321]:
+          - generic [ref=e323]:
+            - button [ref=e325]
+            - generic [ref=e326]: "4"
+            - generic [ref=e328]:
+              - img [ref=e330]
+              - paragraph [ref=e331]: Atlantic United
+          - generic [ref=e333]:
+            - generic [ref=e334]: "0"
+            - generic [ref=e335]: "0"
+            - generic [ref=e336]: "0"
+            - generic [ref=e337]: "0"
+            - generic [ref=e338]: "0"
+            - generic [ref=e339]: "0"
+            - generic [ref=e340]: "0"
+            - generic [ref=e341]: "0"
+            - generic [ref=e342]: "0"
+      - generic [ref=e343]:
+        - generic [ref=e345]:
+          - generic [ref=e346]: Rank
+          - paragraph [ref=e349]: Male - U13 Group D
+        - generic [ref=e351]:
+          - generic [ref=e352]: PTS
+          - generic [ref=e353]: PPM
+          - generic [ref=e354]: MP
+          - generic [ref=e355]: W
+          - generic [ref=e356]: L
+          - generic [ref=e357]: T
+          - generic [ref=e358]: GF
+          - generic [ref=e359]: GA
+          - generic [ref=e360]: GD
+      - generic [ref=e361]:
+        - generic [ref=e363]:
+          - generic [ref=e365]:
+            - button [ref=e367]
+            - generic [ref=e368]: "1"
+            - generic [ref=e370]:
+              - img [ref=e372]
+              - paragraph [ref=e373]: IFA West
+          - generic [ref=e375]:
+            - generic [ref=e376]: "0"
+            - generic [ref=e377]: "0"
+            - generic [ref=e378]: "0"
+            - generic [ref=e379]: "0"
+            - generic [ref=e380]: "0"
+            - generic [ref=e381]: "0"
+            - generic [ref=e382]: "0"
+            - generic [ref=e383]: "0"
+            - generic [ref=e384]: "0"
+        - generic [ref=e386]:
+          - generic [ref=e388]:
+            - button [ref=e390]
+            - generic [ref=e391]: "2"
+            - generic [ref=e393]:
+              - img [ref=e395]
+              - paragraph [ref=e396]: Seacoast United Mass
+          - generic [ref=e398]:
+            - generic [ref=e399]: "0"
+            - generic [ref=e400]: "0"
+            - generic [ref=e401]: "0"
+            - generic [ref=e402]: "0"
+            - generic [ref=e403]: "0"
+            - generic [ref=e404]: "0"
+            - generic [ref=e405]: "0"
+            - generic [ref=e406]: "0"
+            - generic [ref=e407]: "0"
+        - generic [ref=e409]:
+          - generic [ref=e411]:
+            - button [ref=e413]
+            - generic [ref=e414]: "3"
+            - generic [ref=e416]:
+              - img [ref=e418]
+              - paragraph [ref=e419]: TSF Academy
+          - generic [ref=e421]:
+            - generic [ref=e422]: "0"
+            - generic [ref=e423]: "0"
+            - generic [ref=e424]: "0"
+            - generic [ref=e425]: "0"
+            - generic [ref=e426]: "0"
+            - generic [ref=e427]: "0"
+            - generic [ref=e428]: "0"
+            - generic [ref=e429]: "0"
+            - generic [ref=e430]: "0"
+        - generic [ref=e432]:
+          - generic [ref=e434]:
+            - button [ref=e436]
+            - generic [ref=e437]: "4"
+            - generic [ref=e439]:
+              - img [ref=e441]
+              - paragraph [ref=e442]: Cedar Stars Academy Newark
+          - generic [ref=e444]:
+            - generic [ref=e445]: "0"
+            - generic [ref=e446]: "0"
+            - generic [ref=e447]: "0"
+            - generic [ref=e448]: "0"
+            - generic [ref=e449]: "0"
+            - generic [ref=e450]: "0"
+            - generic [ref=e451]: "0"
+            - generic [ref=e452]: "0"
+            - generic [ref=e453]: "0"
+      - generic [ref=e454]:
+        - generic [ref=e456]:
+          - generic [ref=e457]: Rank
+          - paragraph [ref=e460]: Male - U13 Group E
+        - generic [ref=e462]:
+          - generic [ref=e463]: PTS
+          - generic [ref=e464]: PPM
+          - generic [ref=e465]: MP
+          - generic [ref=e466]: W
+          - generic [ref=e467]: L
+          - generic [ref=e468]: T
+          - generic [ref=e469]: GF
+          - generic [ref=e470]: GA
+          - generic [ref=e471]: GD
+      - generic [ref=e472]:
+        - generic [ref=e474]:
+          - generic [ref=e476]:
+            - button [ref=e478]
+            - generic [ref=e479]: "1"
+            - generic [ref=e481]:
+              - img [ref=e483]
+              - paragraph [ref=e484]: FC Harlem
+          - generic [ref=e486]:
+            - generic [ref=e487]: "0"
+            - generic [ref=e488]: "0"
+            - generic [ref=e489]: "0"
+            - generic [ref=e490]: "0"
+            - generic [ref=e491]: "0"
+            - generic [ref=e492]: "0"
+            - generic [ref=e493]: "0"
+            - generic [ref=e494]: "0"
+            - generic [ref=e495]: "0"
+        - generic [ref=e497]:
+          - generic [ref=e499]:
+            - button [ref=e501]
+            - generic [ref=e502]: "2"
+            - generic [ref=e504]:
+              - img [ref=e506]
+              - paragraph [ref=e507]: Bayside FC
+          - generic [ref=e509]:
+            - generic [ref=e510]: "0"
+            - generic [ref=e511]: "0"
+            - generic [ref=e512]: "0"
+            - generic [ref=e513]: "0"
+            - generic [ref=e514]: "0"
+            - generic [ref=e515]: "0"
+            - generic [ref=e516]: "0"
+            - generic [ref=e517]: "0"
+            - generic [ref=e518]: "0"
+        - generic [ref=e520]:
+          - generic [ref=e522]:
+            - button [ref=e524]
+            - generic [ref=e525]: "3"
+            - generic [ref=e527]:
+              - img [ref=e529]
+              - paragraph [ref=e530]: NEFC
+          - generic [ref=e532]:
+            - generic [ref=e533]: "0"
+            - generic [ref=e534]: "0"
+            - generic [ref=e535]: "0"
+            - generic [ref=e536]: "0"
+            - generic [ref=e537]: "0"
+            - generic [ref=e538]: "0"
+            - generic [ref=e539]: "0"
+            - generic [ref=e540]: "0"
+            - generic [ref=e541]: "0"
+        - generic [ref=e543]:
+          - generic [ref=e545]:
+            - button [ref=e547]
+            - generic [ref=e548]: "4"
+            - generic [ref=e550]:
+              - img [ref=e552]
+              - paragraph [ref=e553]: Beachside of Connecticut
+          - generic [ref=e555]:
+            - generic [ref=e556]: "0"
+            - generic [ref=e557]: "0"
+            - generic [ref=e558]: "0"
+            - generic [ref=e559]: "0"
+            - generic [ref=e560]: "0"
+            - generic [ref=e561]: "0"
+            - generic [ref=e562]: "0"
+            - generic [ref=e563]: "0"
+            - generic [ref=e564]: "0"
+      - generic [ref=e565]:
+        - generic [ref=e567]:
+          - generic [ref=e568]: Rank
+          - paragraph [ref=e571]: Male - U13 Group F
+        - generic [ref=e573]:
+          - generic [ref=e574]: PTS
+          - generic [ref=e575]: PPM
+          - generic [ref=e576]: MP
+          - generic [ref=e577]: W
+          - generic [ref=e578]: L
+          - generic [ref=e579]: T
+          - generic [ref=e580]: GF
+          - generic [ref=e581]: GA
+          - generic [ref=e582]: GD
+      - generic [ref=e583]:
+        - generic [ref=e585]:
+          - generic [ref=e587]:
+            - button [ref=e589]
+            - generic [ref=e590]: "1"
+            - generic [ref=e592]:
+              - img [ref=e594]
+              - paragraph [ref=e595]: Syracuse Development Academy
+          - generic [ref=e597]:
+            - generic [ref=e598]: "0"
+            - generic [ref=e599]: "0"
+            - generic [ref=e600]: "0"
+            - generic [ref=e601]: "0"
+            - generic [ref=e602]: "0"
+            - generic [ref=e603]: "0"
+            - generic [ref=e604]: "0"
+            - generic [ref=e605]: "0"
+            - generic [ref=e606]: "0"
+        - generic [ref=e608]:
+          - generic [ref=e610]:
+            - button [ref=e612]
+            - generic [ref=e613]: "2"
+            - generic [ref=e615]:
+              - img [ref=e617]
+              - paragraph [ref=e618]: Ginga FC
+          - generic [ref=e620]:
+            - generic [ref=e621]: "0"
+            - generic [ref=e622]: "0"
+            - generic [ref=e623]: "0"
+            - generic [ref=e624]: "0"
+            - generic [ref=e625]: "0"
+            - generic [ref=e626]: "0"
+            - generic [ref=e627]: "0"
+            - generic [ref=e628]: "0"
+            - generic [ref=e629]: "0"
+        - generic [ref=e631]:
+          - generic [ref=e633]:
+            - button [ref=e635]
+            - generic [ref=e636]: "3"
+            - generic [ref=e638]:
+              - img [ref=e640]
+              - paragraph [ref=e641]: FC Westchester
+          - generic [ref=e643]:
+            - generic [ref=e644]: "0"
+            - generic [ref=e645]: "0"
+            - generic [ref=e646]: "0"
+            - generic [ref=e647]: "0"
+            - generic [ref=e648]: "0"
+            - generic [ref=e649]: "0"
+            - generic [ref=e650]: "0"
+            - generic [ref=e651]: "0"
+            - generic [ref=e652]: "0"
+        - generic [ref=e654]:
+          - generic [ref=e656]:
+            - button [ref=e658]
+            - generic [ref=e659]: "4"
+            - generic [ref=e661]:
+              - img [ref=e663]
+              - paragraph [ref=e664]: FA Euro New York
+          - generic [ref=e666]:
+            - generic [ref=e667]: "0"
+            - generic [ref=e668]: "0"
+            - generic [ref=e669]: "0"
+            - generic [ref=e670]: "0"
+            - generic [ref=e671]: "0"
+            - generic [ref=e672]: "0"
+            - generic [ref=e673]: "0"
+            - generic [ref=e674]: "0"
+            - generic [ref=e675]: "0"
+      - generic [ref=e676]:
+        - generic [ref=e678]:
+          - generic [ref=e679]: Rank
+          - paragraph [ref=e682]: Male - U13 Group G
+        - generic [ref=e684]:
+          - generic [ref=e685]: PTS
+          - generic [ref=e686]: PPM
+          - generic [ref=e687]: MP
+          - generic [ref=e688]: W
+          - generic [ref=e689]: L
+          - generic [ref=e690]: T
+          - generic [ref=e691]: GF
+          - generic [ref=e692]: GA
+          - generic [ref=e693]: GD
+      - generic [ref=e694]:
+        - generic [ref=e696]:
+          - generic [ref=e698]:
+            - button [ref=e700]
+            - generic [ref=e701]: "1"
+            - generic [ref=e703]:
+              - img [ref=e705]
+              - paragraph [ref=e706]: New York Rush
+          - generic [ref=e708]:
+            - generic [ref=e709]: "0"
+            - generic [ref=e710]: "0"
+            - generic [ref=e711]: "0"
+            - generic [ref=e712]: "0"
+            - generic [ref=e713]: "0"
+            - generic [ref=e714]: "0"
+            - generic [ref=e715]: "0"
+            - generic [ref=e716]: "0"
+            - generic [ref=e717]: "0"
+        - generic [ref=e719]:
+          - generic [ref=e721]:
+            - button [ref=e723]
+            - generic [ref=e724]: "2"
+            - generic [ref=e726]:
+              - img [ref=e728]
+              - paragraph [ref=e729]: NEFC South
+          - generic [ref=e731]:
+            - generic [ref=e732]: "0"
+            - generic [ref=e733]: "0"
+            - generic [ref=e734]: "0"
+            - generic [ref=e735]: "0"
+            - generic [ref=e736]: "0"
+            - generic [ref=e737]: "0"
+            - generic [ref=e738]: "0"
+            - generic [ref=e739]: "0"
+            - generic [ref=e740]: "0"
+        - generic [ref=e742]:
+          - generic [ref=e744]:
+            - button [ref=e746]
+            - generic [ref=e747]: "3"
+            - generic [ref=e749]:
+              - img [ref=e751]
+              - paragraph [ref=e752]: Long Island Soccer Club
+          - generic [ref=e754]:
+            - generic [ref=e755]: "0"
+            - generic [ref=e756]: "0"
+            - generic [ref=e757]: "0"
+            - generic [ref=e758]: "0"
+            - generic [ref=e759]: "0"
+            - generic [ref=e760]: "0"
+            - generic [ref=e761]: "0"
+            - generic [ref=e762]: "0"
+            - generic [ref=e763]: "0"
+        - generic [ref=e765]:
+          - generic [ref=e767]:
+            - button [ref=e769]
+            - generic [ref=e770]: "4"
+            - generic [ref=e772]:
+              - img [ref=e774]
+              - paragraph [ref=e775]: Blau Weiss Gottschee
+          - generic [ref=e777]:
+            - generic [ref=e778]: "0"
+            - generic [ref=e779]: "0"
+            - generic [ref=e780]: "0"
+            - generic [ref=e781]: "0"
+            - generic [ref=e782]: "0"
+            - generic [ref=e783]: "0"
+            - generic [ref=e784]: "0"
+            - generic [ref=e785]: "0"
+            - generic [ref=e786]: "0"
+      - generic [ref=e787]:
+        - generic [ref=e789]:
+          - generic [ref=e790]: Rank
+          - paragraph [ref=e793]: Male - U13 Group H
+        - generic [ref=e795]:
+          - generic [ref=e796]: PTS
+          - generic [ref=e797]: PPM
+          - generic [ref=e798]: MP
+          - generic [ref=e799]: W
+          - generic [ref=e800]: L
+          - generic [ref=e801]: T
+          - generic [ref=e802]: GF
+          - generic [ref=e803]: GA
+          - generic [ref=e804]: GD
+      - generic [ref=e805]:
+        - generic [ref=e807]:
+          - generic [ref=e809]:
+            - button [ref=e811]
+            - generic [ref=e812]: "1"
+            - generic [ref=e814]:
+              - img [ref=e816]
+              - paragraph [ref=e817]: Rhode Island Surf SC
+          - generic [ref=e819]:
+            - generic [ref=e820]: "0"
+            - generic [ref=e821]: "0"
+            - generic [ref=e822]: "0"
+            - generic [ref=e823]: "0"
+            - generic [ref=e824]: "0"
+            - generic [ref=e825]: "0"
+            - generic [ref=e826]: "0"
+            - generic [ref=e827]: "0"
+            - generic [ref=e828]: "0"
+        - generic [ref=e830]:
+          - generic [ref=e832]:
+            - button [ref=e834]
+            - generic [ref=e835]: "2"
+            - generic [ref=e837]:
+              - img [ref=e839]
+              - paragraph [ref=e840]: New York Elite Alleycats FC
+          - generic [ref=e842]:
+            - generic [ref=e843]: "0"
+            - generic [ref=e844]: "0"
+            - generic [ref=e845]: "0"
+            - generic [ref=e846]: "0"
+            - generic [ref=e847]: "0"
+            - generic [ref=e848]: "0"
+            - generic [ref=e849]: "0"
+            - generic [ref=e850]: "0"
+            - generic [ref=e851]: "0"
+        - generic [ref=e853]:
+          - generic [ref=e855]:
+            - button [ref=e857]
+            - generic [ref=e858]: "3"
+            - generic [ref=e860]:
+              - img [ref=e862]
+              - paragraph [ref=e863]: Cedar Stars Academy Bergen
+          - generic [ref=e865]:
+            - generic [ref=e866]: "0"
+            - generic [ref=e867]: "0"
+            - generic [ref=e868]: "0"
+            - generic [ref=e869]: "0"
+            - generic [ref=e870]: "0"
+            - generic [ref=e871]: "0"
+            - generic [ref=e872]: "0"
+            - generic [ref=e873]: "0"
+            - generic [ref=e874]: "0"
+        - generic [ref=e876]:
+          - generic [ref=e878]:
+            - button [ref=e880]
+            - generic [ref=e881]: "4"
+            - generic [ref=e883]:
+              - img [ref=e885]
+              - paragraph [ref=e886]: Valeo Futbol Club
+          - generic [ref=e888]:
+            - generic [ref=e889]: "0"
+            - generic [ref=e890]: "0"
+            - generic [ref=e891]: "0"
+            - generic [ref=e892]: "0"
+            - generic [ref=e893]: "0"
+            - generic [ref=e894]: "0"
+            - generic [ref=e895]: "0"
+            - generic [ref=e896]: "0"
+            - generic [ref=e897]: "0"
+  - generic [ref=e898]:
+    - heading "Friday, April 17, 2026" [level=2] [ref=e899]
+    - generic [ref=e901]:
+      - generic [ref=e902]:
+        - generic [ref=e903]: Match ID
+        - generic [ref=e904]: Details
+        - generic [ref=e905]: Age
+        - generic [ref=e906]:
+          - text: Competition
+          - text: Division
+        - generic [ref=e908]:
+          - generic [ref=e909]: Home Team
+          - generic [ref=e910]: Away Team
+        - generic [ref=e911]: Live Stream
+      - generic [ref=e913]:
+        - generic [ref=e914]: Details
+        - generic [ref=e915]: Teams
+      - generic [ref=e916]:
+        - generic [ref=e917]:
+          - generic [ref=e918]:
+            - text: "21668"
+            - text: MALE
+          - generic [ref=e919]:
+            - text: 04/17/26 07:45am
+            - link "34 - Tuckahoe T..." [ref=e920] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e922]: 34 - Tuckahoe T...
+          - generic [ref=e923]: U13
+          - generic [ref=e924]:
+            - text: Group Play
+            - text: A
+          - generic [ref=e926]:
+            - paragraph [ref=e928]: Seacoast United Bedford
+            - generic [ref=e929]: TBD
+            - paragraph [ref=e931]: New England Surf SC
+          - generic [ref=e933]: U13 GP
+        - generic [ref=e934]:
+          - generic [ref=e935]:
+            - button [ref=e937]
+            - generic [ref=e938]:
+              - text: 04/17/26 07:45am
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e939]: TBD
+            - generic [ref=e941]: U13 GP
+          - generic [ref=e942]:
+            - generic [ref=e943]:
+              - generic [ref=e944]:
+                - generic [ref=e945]:
+                  - generic [ref=e946]: Home Team
+                  - paragraph [ref=e948]: Seacoast United Bedford
+                - generic [ref=e949]: VS
+                - generic [ref=e950]:
+                  - generic [ref=e951]: Away Team
+                  - paragraph [ref=e953]: New England Surf SC
+              - generic [ref=e954]:
+                - generic [ref=e955]:
+                  - generic [ref=e956]: Match ID
+                  - generic [ref=e957]: "21668"
+                - generic [ref=e958]:
+                  - generic [ref=e959]: Date
+                  - generic [ref=e960]: 04/17/26 07:45am
+                - generic [ref=e961]:
+                  - generic [ref=e962]: Age
+                  - generic [ref=e963]: U13
+              - generic [ref=e964]:
+                - generic [ref=e965]:
+                  - generic [ref=e966]: Gender
+                  - generic [ref=e967]: MALE
+                - generic [ref=e968]:
+                  - generic [ref=e969]: Competition
+                  - generic [ref=e970]: Group Play
+                - generic [ref=e971]:
+                  - generic [ref=e972]: Division
+                  - generic [ref=e973]: A
+              - generic [ref=e974]:
+                - generic [ref=e975]:
+                  - generic [ref=e976]: Location Name
+                  - generic [ref=e977]: Tuckahoe Turf Farm
+                - generic [ref=e978]:
+                  - generic [ref=e979]: Field Identifier
+                  - generic [ref=e980]: "34"
+              - generic [ref=e982]:
+                - generic [ref=e983]: Location Address
+                - paragraph [ref=e986]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e987] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e988]: U13 GP
+      - generic [ref=e989]:
+        - generic [ref=e990]:
+          - generic [ref=e991]:
+            - text: "21875"
+            - text: MALE
+          - generic [ref=e992]:
+            - text: 04/17/26 07:45am
+            - link "40 - Tuckahoe T..." [ref=e993] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e995]: 40 - Tuckahoe T...
+          - generic [ref=e996]: U13
+          - generic [ref=e997]:
+            - text: Group Play
+            - text: H
+          - generic [ref=e999]:
+            - paragraph [ref=e1001]: Rhode Island Surf SC
+            - generic [ref=e1002]: TBD
+            - paragraph [ref=e1004]: New York Elite Alleycats FC
+          - generic [ref=e1006]: U13 GP
+        - generic [ref=e1007]:
+          - generic [ref=e1008]:
+            - button [ref=e1010]
+            - generic [ref=e1011]:
+              - text: 04/17/26 07:45am
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e1012]: TBD
+            - generic [ref=e1014]: U13 GP
+          - generic [ref=e1015]:
+            - generic [ref=e1016]:
+              - generic [ref=e1017]:
+                - generic [ref=e1018]:
+                  - generic [ref=e1019]: Home Team
+                  - paragraph [ref=e1021]: Rhode Island Surf SC
+                - generic [ref=e1022]: VS
+                - generic [ref=e1023]:
+                  - generic [ref=e1024]: Away Team
+                  - paragraph [ref=e1026]: New York Elite Alleycats FC
+              - generic [ref=e1027]:
+                - generic [ref=e1028]:
+                  - generic [ref=e1029]: Match ID
+                  - generic [ref=e1030]: "21875"
+                - generic [ref=e1031]:
+                  - generic [ref=e1032]: Date
+                  - generic [ref=e1033]: 04/17/26 07:45am
+                - generic [ref=e1034]:
+                  - generic [ref=e1035]: Age
+                  - generic [ref=e1036]: U13
+              - generic [ref=e1037]:
+                - generic [ref=e1038]:
+                  - generic [ref=e1039]: Gender
+                  - generic [ref=e1040]: MALE
+                - generic [ref=e1041]:
+                  - generic [ref=e1042]: Competition
+                  - generic [ref=e1043]: Group Play
+                - generic [ref=e1044]:
+                  - generic [ref=e1045]: Division
+                  - generic [ref=e1046]: H
+              - generic [ref=e1047]:
+                - generic [ref=e1048]:
+                  - generic [ref=e1049]: Location Name
+                  - generic [ref=e1050]: Tuckahoe Turf Farm
+                - generic [ref=e1051]:
+                  - generic [ref=e1052]: Field Identifier
+                  - generic [ref=e1053]: "40"
+              - generic [ref=e1055]:
+                - generic [ref=e1056]: Location Address
+                - paragraph [ref=e1059]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1060] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1061]: U13 GP
+      - generic [ref=e1062]:
+        - generic [ref=e1063]:
+          - generic [ref=e1064]:
+            - text: "21754"
+            - text: MALE
+          - generic [ref=e1065]:
+            - text: 04/17/26 07:45am
+            - link "42 - Tuckahoe T..." [ref=e1066] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1068]: 42 - Tuckahoe T...
+          - generic [ref=e1069]: U13
+          - generic [ref=e1070]:
+            - text: Group Play
+            - text: H
+          - generic [ref=e1072]:
+            - paragraph [ref=e1074]: Cedar Stars Academy Bergen
+            - generic [ref=e1075]: TBD
+            - paragraph [ref=e1077]: Valeo Futbol Club
+          - generic [ref=e1079]: U13 GP
+        - generic [ref=e1080]:
+          - generic [ref=e1081]:
+            - button [ref=e1083]
+            - generic [ref=e1084]:
+              - text: 04/17/26 07:45am
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e1085]: TBD
+            - generic [ref=e1087]: U13 GP
+          - generic [ref=e1088]:
+            - generic [ref=e1089]:
+              - generic [ref=e1090]:
+                - generic [ref=e1091]:
+                  - generic [ref=e1092]: Home Team
+                  - paragraph [ref=e1094]: Cedar Stars Academy Bergen
+                - generic [ref=e1095]: VS
+                - generic [ref=e1096]:
+                  - generic [ref=e1097]: Away Team
+                  - paragraph [ref=e1099]: Valeo Futbol Club
+              - generic [ref=e1100]:
+                - generic [ref=e1101]:
+                  - generic [ref=e1102]: Match ID
+                  - generic [ref=e1103]: "21754"
+                - generic [ref=e1104]:
+                  - generic [ref=e1105]: Date
+                  - generic [ref=e1106]: 04/17/26 07:45am
+                - generic [ref=e1107]:
+                  - generic [ref=e1108]: Age
+                  - generic [ref=e1109]: U13
+              - generic [ref=e1110]:
+                - generic [ref=e1111]:
+                  - generic [ref=e1112]: Gender
+                  - generic [ref=e1113]: MALE
+                - generic [ref=e1114]:
+                  - generic [ref=e1115]: Competition
+                  - generic [ref=e1116]: Group Play
+                - generic [ref=e1117]:
+                  - generic [ref=e1118]: Division
+                  - generic [ref=e1119]: H
+              - generic [ref=e1120]:
+                - generic [ref=e1121]:
+                  - generic [ref=e1122]: Location Name
+                  - generic [ref=e1123]: Tuckahoe Turf Farm
+                - generic [ref=e1124]:
+                  - generic [ref=e1125]: Field Identifier
+                  - generic [ref=e1126]: "42"
+              - generic [ref=e1128]:
+                - generic [ref=e1129]: Location Address
+                - paragraph [ref=e1132]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1133] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1134]: U13 GP
+      - generic [ref=e1135]:
+        - generic [ref=e1136]:
+          - generic [ref=e1137]:
+            - text: "21803"
+            - text: MALE
+          - generic [ref=e1138]:
+            - text: 04/17/26 07:45am
+            - link "39 - Tuckahoe T..." [ref=e1139] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1141]: 39 - Tuckahoe T...
+          - generic [ref=e1142]: U13
+          - generic [ref=e1143]:
+            - text: Group Play
+            - text: A
+          - generic [ref=e1145]:
+            - paragraph [ref=e1147]: New York SC
+            - generic [ref=e1148]: TBD
+            - paragraph [ref=e1150]: Long Island Slammers
+          - generic [ref=e1152]: U13 GP
+        - generic [ref=e1153]:
+          - generic [ref=e1154]:
+            - button [ref=e1156]
+            - generic [ref=e1157]:
+              - text: 04/17/26 07:45am
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e1158]: TBD
+            - generic [ref=e1160]: U13 GP
+          - generic [ref=e1161]:
+            - generic [ref=e1162]:
+              - generic [ref=e1163]:
+                - generic [ref=e1164]:
+                  - generic [ref=e1165]: Home Team
+                  - paragraph [ref=e1167]: New York SC
+                - generic [ref=e1168]: VS
+                - generic [ref=e1169]:
+                  - generic [ref=e1170]: Away Team
+                  - paragraph [ref=e1172]: Long Island Slammers
+              - generic [ref=e1173]:
+                - generic [ref=e1174]:
+                  - generic [ref=e1175]: Match ID
+                  - generic [ref=e1176]: "21803"
+                - generic [ref=e1177]:
+                  - generic [ref=e1178]: Date
+                  - generic [ref=e1179]: 04/17/26 07:45am
+                - generic [ref=e1180]:
+                  - generic [ref=e1181]: Age
+                  - generic [ref=e1182]: U13
+              - generic [ref=e1183]:
+                - generic [ref=e1184]:
+                  - generic [ref=e1185]: Gender
+                  - generic [ref=e1186]: MALE
+                - generic [ref=e1187]:
+                  - generic [ref=e1188]: Competition
+                  - generic [ref=e1189]: Group Play
+                - generic [ref=e1190]:
+                  - generic [ref=e1191]: Division
+                  - generic [ref=e1192]: A
+              - generic [ref=e1193]:
+                - generic [ref=e1194]:
+                  - generic [ref=e1195]: Location Name
+                  - generic [ref=e1196]: Tuckahoe Turf Farm
+                - generic [ref=e1197]:
+                  - generic [ref=e1198]: Field Identifier
+                  - generic [ref=e1199]: "39"
+              - generic [ref=e1201]:
+                - generic [ref=e1202]: Location Address
+                - paragraph [ref=e1205]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1206] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1207]: U13 GP
+      - generic [ref=e1208]:
+        - generic [ref=e1209]:
+          - generic [ref=e1210]:
+            - text: "21659"
+            - text: MALE
+          - generic [ref=e1211]:
+            - text: 04/17/26 10:45am
+            - link "34 - Tuckahoe T..." [ref=e1212] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1214]: 34 - Tuckahoe T...
+          - generic [ref=e1215]: U13
+          - generic [ref=e1216]:
+            - text: Group Play
+            - text: D
+          - generic [ref=e1218]:
+            - paragraph [ref=e1220]: IFA West
+            - generic [ref=e1221]: TBD
+            - paragraph [ref=e1223]: Cedar Stars Academy Newark
+          - generic [ref=e1225]: U13 GP
+        - generic [ref=e1226]:
+          - generic [ref=e1227]:
+            - button [ref=e1229]
+            - generic [ref=e1230]:
+              - text: 04/17/26 10:45am
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e1231]: TBD
+            - generic [ref=e1233]: U13 GP
+          - generic [ref=e1234]:
+            - generic [ref=e1235]:
+              - generic [ref=e1236]:
+                - generic [ref=e1237]:
+                  - generic [ref=e1238]: Home Team
+                  - paragraph [ref=e1240]: IFA West
+                - generic [ref=e1241]: VS
+                - generic [ref=e1242]:
+                  - generic [ref=e1243]: Away Team
+                  - paragraph [ref=e1245]: Cedar Stars Academy Newark
+              - generic [ref=e1246]:
+                - generic [ref=e1247]:
+                  - generic [ref=e1248]: Match ID
+                  - generic [ref=e1249]: "21659"
+                - generic [ref=e1250]:
+                  - generic [ref=e1251]: Date
+                  - generic [ref=e1252]: 04/17/26 10:45am
+                - generic [ref=e1253]:
+                  - generic [ref=e1254]: Age
+                  - generic [ref=e1255]: U13
+              - generic [ref=e1256]:
+                - generic [ref=e1257]:
+                  - generic [ref=e1258]: Gender
+                  - generic [ref=e1259]: MALE
+                - generic [ref=e1260]:
+                  - generic [ref=e1261]: Competition
+                  - generic [ref=e1262]: Group Play
+                - generic [ref=e1263]:
+                  - generic [ref=e1264]: Division
+                  - generic [ref=e1265]: D
+              - generic [ref=e1266]:
+                - generic [ref=e1267]:
+                  - generic [ref=e1268]: Location Name
+                  - generic [ref=e1269]: Tuckahoe Turf Farm
+                - generic [ref=e1270]:
+                  - generic [ref=e1271]: Field Identifier
+                  - generic [ref=e1272]: "34"
+              - generic [ref=e1274]:
+                - generic [ref=e1275]: Location Address
+                - paragraph [ref=e1278]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1279] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1280]: U13 GP
+      - generic [ref=e1281]:
+        - generic [ref=e1282]:
+          - generic [ref=e1283]:
+            - text: "21710"
+            - text: MALE
+          - generic [ref=e1284]:
+            - text: 04/17/26 10:45am
+            - link "40 - Tuckahoe T..." [ref=e1285] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1287]: 40 - Tuckahoe T...
+          - generic [ref=e1288]: U13
+          - generic [ref=e1289]:
+            - text: Group Play
+            - text: E
+          - generic [ref=e1291]:
+            - paragraph [ref=e1293]: NEFC
+            - generic [ref=e1294]: TBD
+            - paragraph [ref=e1296]: Bayside FC
+          - generic [ref=e1298]: U13 GP
+        - generic [ref=e1299]:
+          - generic [ref=e1300]:
+            - button [ref=e1302]
+            - generic [ref=e1303]:
+              - text: 04/17/26 10:45am
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e1304]: TBD
+            - generic [ref=e1306]: U13 GP
+          - generic [ref=e1307]:
+            - generic [ref=e1308]:
+              - generic [ref=e1309]:
+                - generic [ref=e1310]:
+                  - generic [ref=e1311]: Home Team
+                  - paragraph [ref=e1313]: NEFC
+                - generic [ref=e1314]: VS
+                - generic [ref=e1315]:
+                  - generic [ref=e1316]: Away Team
+                  - paragraph [ref=e1318]: Bayside FC
+              - generic [ref=e1319]:
+                - generic [ref=e1320]:
+                  - generic [ref=e1321]: Match ID
+                  - generic [ref=e1322]: "21710"
+                - generic [ref=e1323]:
+                  - generic [ref=e1324]: Date
+                  - generic [ref=e1325]: 04/17/26 10:45am
+                - generic [ref=e1326]:
+                  - generic [ref=e1327]: Age
+                  - generic [ref=e1328]: U13
+              - generic [ref=e1329]:
+                - generic [ref=e1330]:
+                  - generic [ref=e1331]: Gender
+                  - generic [ref=e1332]: MALE
+                - generic [ref=e1333]:
+                  - generic [ref=e1334]: Competition
+                  - generic [ref=e1335]: Group Play
+                - generic [ref=e1336]:
+                  - generic [ref=e1337]: Division
+                  - generic [ref=e1338]: E
+              - generic [ref=e1339]:
+                - generic [ref=e1340]:
+                  - generic [ref=e1341]: Location Name
+                  - generic [ref=e1342]: Tuckahoe Turf Farm
+                - generic [ref=e1343]:
+                  - generic [ref=e1344]: Field Identifier
+                  - generic [ref=e1345]: "40"
+              - generic [ref=e1347]:
+                - generic [ref=e1348]: Location Address
+                - paragraph [ref=e1351]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1352] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1353]: U13 GP
+      - generic [ref=e1354]:
+        - generic [ref=e1355]:
+          - generic [ref=e1356]:
+            - text: "21813"
+            - text: MALE
+          - generic [ref=e1357]:
+            - text: 04/17/26 10:45am
+            - link "39 - Tuckahoe T..." [ref=e1358] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1360]: 39 - Tuckahoe T...
+          - generic [ref=e1361]: U13
+          - generic [ref=e1362]:
+            - text: Group Play
+            - text: D
+          - generic [ref=e1364]:
+            - paragraph [ref=e1366]: TSF Academy
+            - generic [ref=e1367]: TBD
+            - paragraph [ref=e1369]: Seacoast United Mass
+          - generic [ref=e1371]: U13 GP
+        - generic [ref=e1372]:
+          - generic [ref=e1373]:
+            - button [ref=e1375]
+            - generic [ref=e1376]:
+              - text: 04/17/26 10:45am
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e1377]: TBD
+            - generic [ref=e1379]: U13 GP
+          - generic [ref=e1380]:
+            - generic [ref=e1381]:
+              - generic [ref=e1382]:
+                - generic [ref=e1383]:
+                  - generic [ref=e1384]: Home Team
+                  - paragraph [ref=e1386]: TSF Academy
+                - generic [ref=e1387]: VS
+                - generic [ref=e1388]:
+                  - generic [ref=e1389]: Away Team
+                  - paragraph [ref=e1391]: Seacoast United Mass
+              - generic [ref=e1392]:
+                - generic [ref=e1393]:
+                  - generic [ref=e1394]: Match ID
+                  - generic [ref=e1395]: "21813"
+                - generic [ref=e1396]:
+                  - generic [ref=e1397]: Date
+                  - generic [ref=e1398]: 04/17/26 10:45am
+                - generic [ref=e1399]:
+                  - generic [ref=e1400]: Age
+                  - generic [ref=e1401]: U13
+              - generic [ref=e1402]:
+                - generic [ref=e1403]:
+                  - generic [ref=e1404]: Gender
+                  - generic [ref=e1405]: MALE
+                - generic [ref=e1406]:
+                  - generic [ref=e1407]: Competition
+                  - generic [ref=e1408]: Group Play
+                - generic [ref=e1409]:
+                  - generic [ref=e1410]: Division
+                  - generic [ref=e1411]: D
+              - generic [ref=e1412]:
+                - generic [ref=e1413]:
+                  - generic [ref=e1414]: Location Name
+                  - generic [ref=e1415]: Tuckahoe Turf Farm
+                - generic [ref=e1416]:
+                  - generic [ref=e1417]: Field Identifier
+                  - generic [ref=e1418]: "39"
+              - generic [ref=e1420]:
+                - generic [ref=e1421]: Location Address
+                - paragraph [ref=e1424]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1425] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1426]: U13 GP
+      - generic [ref=e1427]:
+        - generic [ref=e1428]:
+          - generic [ref=e1429]:
+            - text: "21930"
+            - text: MALE
+          - generic [ref=e1430]:
+            - text: 04/17/26 10:45am
+            - link "42 - Tuckahoe T..." [ref=e1431] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1433]: 42 - Tuckahoe T...
+          - generic [ref=e1434]: U13
+          - generic [ref=e1435]:
+            - text: Group Play
+            - text: E
+          - generic [ref=e1437]:
+            - paragraph [ref=e1439]: FC Harlem
+            - generic [ref=e1440]: TBD
+            - paragraph [ref=e1442]: Beachside of Connecticut
+          - generic [ref=e1444]: U13 GP
+        - generic [ref=e1445]:
+          - generic [ref=e1446]:
+            - button [ref=e1448]
+            - generic [ref=e1449]:
+              - text: 04/17/26 10:45am
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e1450]: TBD
+            - generic [ref=e1452]: U13 GP
+          - generic [ref=e1453]:
+            - generic [ref=e1454]:
+              - generic [ref=e1455]:
+                - generic [ref=e1456]:
+                  - generic [ref=e1457]: Home Team
+                  - paragraph [ref=e1459]: FC Harlem
+                - generic [ref=e1460]: VS
+                - generic [ref=e1461]:
+                  - generic [ref=e1462]: Away Team
+                  - paragraph [ref=e1464]: Beachside of Connecticut
+              - generic [ref=e1465]:
+                - generic [ref=e1466]:
+                  - generic [ref=e1467]: Match ID
+                  - generic [ref=e1468]: "21930"
+                - generic [ref=e1469]:
+                  - generic [ref=e1470]: Date
+                  - generic [ref=e1471]: 04/17/26 10:45am
+                - generic [ref=e1472]:
+                  - generic [ref=e1473]: Age
+                  - generic [ref=e1474]: U13
+              - generic [ref=e1475]:
+                - generic [ref=e1476]:
+                  - generic [ref=e1477]: Gender
+                  - generic [ref=e1478]: MALE
+                - generic [ref=e1479]:
+                  - generic [ref=e1480]: Competition
+                  - generic [ref=e1481]: Group Play
+                - generic [ref=e1482]:
+                  - generic [ref=e1483]: Division
+                  - generic [ref=e1484]: E
+              - generic [ref=e1485]:
+                - generic [ref=e1486]:
+                  - generic [ref=e1487]: Location Name
+                  - generic [ref=e1488]: Tuckahoe Turf Farm
+                - generic [ref=e1489]:
+                  - generic [ref=e1490]: Field Identifier
+                  - generic [ref=e1491]: "42"
+              - generic [ref=e1493]:
+                - generic [ref=e1494]: Location Address
+                - paragraph [ref=e1497]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1498] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1499]: U13 GP
+      - generic [ref=e1500]:
+        - generic [ref=e1501]:
+          - generic [ref=e1502]:
+            - text: "21699"
+            - text: MALE
+          - generic [ref=e1503]:
+            - text: 04/17/26 12:15pm
+            - link "34 - Tuckahoe T..." [ref=e1504] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1506]: 34 - Tuckahoe T...
+          - generic [ref=e1507]: U13
+          - generic [ref=e1508]:
+            - text: Group Play
+            - text: C
+          - generic [ref=e1510]:
+            - paragraph [ref=e1512]: FC Greater Boston Bolts
+            - generic [ref=e1513]: TBD
+            - paragraph [ref=e1515]: Oakwood Soccer Club
+          - generic [ref=e1517]: U13 GP
+        - generic [ref=e1518]:
+          - generic [ref=e1519]:
+            - button [ref=e1521]
+            - generic [ref=e1522]:
+              - text: 04/17/26 12:15pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e1523]: TBD
+            - generic [ref=e1525]: U13 GP
+          - generic [ref=e1526]:
+            - generic [ref=e1527]:
+              - generic [ref=e1528]:
+                - generic [ref=e1529]:
+                  - generic [ref=e1530]: Home Team
+                  - paragraph [ref=e1532]: FC Greater Boston Bolts
+                - generic [ref=e1533]: VS
+                - generic [ref=e1534]:
+                  - generic [ref=e1535]: Away Team
+                  - paragraph [ref=e1537]: Oakwood Soccer Club
+              - generic [ref=e1538]:
+                - generic [ref=e1539]:
+                  - generic [ref=e1540]: Match ID
+                  - generic [ref=e1541]: "21699"
+                - generic [ref=e1542]:
+                  - generic [ref=e1543]: Date
+                  - generic [ref=e1544]: 04/17/26 12:15pm
+                - generic [ref=e1545]:
+                  - generic [ref=e1546]: Age
+                  - generic [ref=e1547]: U13
+              - generic [ref=e1548]:
+                - generic [ref=e1549]:
+                  - generic [ref=e1550]: Gender
+                  - generic [ref=e1551]: MALE
+                - generic [ref=e1552]:
+                  - generic [ref=e1553]: Competition
+                  - generic [ref=e1554]: Group Play
+                - generic [ref=e1555]:
+                  - generic [ref=e1556]: Division
+                  - generic [ref=e1557]: C
+              - generic [ref=e1558]:
+                - generic [ref=e1559]:
+                  - generic [ref=e1560]: Location Name
+                  - generic [ref=e1561]: Tuckahoe Turf Farm
+                - generic [ref=e1562]:
+                  - generic [ref=e1563]: Field Identifier
+                  - generic [ref=e1564]: "34"
+              - generic [ref=e1566]:
+                - generic [ref=e1567]: Location Address
+                - paragraph [ref=e1570]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1571] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1572]: U13 GP
+      - generic [ref=e1573]:
+        - generic [ref=e1574]:
+          - generic [ref=e1575]:
+            - text: "21795"
+            - text: MALE
+          - generic [ref=e1576]:
+            - text: 04/17/26 12:15pm
+            - link "39 - Tuckahoe T..." [ref=e1577] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1579]: 39 - Tuckahoe T...
+          - generic [ref=e1580]: U13
+          - generic [ref=e1581]:
+            - text: Group Play
+            - text: C
+          - generic [ref=e1583]:
+            - paragraph [ref=e1585]: Metropolitan Oval
+            - generic [ref=e1586]: TBD
+            - paragraph [ref=e1588]: Atlantic United
+          - generic [ref=e1590]: U13 GP
+        - generic [ref=e1591]:
+          - generic [ref=e1592]:
+            - button [ref=e1594]
+            - generic [ref=e1595]:
+              - text: 04/17/26 12:15pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e1596]: TBD
+            - generic [ref=e1598]: U13 GP
+          - generic [ref=e1599]:
+            - generic [ref=e1600]:
+              - generic [ref=e1601]:
+                - generic [ref=e1602]:
+                  - generic [ref=e1603]: Home Team
+                  - paragraph [ref=e1605]: Metropolitan Oval
+                - generic [ref=e1606]: VS
+                - generic [ref=e1607]:
+                  - generic [ref=e1608]: Away Team
+                  - paragraph [ref=e1610]: Atlantic United
+              - generic [ref=e1611]:
+                - generic [ref=e1612]:
+                  - generic [ref=e1613]: Match ID
+                  - generic [ref=e1614]: "21795"
+                - generic [ref=e1615]:
+                  - generic [ref=e1616]: Date
+                  - generic [ref=e1617]: 04/17/26 12:15pm
+                - generic [ref=e1618]:
+                  - generic [ref=e1619]: Age
+                  - generic [ref=e1620]: U13
+              - generic [ref=e1621]:
+                - generic [ref=e1622]:
+                  - generic [ref=e1623]: Gender
+                  - generic [ref=e1624]: MALE
+                - generic [ref=e1625]:
+                  - generic [ref=e1626]: Competition
+                  - generic [ref=e1627]: Group Play
+                - generic [ref=e1628]:
+                  - generic [ref=e1629]: Division
+                  - generic [ref=e1630]: C
+              - generic [ref=e1631]:
+                - generic [ref=e1632]:
+                  - generic [ref=e1633]: Location Name
+                  - generic [ref=e1634]: Tuckahoe Turf Farm
+                - generic [ref=e1635]:
+                  - generic [ref=e1636]: Field Identifier
+                  - generic [ref=e1637]: "39"
+              - generic [ref=e1639]:
+                - generic [ref=e1640]: Location Address
+                - paragraph [ref=e1643]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1644] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1645]: U13 GP
+      - generic [ref=e1646]:
+        - generic [ref=e1647]:
+          - generic [ref=e1648]:
+            - text: "21829"
+            - text: MALE
+          - generic [ref=e1649]:
+            - text: 04/17/26 12:15pm
+            - link "42 - Tuckahoe T..." [ref=e1650] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1652]: 42 - Tuckahoe T...
+          - generic [ref=e1653]: U13
+          - generic [ref=e1654]:
+            - text: Group Play
+            - text: F
+          - generic [ref=e1656]:
+            - paragraph [ref=e1658]: Ginga FC
+            - generic [ref=e1659]: TBD
+            - paragraph [ref=e1661]: FC Westchester
+          - generic [ref=e1663]: U13 GP
+        - generic [ref=e1664]:
+          - generic [ref=e1665]:
+            - button [ref=e1667]
+            - generic [ref=e1668]:
+              - text: 04/17/26 12:15pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e1669]: TBD
+            - generic [ref=e1671]: U13 GP
+          - generic [ref=e1672]:
+            - generic [ref=e1673]:
+              - generic [ref=e1674]:
+                - generic [ref=e1675]:
+                  - generic [ref=e1676]: Home Team
+                  - paragraph [ref=e1678]: Ginga FC
+                - generic [ref=e1679]: VS
+                - generic [ref=e1680]:
+                  - generic [ref=e1681]: Away Team
+                  - paragraph [ref=e1683]: FC Westchester
+              - generic [ref=e1684]:
+                - generic [ref=e1685]:
+                  - generic [ref=e1686]: Match ID
+                  - generic [ref=e1687]: "21829"
+                - generic [ref=e1688]:
+                  - generic [ref=e1689]: Date
+                  - generic [ref=e1690]: 04/17/26 12:15pm
+                - generic [ref=e1691]:
+                  - generic [ref=e1692]: Age
+                  - generic [ref=e1693]: U13
+              - generic [ref=e1694]:
+                - generic [ref=e1695]:
+                  - generic [ref=e1696]: Gender
+                  - generic [ref=e1697]: MALE
+                - generic [ref=e1698]:
+                  - generic [ref=e1699]: Competition
+                  - generic [ref=e1700]: Group Play
+                - generic [ref=e1701]:
+                  - generic [ref=e1702]: Division
+                  - generic [ref=e1703]: F
+              - generic [ref=e1704]:
+                - generic [ref=e1705]:
+                  - generic [ref=e1706]: Location Name
+                  - generic [ref=e1707]: Tuckahoe Turf Farm
+                - generic [ref=e1708]:
+                  - generic [ref=e1709]: Field Identifier
+                  - generic [ref=e1710]: "42"
+              - generic [ref=e1712]:
+                - generic [ref=e1713]: Location Address
+                - paragraph [ref=e1716]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1717] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1718]: U13 GP
+      - generic [ref=e1719]:
+        - generic [ref=e1720]:
+          - generic [ref=e1721]:
+            - text: "21884"
+            - text: MALE
+          - generic [ref=e1722]:
+            - text: 04/17/26 12:15pm
+            - link "40 - Tuckahoe T..." [ref=e1723] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1725]: 40 - Tuckahoe T...
+          - generic [ref=e1726]: U13
+          - generic [ref=e1727]:
+            - text: Group Play
+            - text: F
+          - generic [ref=e1729]:
+            - paragraph [ref=e1731]: Syracuse Development Academy
+            - generic [ref=e1732]: TBD
+            - paragraph [ref=e1734]: FA Euro New York
+          - generic [ref=e1736]: U13 GP
+        - generic [ref=e1737]:
+          - generic [ref=e1738]:
+            - button [ref=e1740]
+            - generic [ref=e1741]:
+              - text: 04/17/26 12:15pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e1742]: TBD
+            - generic [ref=e1744]: U13 GP
+          - generic [ref=e1745]:
+            - generic [ref=e1746]:
+              - generic [ref=e1747]:
+                - generic [ref=e1748]:
+                  - generic [ref=e1749]: Home Team
+                  - paragraph [ref=e1751]: Syracuse Development Academy
+                - generic [ref=e1752]: VS
+                - generic [ref=e1753]:
+                  - generic [ref=e1754]: Away Team
+                  - paragraph [ref=e1756]: FA Euro New York
+              - generic [ref=e1757]:
+                - generic [ref=e1758]:
+                  - generic [ref=e1759]: Match ID
+                  - generic [ref=e1760]: "21884"
+                - generic [ref=e1761]:
+                  - generic [ref=e1762]: Date
+                  - generic [ref=e1763]: 04/17/26 12:15pm
+                - generic [ref=e1764]:
+                  - generic [ref=e1765]: Age
+                  - generic [ref=e1766]: U13
+              - generic [ref=e1767]:
+                - generic [ref=e1768]:
+                  - generic [ref=e1769]: Gender
+                  - generic [ref=e1770]: MALE
+                - generic [ref=e1771]:
+                  - generic [ref=e1772]: Competition
+                  - generic [ref=e1773]: Group Play
+                - generic [ref=e1774]:
+                  - generic [ref=e1775]: Division
+                  - generic [ref=e1776]: F
+              - generic [ref=e1777]:
+                - generic [ref=e1778]:
+                  - generic [ref=e1779]: Location Name
+                  - generic [ref=e1780]: Tuckahoe Turf Farm
+                - generic [ref=e1781]:
+                  - generic [ref=e1782]: Field Identifier
+                  - generic [ref=e1783]: "40"
+              - generic [ref=e1785]:
+                - generic [ref=e1786]: Location Address
+                - paragraph [ref=e1789]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1790] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1791]: U13 GP
+      - generic [ref=e1792]:
+        - generic [ref=e1793]:
+          - generic [ref=e1794]:
+            - text: "21909"
+            - text: MALE
+          - generic [ref=e1795]:
+            - text: 04/17/26 01:45pm
+            - link "34 - Tuckahoe T..." [ref=e1796] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1798]: 34 - Tuckahoe T...
+          - generic [ref=e1799]: U13
+          - generic [ref=e1800]:
+            - text: Group Play
+            - text: A
+          - generic [ref=e1802]:
+            - paragraph [ref=e1804]: Long Island Slammers
+            - generic [ref=e1805]: TBD
+            - paragraph [ref=e1807]: Seacoast United Bedford
+          - generic [ref=e1809]: U13 GP
+        - generic [ref=e1810]:
+          - generic [ref=e1811]:
+            - button [ref=e1813]
+            - generic [ref=e1814]:
+              - text: 04/17/26 01:45pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e1815]: TBD
+            - generic [ref=e1817]: U13 GP
+          - generic [ref=e1818]:
+            - generic [ref=e1819]:
+              - generic [ref=e1820]:
+                - generic [ref=e1821]:
+                  - generic [ref=e1822]: Home Team
+                  - paragraph [ref=e1824]: Long Island Slammers
+                - generic [ref=e1825]: VS
+                - generic [ref=e1826]:
+                  - generic [ref=e1827]: Away Team
+                  - paragraph [ref=e1829]: Seacoast United Bedford
+              - generic [ref=e1830]:
+                - generic [ref=e1831]:
+                  - generic [ref=e1832]: Match ID
+                  - generic [ref=e1833]: "21909"
+                - generic [ref=e1834]:
+                  - generic [ref=e1835]: Date
+                  - generic [ref=e1836]: 04/17/26 01:45pm
+                - generic [ref=e1837]:
+                  - generic [ref=e1838]: Age
+                  - generic [ref=e1839]: U13
+              - generic [ref=e1840]:
+                - generic [ref=e1841]:
+                  - generic [ref=e1842]: Gender
+                  - generic [ref=e1843]: MALE
+                - generic [ref=e1844]:
+                  - generic [ref=e1845]: Competition
+                  - generic [ref=e1846]: Group Play
+                - generic [ref=e1847]:
+                  - generic [ref=e1848]: Division
+                  - generic [ref=e1849]: A
+              - generic [ref=e1850]:
+                - generic [ref=e1851]:
+                  - generic [ref=e1852]: Location Name
+                  - generic [ref=e1853]: Tuckahoe Turf Farm
+                - generic [ref=e1854]:
+                  - generic [ref=e1855]: Field Identifier
+                  - generic [ref=e1856]: "34"
+              - generic [ref=e1858]:
+                - generic [ref=e1859]: Location Address
+                - paragraph [ref=e1862]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1863] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1864]: U13 GP
+      - generic [ref=e1865]:
+        - generic [ref=e1866]:
+          - generic [ref=e1867]:
+            - text: "21857"
+            - text: MALE
+          - generic [ref=e1868]:
+            - text: 04/17/26 01:45pm
+            - link "42 - Tuckahoe T..." [ref=e1869] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1871]: 42 - Tuckahoe T...
+          - generic [ref=e1872]: U13
+          - generic [ref=e1873]:
+            - text: Group Play
+            - text: H
+          - generic [ref=e1875]:
+            - paragraph [ref=e1877]: New York Elite Alleycats FC
+            - generic [ref=e1878]: TBD
+            - paragraph [ref=e1880]: Cedar Stars Academy Bergen
+          - generic [ref=e1882]: U13 GP
+        - generic [ref=e1883]:
+          - generic [ref=e1884]:
+            - button [ref=e1886]
+            - generic [ref=e1887]:
+              - text: 04/17/26 01:45pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e1888]: TBD
+            - generic [ref=e1890]: U13 GP
+          - generic [ref=e1891]:
+            - generic [ref=e1892]:
+              - generic [ref=e1893]:
+                - generic [ref=e1894]:
+                  - generic [ref=e1895]: Home Team
+                  - paragraph [ref=e1897]: New York Elite Alleycats FC
+                - generic [ref=e1898]: VS
+                - generic [ref=e1899]:
+                  - generic [ref=e1900]: Away Team
+                  - paragraph [ref=e1902]: Cedar Stars Academy Bergen
+              - generic [ref=e1903]:
+                - generic [ref=e1904]:
+                  - generic [ref=e1905]: Match ID
+                  - generic [ref=e1906]: "21857"
+                - generic [ref=e1907]:
+                  - generic [ref=e1908]: Date
+                  - generic [ref=e1909]: 04/17/26 01:45pm
+                - generic [ref=e1910]:
+                  - generic [ref=e1911]: Age
+                  - generic [ref=e1912]: U13
+              - generic [ref=e1913]:
+                - generic [ref=e1914]:
+                  - generic [ref=e1915]: Gender
+                  - generic [ref=e1916]: MALE
+                - generic [ref=e1917]:
+                  - generic [ref=e1918]: Competition
+                  - generic [ref=e1919]: Group Play
+                - generic [ref=e1920]:
+                  - generic [ref=e1921]: Division
+                  - generic [ref=e1922]: H
+              - generic [ref=e1923]:
+                - generic [ref=e1924]:
+                  - generic [ref=e1925]: Location Name
+                  - generic [ref=e1926]: Tuckahoe Turf Farm
+                - generic [ref=e1927]:
+                  - generic [ref=e1928]: Field Identifier
+                  - generic [ref=e1929]: "42"
+              - generic [ref=e1931]:
+                - generic [ref=e1932]: Location Address
+                - paragraph [ref=e1935]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e1936] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e1937]: U13 GP
+      - generic [ref=e1938]:
+        - generic [ref=e1939]:
+          - generic [ref=e1940]:
+            - text: "21728"
+            - text: MALE
+          - generic [ref=e1941]:
+            - text: 04/17/26 01:45pm
+            - link "40 - Tuckahoe T..." [ref=e1942] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e1944]: 40 - Tuckahoe T...
+          - generic [ref=e1945]: U13
+          - generic [ref=e1946]:
+            - text: Group Play
+            - text: H
+          - generic [ref=e1948]:
+            - paragraph [ref=e1950]: Valeo Futbol Club
+            - generic [ref=e1951]: TBD
+            - paragraph [ref=e1953]: Rhode Island Surf SC
+          - generic [ref=e1955]: U13 GP
+        - generic [ref=e1956]:
+          - generic [ref=e1957]:
+            - button [ref=e1959]
+            - generic [ref=e1960]:
+              - text: 04/17/26 01:45pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e1961]: TBD
+            - generic [ref=e1963]: U13 GP
+          - generic [ref=e1964]:
+            - generic [ref=e1965]:
+              - generic [ref=e1966]:
+                - generic [ref=e1967]:
+                  - generic [ref=e1968]: Home Team
+                  - paragraph [ref=e1970]: Valeo Futbol Club
+                - generic [ref=e1971]: VS
+                - generic [ref=e1972]:
+                  - generic [ref=e1973]: Away Team
+                  - paragraph [ref=e1975]: Rhode Island Surf SC
+              - generic [ref=e1976]:
+                - generic [ref=e1977]:
+                  - generic [ref=e1978]: Match ID
+                  - generic [ref=e1979]: "21728"
+                - generic [ref=e1980]:
+                  - generic [ref=e1981]: Date
+                  - generic [ref=e1982]: 04/17/26 01:45pm
+                - generic [ref=e1983]:
+                  - generic [ref=e1984]: Age
+                  - generic [ref=e1985]: U13
+              - generic [ref=e1986]:
+                - generic [ref=e1987]:
+                  - generic [ref=e1988]: Gender
+                  - generic [ref=e1989]: MALE
+                - generic [ref=e1990]:
+                  - generic [ref=e1991]: Competition
+                  - generic [ref=e1992]: Group Play
+                - generic [ref=e1993]:
+                  - generic [ref=e1994]: Division
+                  - generic [ref=e1995]: H
+              - generic [ref=e1996]:
+                - generic [ref=e1997]:
+                  - generic [ref=e1998]: Location Name
+                  - generic [ref=e1999]: Tuckahoe Turf Farm
+                - generic [ref=e2000]:
+                  - generic [ref=e2001]: Field Identifier
+                  - generic [ref=e2002]: "40"
+              - generic [ref=e2004]:
+                - generic [ref=e2005]: Location Address
+                - paragraph [ref=e2008]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2009] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2010]: U13 GP
+      - generic [ref=e2011]:
+        - generic [ref=e2012]:
+          - generic [ref=e2013]:
+            - text: "21847"
+            - text: MALE
+          - generic [ref=e2014]:
+            - text: 04/17/26 01:45pm
+            - link "39 - Tuckahoe T..." [ref=e2015] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2017]: 39 - Tuckahoe T...
+          - generic [ref=e2018]: U13
+          - generic [ref=e2019]:
+            - text: Group Play
+            - text: A
+          - generic [ref=e2021]:
+            - paragraph [ref=e2023]: New England Surf SC
+            - generic [ref=e2024]: TBD
+            - paragraph [ref=e2026]: New York SC
+          - generic [ref=e2028]: U13 GP
+        - generic [ref=e2029]:
+          - generic [ref=e2030]:
+            - button [ref=e2032]
+            - generic [ref=e2033]:
+              - text: 04/17/26 01:45pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e2034]: TBD
+            - generic [ref=e2036]: U13 GP
+          - generic [ref=e2037]:
+            - generic [ref=e2038]:
+              - generic [ref=e2039]:
+                - generic [ref=e2040]:
+                  - generic [ref=e2041]: Home Team
+                  - paragraph [ref=e2043]: New England Surf SC
+                - generic [ref=e2044]: VS
+                - generic [ref=e2045]:
+                  - generic [ref=e2046]: Away Team
+                  - paragraph [ref=e2048]: New York SC
+              - generic [ref=e2049]:
+                - generic [ref=e2050]:
+                  - generic [ref=e2051]: Match ID
+                  - generic [ref=e2052]: "21847"
+                - generic [ref=e2053]:
+                  - generic [ref=e2054]: Date
+                  - generic [ref=e2055]: 04/17/26 01:45pm
+                - generic [ref=e2056]:
+                  - generic [ref=e2057]: Age
+                  - generic [ref=e2058]: U13
+              - generic [ref=e2059]:
+                - generic [ref=e2060]:
+                  - generic [ref=e2061]: Gender
+                  - generic [ref=e2062]: MALE
+                - generic [ref=e2063]:
+                  - generic [ref=e2064]: Competition
+                  - generic [ref=e2065]: Group Play
+                - generic [ref=e2066]:
+                  - generic [ref=e2067]: Division
+                  - generic [ref=e2068]: A
+              - generic [ref=e2069]:
+                - generic [ref=e2070]:
+                  - generic [ref=e2071]: Location Name
+                  - generic [ref=e2072]: Tuckahoe Turf Farm
+                - generic [ref=e2073]:
+                  - generic [ref=e2074]: Field Identifier
+                  - generic [ref=e2075]: "39"
+              - generic [ref=e2077]:
+                - generic [ref=e2078]: Location Address
+                - paragraph [ref=e2081]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2082] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2083]: U13 GP
+      - generic [ref=e2084]:
+        - generic [ref=e2085]:
+          - generic [ref=e2086]:
+            - text: "21744"
+            - text: MALE
+          - generic [ref=e2087]:
+            - text: 04/17/26 03:15pm
+            - link "40 - Tuckahoe T..." [ref=e2088] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2090]: 40 - Tuckahoe T...
+          - generic [ref=e2091]: U13
+          - generic [ref=e2092]:
+            - text: Group Play
+            - text: G
+          - generic [ref=e2094]:
+            - paragraph [ref=e2096]: Blau Weiss Gottschee
+            - generic [ref=e2097]: TBD
+            - paragraph [ref=e2099]: New York Rush
+          - generic [ref=e2101]: U13 GP
+        - generic [ref=e2102]:
+          - generic [ref=e2103]:
+            - button [ref=e2105]
+            - generic [ref=e2106]:
+              - text: 04/17/26 03:15pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e2107]: TBD
+            - generic [ref=e2109]: U13 GP
+          - generic [ref=e2110]:
+            - generic [ref=e2111]:
+              - generic [ref=e2112]:
+                - generic [ref=e2113]:
+                  - generic [ref=e2114]: Home Team
+                  - paragraph [ref=e2116]: Blau Weiss Gottschee
+                - generic [ref=e2117]: VS
+                - generic [ref=e2118]:
+                  - generic [ref=e2119]: Away Team
+                  - paragraph [ref=e2121]: New York Rush
+              - generic [ref=e2122]:
+                - generic [ref=e2123]:
+                  - generic [ref=e2124]: Match ID
+                  - generic [ref=e2125]: "21744"
+                - generic [ref=e2126]:
+                  - generic [ref=e2127]: Date
+                  - generic [ref=e2128]: 04/17/26 03:15pm
+                - generic [ref=e2129]:
+                  - generic [ref=e2130]: Age
+                  - generic [ref=e2131]: U13
+              - generic [ref=e2132]:
+                - generic [ref=e2133]:
+                  - generic [ref=e2134]: Gender
+                  - generic [ref=e2135]: MALE
+                - generic [ref=e2136]:
+                  - generic [ref=e2137]: Competition
+                  - generic [ref=e2138]: Group Play
+                - generic [ref=e2139]:
+                  - generic [ref=e2140]: Division
+                  - generic [ref=e2141]: G
+              - generic [ref=e2142]:
+                - generic [ref=e2143]:
+                  - generic [ref=e2144]: Location Name
+                  - generic [ref=e2145]: Tuckahoe Turf Farm
+                - generic [ref=e2146]:
+                  - generic [ref=e2147]: Field Identifier
+                  - generic [ref=e2148]: "40"
+              - generic [ref=e2150]:
+                - generic [ref=e2151]: Location Address
+                - paragraph [ref=e2154]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2155] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2156]: U13 GP
+      - generic [ref=e2157]:
+        - generic [ref=e2158]:
+          - generic [ref=e2159]:
+            - text: "21761"
+            - text: MALE
+          - generic [ref=e2160]:
+            - text: 04/17/26 03:15pm
+            - link "39 - Tuckahoe T..." [ref=e2161] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2163]: 39 - Tuckahoe T...
+          - generic [ref=e2164]: U13
+          - generic [ref=e2165]:
+            - text: Group Play
+            - text: B
+          - generic [ref=e2167]:
+            - paragraph [ref=e2169]: Downtown United Soccer Club
+            - generic [ref=e2170]: TBD
+            - paragraph [ref=e2172]: New England Surf SC
+          - generic [ref=e2174]: U13 GP
+        - generic [ref=e2175]:
+          - generic [ref=e2176]:
+            - button [ref=e2178]
+            - generic [ref=e2179]:
+              - text: 04/17/26 03:15pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e2180]: TBD
+            - generic [ref=e2182]: U13 GP
+          - generic [ref=e2183]:
+            - generic [ref=e2184]:
+              - generic [ref=e2185]:
+                - generic [ref=e2186]:
+                  - generic [ref=e2187]: Home Team
+                  - paragraph [ref=e2189]: Downtown United Soccer Club
+                - generic [ref=e2190]: VS
+                - generic [ref=e2191]:
+                  - generic [ref=e2192]: Away Team
+                  - paragraph [ref=e2194]: New England Surf SC
+              - generic [ref=e2195]:
+                - generic [ref=e2196]:
+                  - generic [ref=e2197]: Match ID
+                  - generic [ref=e2198]: "21761"
+                - generic [ref=e2199]:
+                  - generic [ref=e2200]: Date
+                  - generic [ref=e2201]: 04/17/26 03:15pm
+                - generic [ref=e2202]:
+                  - generic [ref=e2203]: Age
+                  - generic [ref=e2204]: U13
+              - generic [ref=e2205]:
+                - generic [ref=e2206]:
+                  - generic [ref=e2207]: Gender
+                  - generic [ref=e2208]: MALE
+                - generic [ref=e2209]:
+                  - generic [ref=e2210]: Competition
+                  - generic [ref=e2211]: Group Play
+                - generic [ref=e2212]:
+                  - generic [ref=e2213]: Division
+                  - generic [ref=e2214]: B
+              - generic [ref=e2215]:
+                - generic [ref=e2216]:
+                  - generic [ref=e2217]: Location Name
+                  - generic [ref=e2218]: Tuckahoe Turf Farm
+                - generic [ref=e2219]:
+                  - generic [ref=e2220]: Field Identifier
+                  - generic [ref=e2221]: "39"
+              - generic [ref=e2223]:
+                - generic [ref=e2224]: Location Address
+                - paragraph [ref=e2227]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2228] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2229]: U13 GP
+      - generic [ref=e2230]:
+        - generic [ref=e2231]:
+          - generic [ref=e2232]:
+            - text: "21837"
+            - text: MALE
+          - generic [ref=e2233]:
+            - text: 04/17/26 03:15pm
+            - link "42 - Tuckahoe T..." [ref=e2234] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2236]: 42 - Tuckahoe T...
+          - generic [ref=e2237]: U13
+          - generic [ref=e2238]:
+            - text: Group Play
+            - text: G
+          - generic [ref=e2240]:
+            - paragraph [ref=e2242]: NEFC South
+            - generic [ref=e2243]: TBD
+            - paragraph [ref=e2245]: Long Island Soccer Club
+          - generic [ref=e2247]: U13 GP
+        - generic [ref=e2248]:
+          - generic [ref=e2249]:
+            - button [ref=e2251]
+            - generic [ref=e2252]:
+              - text: 04/17/26 03:15pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e2253]: TBD
+            - generic [ref=e2255]: U13 GP
+          - generic [ref=e2256]:
+            - generic [ref=e2257]:
+              - generic [ref=e2258]:
+                - generic [ref=e2259]:
+                  - generic [ref=e2260]: Home Team
+                  - paragraph [ref=e2262]: NEFC South
+                - generic [ref=e2263]: VS
+                - generic [ref=e2264]:
+                  - generic [ref=e2265]: Away Team
+                  - paragraph [ref=e2267]: Long Island Soccer Club
+              - generic [ref=e2268]:
+                - generic [ref=e2269]:
+                  - generic [ref=e2270]: Match ID
+                  - generic [ref=e2271]: "21837"
+                - generic [ref=e2272]:
+                  - generic [ref=e2273]: Date
+                  - generic [ref=e2274]: 04/17/26 03:15pm
+                - generic [ref=e2275]:
+                  - generic [ref=e2276]: Age
+                  - generic [ref=e2277]: U13
+              - generic [ref=e2278]:
+                - generic [ref=e2279]:
+                  - generic [ref=e2280]: Gender
+                  - generic [ref=e2281]: MALE
+                - generic [ref=e2282]:
+                  - generic [ref=e2283]: Competition
+                  - generic [ref=e2284]: Group Play
+                - generic [ref=e2285]:
+                  - generic [ref=e2286]: Division
+                  - generic [ref=e2287]: G
+              - generic [ref=e2288]:
+                - generic [ref=e2289]:
+                  - generic [ref=e2290]: Location Name
+                  - generic [ref=e2291]: Tuckahoe Turf Farm
+                - generic [ref=e2292]:
+                  - generic [ref=e2293]: Field Identifier
+                  - generic [ref=e2294]: "42"
+              - generic [ref=e2296]:
+                - generic [ref=e2297]: Location Address
+                - paragraph [ref=e2300]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2301] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2302]: U13 GP
+      - generic [ref=e2303]:
+        - generic [ref=e2304]:
+          - generic [ref=e2305]:
+            - text: "21938"
+            - text: MALE
+          - generic [ref=e2306]:
+            - text: 04/17/26 03:15pm
+            - link "34 - Tuckahoe T..." [ref=e2307] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2309]: 34 - Tuckahoe T...
+          - generic [ref=e2310]: U13
+          - generic [ref=e2311]:
+            - text: Group Play
+            - text: B
+          - generic [ref=e2313]:
+            - paragraph [ref=e2315]: Intercontinental Football Academy of New England
+            - generic [ref=e2316]: TBD
+            - paragraph [ref=e2318]: Long Island Slammers
+          - generic [ref=e2320]: U13 GP
+        - generic [ref=e2321]:
+          - generic [ref=e2322]:
+            - button [ref=e2324]
+            - generic [ref=e2325]:
+              - text: 04/17/26 03:15pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e2326]: TBD
+            - generic [ref=e2328]: U13 GP
+          - generic [ref=e2329]:
+            - generic [ref=e2330]:
+              - generic [ref=e2331]:
+                - generic [ref=e2332]:
+                  - generic [ref=e2333]: Home Team
+                  - paragraph [ref=e2335]: Intercontinental Football Academy of New England
+                - generic [ref=e2336]: VS
+                - generic [ref=e2337]:
+                  - generic [ref=e2338]: Away Team
+                  - paragraph [ref=e2340]: Long Island Slammers
+              - generic [ref=e2341]:
+                - generic [ref=e2342]:
+                  - generic [ref=e2343]: Match ID
+                  - generic [ref=e2344]: "21938"
+                - generic [ref=e2345]:
+                  - generic [ref=e2346]: Date
+                  - generic [ref=e2347]: 04/17/26 03:15pm
+                - generic [ref=e2348]:
+                  - generic [ref=e2349]: Age
+                  - generic [ref=e2350]: U13
+              - generic [ref=e2351]:
+                - generic [ref=e2352]:
+                  - generic [ref=e2353]: Gender
+                  - generic [ref=e2354]: MALE
+                - generic [ref=e2355]:
+                  - generic [ref=e2356]: Competition
+                  - generic [ref=e2357]: Group Play
+                - generic [ref=e2358]:
+                  - generic [ref=e2359]: Division
+                  - generic [ref=e2360]: B
+              - generic [ref=e2361]:
+                - generic [ref=e2362]:
+                  - generic [ref=e2363]: Location Name
+                  - generic [ref=e2364]: Tuckahoe Turf Farm
+                - generic [ref=e2365]:
+                  - generic [ref=e2366]: Field Identifier
+                  - generic [ref=e2367]: "34"
+              - generic [ref=e2369]:
+                - generic [ref=e2370]: Location Address
+                - paragraph [ref=e2373]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2374] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2375]: U13 GP
+      - generic [ref=e2376]:
+        - generic [ref=e2377]:
+          - generic [ref=e2378]:
+            - text: "21678"
+            - text: MALE
+          - generic [ref=e2379]:
+            - text: 04/17/26 04:45pm
+            - link "34 - Tuckahoe T..." [ref=e2380] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2382]: 34 - Tuckahoe T...
+          - generic [ref=e2383]: U13
+          - generic [ref=e2384]:
+            - text: Group Play
+            - text: D
+          - generic [ref=e2386]:
+            - paragraph [ref=e2388]: Seacoast United Mass
+            - generic [ref=e2389]: TBD
+            - paragraph [ref=e2391]: IFA West
+          - generic [ref=e2393]: U13 GP
+        - generic [ref=e2394]:
+          - generic [ref=e2395]:
+            - button [ref=e2397]
+            - generic [ref=e2398]:
+              - text: 04/17/26 04:45pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e2399]: TBD
+            - generic [ref=e2401]: U13 GP
+          - generic [ref=e2402]:
+            - generic [ref=e2403]:
+              - generic [ref=e2404]:
+                - generic [ref=e2405]:
+                  - generic [ref=e2406]: Home Team
+                  - paragraph [ref=e2408]: Seacoast United Mass
+                - generic [ref=e2409]: VS
+                - generic [ref=e2410]:
+                  - generic [ref=e2411]: Away Team
+                  - paragraph [ref=e2413]: IFA West
+              - generic [ref=e2414]:
+                - generic [ref=e2415]:
+                  - generic [ref=e2416]: Match ID
+                  - generic [ref=e2417]: "21678"
+                - generic [ref=e2418]:
+                  - generic [ref=e2419]: Date
+                  - generic [ref=e2420]: 04/17/26 04:45pm
+                - generic [ref=e2421]:
+                  - generic [ref=e2422]: Age
+                  - generic [ref=e2423]: U13
+              - generic [ref=e2424]:
+                - generic [ref=e2425]:
+                  - generic [ref=e2426]: Gender
+                  - generic [ref=e2427]: MALE
+                - generic [ref=e2428]:
+                  - generic [ref=e2429]: Competition
+                  - generic [ref=e2430]: Group Play
+                - generic [ref=e2431]:
+                  - generic [ref=e2432]: Division
+                  - generic [ref=e2433]: D
+              - generic [ref=e2434]:
+                - generic [ref=e2435]:
+                  - generic [ref=e2436]: Location Name
+                  - generic [ref=e2437]: Tuckahoe Turf Farm
+                - generic [ref=e2438]:
+                  - generic [ref=e2439]: Field Identifier
+                  - generic [ref=e2440]: "34"
+              - generic [ref=e2442]:
+                - generic [ref=e2443]: Location Address
+                - paragraph [ref=e2446]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2447] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2448]: U13 GP
+      - generic [ref=e2449]:
+        - generic [ref=e2450]:
+          - generic [ref=e2451]:
+            - text: "21689"
+            - text: MALE
+          - generic [ref=e2452]:
+            - text: 04/17/26 04:45pm
+            - link "42 - Tuckahoe T..." [ref=e2453] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2455]: 42 - Tuckahoe T...
+          - generic [ref=e2456]: U13
+          - generic [ref=e2457]:
+            - text: Group Play
+            - text: E
+          - generic [ref=e2459]:
+            - paragraph [ref=e2461]: Bayside FC
+            - generic [ref=e2462]: TBD
+            - paragraph [ref=e2464]: FC Harlem
+          - generic [ref=e2466]: U13 GP
+        - generic [ref=e2467]:
+          - generic [ref=e2468]:
+            - button [ref=e2470]
+            - generic [ref=e2471]:
+              - text: 04/17/26 04:45pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e2472]: TBD
+            - generic [ref=e2474]: U13 GP
+          - generic [ref=e2475]:
+            - generic [ref=e2476]:
+              - generic [ref=e2477]:
+                - generic [ref=e2478]:
+                  - generic [ref=e2479]: Home Team
+                  - paragraph [ref=e2481]: Bayside FC
+                - generic [ref=e2482]: VS
+                - generic [ref=e2483]:
+                  - generic [ref=e2484]: Away Team
+                  - paragraph [ref=e2486]: FC Harlem
+              - generic [ref=e2487]:
+                - generic [ref=e2488]:
+                  - generic [ref=e2489]: Match ID
+                  - generic [ref=e2490]: "21689"
+                - generic [ref=e2491]:
+                  - generic [ref=e2492]: Date
+                  - generic [ref=e2493]: 04/17/26 04:45pm
+                - generic [ref=e2494]:
+                  - generic [ref=e2495]: Age
+                  - generic [ref=e2496]: U13
+              - generic [ref=e2497]:
+                - generic [ref=e2498]:
+                  - generic [ref=e2499]: Gender
+                  - generic [ref=e2500]: MALE
+                - generic [ref=e2501]:
+                  - generic [ref=e2502]: Competition
+                  - generic [ref=e2503]: Group Play
+                - generic [ref=e2504]:
+                  - generic [ref=e2505]: Division
+                  - generic [ref=e2506]: E
+              - generic [ref=e2507]:
+                - generic [ref=e2508]:
+                  - generic [ref=e2509]: Location Name
+                  - generic [ref=e2510]: Tuckahoe Turf Farm
+                - generic [ref=e2511]:
+                  - generic [ref=e2512]: Field Identifier
+                  - generic [ref=e2513]: "42"
+              - generic [ref=e2515]:
+                - generic [ref=e2516]: Location Address
+                - paragraph [ref=e2519]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2520] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2521]: U13 GP
+      - generic [ref=e2522]:
+        - generic [ref=e2523]:
+          - generic [ref=e2524]:
+            - text: "21736"
+            - text: MALE
+          - generic [ref=e2525]:
+            - text: 04/17/26 04:45pm
+            - link "40 - Tuckahoe T..." [ref=e2526] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2528]: 40 - Tuckahoe T...
+          - generic [ref=e2529]: U13
+          - generic [ref=e2530]:
+            - text: Group Play
+            - text: E
+          - generic [ref=e2532]:
+            - paragraph [ref=e2534]: Beachside of Connecticut
+            - generic [ref=e2535]: TBD
+            - paragraph [ref=e2537]: NEFC
+          - generic [ref=e2539]: U13 GP
+        - generic [ref=e2540]:
+          - generic [ref=e2541]:
+            - button [ref=e2543]
+            - generic [ref=e2544]:
+              - text: 04/17/26 04:45pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e2545]: TBD
+            - generic [ref=e2547]: U13 GP
+          - generic [ref=e2548]:
+            - generic [ref=e2549]:
+              - generic [ref=e2550]:
+                - generic [ref=e2551]:
+                  - generic [ref=e2552]: Home Team
+                  - paragraph [ref=e2554]: Beachside of Connecticut
+                - generic [ref=e2555]: VS
+                - generic [ref=e2556]:
+                  - generic [ref=e2557]: Away Team
+                  - paragraph [ref=e2559]: NEFC
+              - generic [ref=e2560]:
+                - generic [ref=e2561]:
+                  - generic [ref=e2562]: Match ID
+                  - generic [ref=e2563]: "21736"
+                - generic [ref=e2564]:
+                  - generic [ref=e2565]: Date
+                  - generic [ref=e2566]: 04/17/26 04:45pm
+                - generic [ref=e2567]:
+                  - generic [ref=e2568]: Age
+                  - generic [ref=e2569]: U13
+              - generic [ref=e2570]:
+                - generic [ref=e2571]:
+                  - generic [ref=e2572]: Gender
+                  - generic [ref=e2573]: MALE
+                - generic [ref=e2574]:
+                  - generic [ref=e2575]: Competition
+                  - generic [ref=e2576]: Group Play
+                - generic [ref=e2577]:
+                  - generic [ref=e2578]: Division
+                  - generic [ref=e2579]: E
+              - generic [ref=e2580]:
+                - generic [ref=e2581]:
+                  - generic [ref=e2582]: Location Name
+                  - generic [ref=e2583]: Tuckahoe Turf Farm
+                - generic [ref=e2584]:
+                  - generic [ref=e2585]: Field Identifier
+                  - generic [ref=e2586]: "40"
+              - generic [ref=e2588]:
+                - generic [ref=e2589]: Location Address
+                - paragraph [ref=e2592]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2593] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2594]: U13 GP
+      - generic [ref=e2595]:
+        - generic [ref=e2596]:
+          - generic [ref=e2597]:
+            - text: "21894"
+            - text: MALE
+          - generic [ref=e2598]:
+            - text: 04/17/26 04:45pm
+            - link "39 - Tuckahoe T..." [ref=e2599] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2601]: 39 - Tuckahoe T...
+          - generic [ref=e2602]: U13
+          - generic [ref=e2603]:
+            - text: Group Play
+            - text: D
+          - generic [ref=e2605]:
+            - paragraph [ref=e2607]: Cedar Stars Academy Newark
+            - generic [ref=e2608]: TBD
+            - paragraph [ref=e2610]: TSF Academy
+          - generic [ref=e2612]: U13 GP
+        - generic [ref=e2613]:
+          - generic [ref=e2614]:
+            - button [ref=e2616]
+            - generic [ref=e2617]:
+              - text: 04/17/26 04:45pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e2618]: TBD
+            - generic [ref=e2620]: U13 GP
+          - generic [ref=e2621]:
+            - generic [ref=e2622]:
+              - generic [ref=e2623]:
+                - generic [ref=e2624]:
+                  - generic [ref=e2625]: Home Team
+                  - paragraph [ref=e2627]: Cedar Stars Academy Newark
+                - generic [ref=e2628]: VS
+                - generic [ref=e2629]:
+                  - generic [ref=e2630]: Away Team
+                  - paragraph [ref=e2632]: TSF Academy
+              - generic [ref=e2633]:
+                - generic [ref=e2634]:
+                  - generic [ref=e2635]: Match ID
+                  - generic [ref=e2636]: "21894"
+                - generic [ref=e2637]:
+                  - generic [ref=e2638]: Date
+                  - generic [ref=e2639]: 04/17/26 04:45pm
+                - generic [ref=e2640]:
+                  - generic [ref=e2641]: Age
+                  - generic [ref=e2642]: U13
+              - generic [ref=e2643]:
+                - generic [ref=e2644]:
+                  - generic [ref=e2645]: Gender
+                  - generic [ref=e2646]: MALE
+                - generic [ref=e2647]:
+                  - generic [ref=e2648]: Competition
+                  - generic [ref=e2649]: Group Play
+                - generic [ref=e2650]:
+                  - generic [ref=e2651]: Division
+                  - generic [ref=e2652]: D
+              - generic [ref=e2653]:
+                - generic [ref=e2654]:
+                  - generic [ref=e2655]: Location Name
+                  - generic [ref=e2656]: Tuckahoe Turf Farm
+                - generic [ref=e2657]:
+                  - generic [ref=e2658]: Field Identifier
+                  - generic [ref=e2659]: "39"
+              - generic [ref=e2661]:
+                - generic [ref=e2662]: Location Address
+                - paragraph [ref=e2665]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2666] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2667]: U13 GP
+      - generic [ref=e2668]:
+        - generic [ref=e2669]:
+          - generic [ref=e2670]:
+            - text: "21920"
+            - text: MALE
+          - generic [ref=e2671]:
+            - text: 04/17/26 06:15pm
+            - link "34 - Tuckahoe T..." [ref=e2672] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2674]: 34 - Tuckahoe T...
+          - generic [ref=e2675]: U13
+          - generic [ref=e2676]:
+            - text: Group Play
+            - text: C
+          - generic [ref=e2678]:
+            - paragraph [ref=e2680]: Atlantic United
+            - generic [ref=e2681]: TBD
+            - paragraph [ref=e2683]: FC Greater Boston Bolts
+          - generic [ref=e2685]: U13 GP
+        - generic [ref=e2686]:
+          - generic [ref=e2687]:
+            - button [ref=e2689]
+            - generic [ref=e2690]:
+              - text: 04/17/26 06:15pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e2691]: TBD
+            - generic [ref=e2693]: U13 GP
+          - generic [ref=e2694]:
+            - generic [ref=e2695]:
+              - generic [ref=e2696]:
+                - generic [ref=e2697]:
+                  - generic [ref=e2698]: Home Team
+                  - paragraph [ref=e2700]: Atlantic United
+                - generic [ref=e2701]: VS
+                - generic [ref=e2702]:
+                  - generic [ref=e2703]: Away Team
+                  - paragraph [ref=e2705]: FC Greater Boston Bolts
+              - generic [ref=e2706]:
+                - generic [ref=e2707]:
+                  - generic [ref=e2708]: Match ID
+                  - generic [ref=e2709]: "21920"
+                - generic [ref=e2710]:
+                  - generic [ref=e2711]: Date
+                  - generic [ref=e2712]: 04/17/26 06:15pm
+                - generic [ref=e2713]:
+                  - generic [ref=e2714]: Age
+                  - generic [ref=e2715]: U13
+              - generic [ref=e2716]:
+                - generic [ref=e2717]:
+                  - generic [ref=e2718]: Gender
+                  - generic [ref=e2719]: MALE
+                - generic [ref=e2720]:
+                  - generic [ref=e2721]: Competition
+                  - generic [ref=e2722]: Group Play
+                - generic [ref=e2723]:
+                  - generic [ref=e2724]: Division
+                  - generic [ref=e2725]: C
+              - generic [ref=e2726]:
+                - generic [ref=e2727]:
+                  - generic [ref=e2728]: Location Name
+                  - generic [ref=e2729]: Tuckahoe Turf Farm
+                - generic [ref=e2730]:
+                  - generic [ref=e2731]: Field Identifier
+                  - generic [ref=e2732]: "34"
+              - generic [ref=e2734]:
+                - generic [ref=e2735]: Location Address
+                - paragraph [ref=e2738]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2739] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2740]: U13 GP
+      - generic [ref=e2741]:
+        - generic [ref=e2742]:
+          - generic [ref=e2743]:
+            - text: "21720"
+            - text: MALE
+          - generic [ref=e2744]:
+            - text: 04/17/26 06:15pm
+            - link "39 - Tuckahoe T..." [ref=e2745] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2747]: 39 - Tuckahoe T...
+          - generic [ref=e2748]: U13
+          - generic [ref=e2749]:
+            - text: Group Play
+            - text: C
+          - generic [ref=e2751]:
+            - paragraph [ref=e2753]: Oakwood Soccer Club
+            - generic [ref=e2754]: TBD
+            - paragraph [ref=e2756]: Metropolitan Oval
+          - generic [ref=e2758]: U13 GP
+        - generic [ref=e2759]:
+          - generic [ref=e2760]:
+            - button [ref=e2762]
+            - generic [ref=e2763]:
+              - text: 04/17/26 06:15pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e2764]: TBD
+            - generic [ref=e2766]: U13 GP
+          - generic [ref=e2767]:
+            - generic [ref=e2768]:
+              - generic [ref=e2769]:
+                - generic [ref=e2770]:
+                  - generic [ref=e2771]: Home Team
+                  - paragraph [ref=e2773]: Oakwood Soccer Club
+                - generic [ref=e2774]: VS
+                - generic [ref=e2775]:
+                  - generic [ref=e2776]: Away Team
+                  - paragraph [ref=e2778]: Metropolitan Oval
+              - generic [ref=e2779]:
+                - generic [ref=e2780]:
+                  - generic [ref=e2781]: Match ID
+                  - generic [ref=e2782]: "21720"
+                - generic [ref=e2783]:
+                  - generic [ref=e2784]: Date
+                  - generic [ref=e2785]: 04/17/26 06:15pm
+                - generic [ref=e2786]:
+                  - generic [ref=e2787]: Age
+                  - generic [ref=e2788]: U13
+              - generic [ref=e2789]:
+                - generic [ref=e2790]:
+                  - generic [ref=e2791]: Gender
+                  - generic [ref=e2792]: MALE
+                - generic [ref=e2793]:
+                  - generic [ref=e2794]: Competition
+                  - generic [ref=e2795]: Group Play
+                - generic [ref=e2796]:
+                  - generic [ref=e2797]: Division
+                  - generic [ref=e2798]: C
+              - generic [ref=e2799]:
+                - generic [ref=e2800]:
+                  - generic [ref=e2801]: Location Name
+                  - generic [ref=e2802]: Tuckahoe Turf Farm
+                - generic [ref=e2803]:
+                  - generic [ref=e2804]: Field Identifier
+                  - generic [ref=e2805]: "39"
+              - generic [ref=e2807]:
+                - generic [ref=e2808]: Location Address
+                - paragraph [ref=e2811]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2812] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2813]: U13 GP
+      - generic [ref=e2814]:
+        - generic [ref=e2815]:
+          - generic [ref=e2816]:
+            - text: "21776"
+            - text: MALE
+          - generic [ref=e2817]:
+            - text: 04/17/26 06:15pm
+            - link "40 - Tuckahoe T..." [ref=e2818] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2820]: 40 - Tuckahoe T...
+          - generic [ref=e2821]: U13
+          - generic [ref=e2822]:
+            - text: Group Play
+            - text: F
+          - generic [ref=e2824]:
+            - paragraph [ref=e2826]: FC Westchester
+            - generic [ref=e2827]: TBD
+            - paragraph [ref=e2829]: Syracuse Development Academy
+          - generic [ref=e2831]: U13 GP
+        - generic [ref=e2832]:
+          - generic [ref=e2833]:
+            - button [ref=e2835]
+            - generic [ref=e2836]:
+              - text: 04/17/26 06:15pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e2837]: TBD
+            - generic [ref=e2839]: U13 GP
+          - generic [ref=e2840]:
+            - generic [ref=e2841]:
+              - generic [ref=e2842]:
+                - generic [ref=e2843]:
+                  - generic [ref=e2844]: Home Team
+                  - paragraph [ref=e2846]: FC Westchester
+                - generic [ref=e2847]: VS
+                - generic [ref=e2848]:
+                  - generic [ref=e2849]: Away Team
+                  - paragraph [ref=e2851]: Syracuse Development Academy
+              - generic [ref=e2852]:
+                - generic [ref=e2853]:
+                  - generic [ref=e2854]: Match ID
+                  - generic [ref=e2855]: "21776"
+                - generic [ref=e2856]:
+                  - generic [ref=e2857]: Date
+                  - generic [ref=e2858]: 04/17/26 06:15pm
+                - generic [ref=e2859]:
+                  - generic [ref=e2860]: Age
+                  - generic [ref=e2861]: U13
+              - generic [ref=e2862]:
+                - generic [ref=e2863]:
+                  - generic [ref=e2864]: Gender
+                  - generic [ref=e2865]: MALE
+                - generic [ref=e2866]:
+                  - generic [ref=e2867]: Competition
+                  - generic [ref=e2868]: Group Play
+                - generic [ref=e2869]:
+                  - generic [ref=e2870]: Division
+                  - generic [ref=e2871]: F
+              - generic [ref=e2872]:
+                - generic [ref=e2873]:
+                  - generic [ref=e2874]: Location Name
+                  - generic [ref=e2875]: Tuckahoe Turf Farm
+                - generic [ref=e2876]:
+                  - generic [ref=e2877]: Field Identifier
+                  - generic [ref=e2878]: "40"
+              - generic [ref=e2880]:
+                - generic [ref=e2881]: Location Address
+                - paragraph [ref=e2884]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2885] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2886]: U13 GP
+      - generic [ref=e2887]:
+        - generic [ref=e2888]:
+          - generic [ref=e2889]:
+            - text: "21767"
+            - text: MALE
+          - generic [ref=e2890]:
+            - text: 04/17/26 06:15pm
+            - link "42 - Tuckahoe T..." [ref=e2891] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2893]: 42 - Tuckahoe T...
+          - generic [ref=e2894]: U13
+          - generic [ref=e2895]:
+            - text: Group Play
+            - text: F
+          - generic [ref=e2897]:
+            - paragraph [ref=e2899]: FA Euro New York
+            - generic [ref=e2900]: TBD
+            - paragraph [ref=e2902]: Ginga FC
+          - generic [ref=e2904]: U13 GP
+        - generic [ref=e2905]:
+          - generic [ref=e2906]:
+            - button [ref=e2908]
+            - generic [ref=e2909]:
+              - text: 04/17/26 06:15pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e2910]: TBD
+            - generic [ref=e2912]: U13 GP
+          - generic [ref=e2913]:
+            - generic [ref=e2914]:
+              - generic [ref=e2915]:
+                - generic [ref=e2916]:
+                  - generic [ref=e2917]: Home Team
+                  - paragraph [ref=e2919]: FA Euro New York
+                - generic [ref=e2920]: VS
+                - generic [ref=e2921]:
+                  - generic [ref=e2922]: Away Team
+                  - paragraph [ref=e2924]: Ginga FC
+              - generic [ref=e2925]:
+                - generic [ref=e2926]:
+                  - generic [ref=e2927]: Match ID
+                  - generic [ref=e2928]: "21767"
+                - generic [ref=e2929]:
+                  - generic [ref=e2930]: Date
+                  - generic [ref=e2931]: 04/17/26 06:15pm
+                - generic [ref=e2932]:
+                  - generic [ref=e2933]: Age
+                  - generic [ref=e2934]: U13
+              - generic [ref=e2935]:
+                - generic [ref=e2936]:
+                  - generic [ref=e2937]: Gender
+                  - generic [ref=e2938]: MALE
+                - generic [ref=e2939]:
+                  - generic [ref=e2940]: Competition
+                  - generic [ref=e2941]: Group Play
+                - generic [ref=e2942]:
+                  - generic [ref=e2943]: Division
+                  - generic [ref=e2944]: F
+              - generic [ref=e2945]:
+                - generic [ref=e2946]:
+                  - generic [ref=e2947]: Location Name
+                  - generic [ref=e2948]: Tuckahoe Turf Farm
+                - generic [ref=e2949]:
+                  - generic [ref=e2950]: Field Identifier
+                  - generic [ref=e2951]: "42"
+              - generic [ref=e2953]:
+                - generic [ref=e2954]: Location Address
+                - paragraph [ref=e2957]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e2958] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e2959]: U13 GP
+      - generic [ref=e2960]:
+        - generic [ref=e2961]:
+          - generic [ref=e2962]:
+            - text: "21786"
+            - text: MALE
+          - generic [ref=e2963]:
+            - text: 04/17/26 09:15pm
+            - link "42 - Tuckahoe T..." [ref=e2964] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e2966]: 42 - Tuckahoe T...
+          - generic [ref=e2967]: U13
+          - generic [ref=e2968]:
+            - text: Group Play
+            - text: G
+          - generic [ref=e2970]:
+            - paragraph [ref=e2972]: Long Island Soccer Club
+            - generic [ref=e2973]: TBD
+            - paragraph [ref=e2975]: Blau Weiss Gottschee
+          - generic [ref=e2977]: U13 GP
+        - generic [ref=e2978]:
+          - generic [ref=e2979]:
+            - button [ref=e2981]
+            - generic [ref=e2982]:
+              - text: 04/17/26 09:15pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e2983]: TBD
+            - generic [ref=e2985]: U13 GP
+          - generic [ref=e2986]:
+            - generic [ref=e2987]:
+              - generic [ref=e2988]:
+                - generic [ref=e2989]:
+                  - generic [ref=e2990]: Home Team
+                  - paragraph [ref=e2992]: Long Island Soccer Club
+                - generic [ref=e2993]: VS
+                - generic [ref=e2994]:
+                  - generic [ref=e2995]: Away Team
+                  - paragraph [ref=e2997]: Blau Weiss Gottschee
+              - generic [ref=e2998]:
+                - generic [ref=e2999]:
+                  - generic [ref=e3000]: Match ID
+                  - generic [ref=e3001]: "21786"
+                - generic [ref=e3002]:
+                  - generic [ref=e3003]: Date
+                  - generic [ref=e3004]: 04/17/26 09:15pm
+                - generic [ref=e3005]:
+                  - generic [ref=e3006]: Age
+                  - generic [ref=e3007]: U13
+              - generic [ref=e3008]:
+                - generic [ref=e3009]:
+                  - generic [ref=e3010]: Gender
+                  - generic [ref=e3011]: MALE
+                - generic [ref=e3012]:
+                  - generic [ref=e3013]: Competition
+                  - generic [ref=e3014]: Group Play
+                - generic [ref=e3015]:
+                  - generic [ref=e3016]: Division
+                  - generic [ref=e3017]: G
+              - generic [ref=e3018]:
+                - generic [ref=e3019]:
+                  - generic [ref=e3020]: Location Name
+                  - generic [ref=e3021]: Tuckahoe Turf Farm
+                - generic [ref=e3022]:
+                  - generic [ref=e3023]: Field Identifier
+                  - generic [ref=e3024]: "42"
+              - generic [ref=e3026]:
+                - generic [ref=e3027]: Location Address
+                - paragraph [ref=e3030]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3031] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3032]: U13 GP
+      - generic [ref=e3033]:
+        - generic [ref=e3034]:
+          - generic [ref=e3035]:
+            - text: "21846"
+            - text: MALE
+          - generic [ref=e3036]:
+            - text: 04/17/26 09:15pm
+            - link "39 - Tuckahoe T..." [ref=e3037] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3039]: 39 - Tuckahoe T...
+          - generic [ref=e3040]: U13
+          - generic [ref=e3041]:
+            - text: Group Play
+            - text: B
+          - generic [ref=e3043]:
+            - paragraph [ref=e3045]: New England Surf SC
+            - generic [ref=e3046]: TBD
+            - paragraph [ref=e3048]: Intercontinental Football Academy of New England
+          - generic [ref=e3050]: U13 GP
+        - generic [ref=e3051]:
+          - generic [ref=e3052]:
+            - button [ref=e3054]
+            - generic [ref=e3055]:
+              - text: 04/17/26 09:15pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e3056]: TBD
+            - generic [ref=e3058]: U13 GP
+          - generic [ref=e3059]:
+            - generic [ref=e3060]:
+              - generic [ref=e3061]:
+                - generic [ref=e3062]:
+                  - generic [ref=e3063]: Home Team
+                  - paragraph [ref=e3065]: New England Surf SC
+                - generic [ref=e3066]: VS
+                - generic [ref=e3067]:
+                  - generic [ref=e3068]: Away Team
+                  - paragraph [ref=e3070]: Intercontinental Football Academy of New England
+              - generic [ref=e3071]:
+                - generic [ref=e3072]:
+                  - generic [ref=e3073]: Match ID
+                  - generic [ref=e3074]: "21846"
+                - generic [ref=e3075]:
+                  - generic [ref=e3076]: Date
+                  - generic [ref=e3077]: 04/17/26 09:15pm
+                - generic [ref=e3078]:
+                  - generic [ref=e3079]: Age
+                  - generic [ref=e3080]: U13
+              - generic [ref=e3081]:
+                - generic [ref=e3082]:
+                  - generic [ref=e3083]: Gender
+                  - generic [ref=e3084]: MALE
+                - generic [ref=e3085]:
+                  - generic [ref=e3086]: Competition
+                  - generic [ref=e3087]: Group Play
+                - generic [ref=e3088]:
+                  - generic [ref=e3089]: Division
+                  - generic [ref=e3090]: B
+              - generic [ref=e3091]:
+                - generic [ref=e3092]:
+                  - generic [ref=e3093]: Location Name
+                  - generic [ref=e3094]: Tuckahoe Turf Farm
+                - generic [ref=e3095]:
+                  - generic [ref=e3096]: Field Identifier
+                  - generic [ref=e3097]: "39"
+              - generic [ref=e3099]:
+                - generic [ref=e3100]: Location Address
+                - paragraph [ref=e3103]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3104] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3105]: U13 GP
+      - generic [ref=e3106]:
+        - generic [ref=e3107]:
+          - generic [ref=e3108]:
+            - text: "21867"
+            - text: MALE
+          - generic [ref=e3109]:
+            - text: 04/17/26 09:15pm
+            - link "40 - Tuckahoe T..." [ref=e3110] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3112]: 40 - Tuckahoe T...
+          - generic [ref=e3113]: U13
+          - generic [ref=e3114]:
+            - text: Group Play
+            - text: G
+          - generic [ref=e3116]:
+            - paragraph [ref=e3118]: New York Rush
+            - generic [ref=e3119]: TBD
+            - paragraph [ref=e3121]: NEFC South
+          - generic [ref=e3123]: U13 GP
+        - generic [ref=e3124]:
+          - generic [ref=e3125]:
+            - button [ref=e3127]
+            - generic [ref=e3128]:
+              - text: 04/17/26 09:15pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e3129]: TBD
+            - generic [ref=e3131]: U13 GP
+          - generic [ref=e3132]:
+            - generic [ref=e3133]:
+              - generic [ref=e3134]:
+                - generic [ref=e3135]:
+                  - generic [ref=e3136]: Home Team
+                  - paragraph [ref=e3138]: New York Rush
+                - generic [ref=e3139]: VS
+                - generic [ref=e3140]:
+                  - generic [ref=e3141]: Away Team
+                  - paragraph [ref=e3143]: NEFC South
+              - generic [ref=e3144]:
+                - generic [ref=e3145]:
+                  - generic [ref=e3146]: Match ID
+                  - generic [ref=e3147]: "21867"
+                - generic [ref=e3148]:
+                  - generic [ref=e3149]: Date
+                  - generic [ref=e3150]: 04/17/26 09:15pm
+                - generic [ref=e3151]:
+                  - generic [ref=e3152]: Age
+                  - generic [ref=e3153]: U13
+              - generic [ref=e3154]:
+                - generic [ref=e3155]:
+                  - generic [ref=e3156]: Gender
+                  - generic [ref=e3157]: MALE
+                - generic [ref=e3158]:
+                  - generic [ref=e3159]: Competition
+                  - generic [ref=e3160]: Group Play
+                - generic [ref=e3161]:
+                  - generic [ref=e3162]: Division
+                  - generic [ref=e3163]: G
+              - generic [ref=e3164]:
+                - generic [ref=e3165]:
+                  - generic [ref=e3166]: Location Name
+                  - generic [ref=e3167]: Tuckahoe Turf Farm
+                - generic [ref=e3168]:
+                  - generic [ref=e3169]: Field Identifier
+                  - generic [ref=e3170]: "40"
+              - generic [ref=e3172]:
+                - generic [ref=e3173]: Location Address
+                - paragraph [ref=e3176]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3177] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3178]: U13 GP
+      - generic [ref=e3179]:
+        - generic [ref=e3180]:
+          - generic [ref=e3181]:
+            - text: "21908"
+            - text: MALE
+          - generic [ref=e3182]:
+            - text: 04/17/26 09:15pm
+            - link "34 - Tuckahoe T..." [ref=e3183] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3185]: 34 - Tuckahoe T...
+          - generic [ref=e3186]: U13
+          - generic [ref=e3187]:
+            - text: Group Play
+            - text: B
+          - generic [ref=e3189]:
+            - paragraph [ref=e3191]: Long Island Slammers
+            - generic [ref=e3192]: TBD
+            - paragraph [ref=e3194]: Downtown United Soccer Club
+          - generic [ref=e3196]: U13 GP
+        - generic [ref=e3197]:
+          - generic [ref=e3198]:
+            - button [ref=e3200]
+            - generic [ref=e3201]:
+              - text: 04/17/26 09:15pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e3202]: TBD
+            - generic [ref=e3204]: U13 GP
+          - generic [ref=e3205]:
+            - generic [ref=e3206]:
+              - generic [ref=e3207]:
+                - generic [ref=e3208]:
+                  - generic [ref=e3209]: Home Team
+                  - paragraph [ref=e3211]: Long Island Slammers
+                - generic [ref=e3212]: VS
+                - generic [ref=e3213]:
+                  - generic [ref=e3214]: Away Team
+                  - paragraph [ref=e3216]: Downtown United Soccer Club
+              - generic [ref=e3217]:
+                - generic [ref=e3218]:
+                  - generic [ref=e3219]: Match ID
+                  - generic [ref=e3220]: "21908"
+                - generic [ref=e3221]:
+                  - generic [ref=e3222]: Date
+                  - generic [ref=e3223]: 04/17/26 09:15pm
+                - generic [ref=e3224]:
+                  - generic [ref=e3225]: Age
+                  - generic [ref=e3226]: U13
+              - generic [ref=e3227]:
+                - generic [ref=e3228]:
+                  - generic [ref=e3229]: Gender
+                  - generic [ref=e3230]: MALE
+                - generic [ref=e3231]:
+                  - generic [ref=e3232]: Competition
+                  - generic [ref=e3233]: Group Play
+                - generic [ref=e3234]:
+                  - generic [ref=e3235]: Division
+                  - generic [ref=e3236]: B
+              - generic [ref=e3237]:
+                - generic [ref=e3238]:
+                  - generic [ref=e3239]: Location Name
+                  - generic [ref=e3240]: Tuckahoe Turf Farm
+                - generic [ref=e3241]:
+                  - generic [ref=e3242]: Field Identifier
+                  - generic [ref=e3243]: "34"
+              - generic [ref=e3245]:
+                - generic [ref=e3246]: Location Address
+                - paragraph [ref=e3249]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3250] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3251]: U13 GP
+    - generic [ref=e3253]:
+      - generic [ref=e3254]: 1 page out of 1
+      - list [ref=e3256]:
+        - listitem [ref=e3257]: First
+        - listitem [ref=e3258]: Prev
+        - listitem [ref=e3259]: "1"
+        - listitem [ref=e3260]: Next
+        - listitem [ref=e3261]: Last
+  - generic [ref=e3262]:
+    - heading "Saturday, April 18, 2026" [level=2] [ref=e3263]
+    - generic [ref=e3265]:
+      - generic [ref=e3266]:
+        - generic [ref=e3267]: Match ID
+        - generic [ref=e3268]: Details
+        - generic [ref=e3269]: Age
+        - generic [ref=e3270]:
+          - text: Competition
+          - text: Division
+        - generic [ref=e3272]:
+          - generic [ref=e3273]: Home Team
+          - generic [ref=e3274]: Away Team
+        - generic [ref=e3275]: Live Stream
+      - generic [ref=e3277]:
+        - generic [ref=e3278]: Details
+        - generic [ref=e3279]: Teams
+      - generic [ref=e3280]:
+        - generic [ref=e3281]:
+          - generic [ref=e3282]:
+            - text: "21669"
+            - text: MALE
+          - generic [ref=e3283]:
+            - text: 04/18/26 09:00am
+            - link "34 - Tuckahoe T..." [ref=e3284] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3286]: 34 - Tuckahoe T...
+          - generic [ref=e3287]: U13
+          - generic [ref=e3288]:
+            - text: Group Play
+            - text: A
+          - generic [ref=e3290]:
+            - paragraph [ref=e3292]: Seacoast United Bedford
+            - generic [ref=e3293]: TBD
+            - paragraph [ref=e3295]: New York SC
+          - generic [ref=e3297]: U13 GP
+        - generic [ref=e3298]:
+          - generic [ref=e3299]:
+            - button [ref=e3301]
+            - generic [ref=e3302]:
+              - text: 04/18/26 09:00am
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e3303]: TBD
+            - generic [ref=e3305]: U13 GP
+          - generic [ref=e3306]:
+            - generic [ref=e3307]:
+              - generic [ref=e3308]:
+                - generic [ref=e3309]:
+                  - generic [ref=e3310]: Home Team
+                  - paragraph [ref=e3312]: Seacoast United Bedford
+                - generic [ref=e3313]: VS
+                - generic [ref=e3314]:
+                  - generic [ref=e3315]: Away Team
+                  - paragraph [ref=e3317]: New York SC
+              - generic [ref=e3318]:
+                - generic [ref=e3319]:
+                  - generic [ref=e3320]: Match ID
+                  - generic [ref=e3321]: "21669"
+                - generic [ref=e3322]:
+                  - generic [ref=e3323]: Date
+                  - generic [ref=e3324]: 04/18/26 09:00am
+                - generic [ref=e3325]:
+                  - generic [ref=e3326]: Age
+                  - generic [ref=e3327]: U13
+              - generic [ref=e3328]:
+                - generic [ref=e3329]:
+                  - generic [ref=e3330]: Gender
+                  - generic [ref=e3331]: MALE
+                - generic [ref=e3332]:
+                  - generic [ref=e3333]: Competition
+                  - generic [ref=e3334]: Group Play
+                - generic [ref=e3335]:
+                  - generic [ref=e3336]: Division
+                  - generic [ref=e3337]: A
+              - generic [ref=e3338]:
+                - generic [ref=e3339]:
+                  - generic [ref=e3340]: Location Name
+                  - generic [ref=e3341]: Tuckahoe Turf Farm
+                - generic [ref=e3342]:
+                  - generic [ref=e3343]: Field Identifier
+                  - generic [ref=e3344]: "34"
+              - generic [ref=e3346]:
+                - generic [ref=e3347]: Location Address
+                - paragraph [ref=e3350]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3351] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3352]: U13 GP
+      - generic [ref=e3353]:
+        - generic [ref=e3354]:
+          - generic [ref=e3355]:
+            - text: "21729"
+            - text: MALE
+          - generic [ref=e3356]:
+            - text: 04/18/26 09:00am
+            - link "42 - Tuckahoe T..." [ref=e3357] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3359]: 42 - Tuckahoe T...
+          - generic [ref=e3360]: U13
+          - generic [ref=e3361]:
+            - text: Group Play
+            - text: H
+          - generic [ref=e3363]:
+            - paragraph [ref=e3365]: Valeo Futbol Club
+            - generic [ref=e3366]: TBD
+            - paragraph [ref=e3368]: New York Elite Alleycats FC
+          - generic [ref=e3370]: U13 GP
+        - generic [ref=e3371]:
+          - generic [ref=e3372]:
+            - button [ref=e3374]
+            - generic [ref=e3375]:
+              - text: 04/18/26 09:00am
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e3376]: TBD
+            - generic [ref=e3378]: U13 GP
+          - generic [ref=e3379]:
+            - generic [ref=e3380]:
+              - generic [ref=e3381]:
+                - generic [ref=e3382]:
+                  - generic [ref=e3383]: Home Team
+                  - paragraph [ref=e3385]: Valeo Futbol Club
+                - generic [ref=e3386]: VS
+                - generic [ref=e3387]:
+                  - generic [ref=e3388]: Away Team
+                  - paragraph [ref=e3390]: New York Elite Alleycats FC
+              - generic [ref=e3391]:
+                - generic [ref=e3392]:
+                  - generic [ref=e3393]: Match ID
+                  - generic [ref=e3394]: "21729"
+                - generic [ref=e3395]:
+                  - generic [ref=e3396]: Date
+                  - generic [ref=e3397]: 04/18/26 09:00am
+                - generic [ref=e3398]:
+                  - generic [ref=e3399]: Age
+                  - generic [ref=e3400]: U13
+              - generic [ref=e3401]:
+                - generic [ref=e3402]:
+                  - generic [ref=e3403]: Gender
+                  - generic [ref=e3404]: MALE
+                - generic [ref=e3405]:
+                  - generic [ref=e3406]: Competition
+                  - generic [ref=e3407]: Group Play
+                - generic [ref=e3408]:
+                  - generic [ref=e3409]: Division
+                  - generic [ref=e3410]: H
+              - generic [ref=e3411]:
+                - generic [ref=e3412]:
+                  - generic [ref=e3413]: Location Name
+                  - generic [ref=e3414]: Tuckahoe Turf Farm
+                - generic [ref=e3415]:
+                  - generic [ref=e3416]: Field Identifier
+                  - generic [ref=e3417]: "42"
+              - generic [ref=e3419]:
+                - generic [ref=e3420]: Location Address
+                - paragraph [ref=e3423]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3424] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3425]: U13 GP
+      - generic [ref=e3426]:
+        - generic [ref=e3427]:
+          - generic [ref=e3428]:
+            - text: "21876"
+            - text: MALE
+          - generic [ref=e3429]:
+            - text: 04/18/26 09:00am
+            - link "40 - Tuckahoe T..." [ref=e3430] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3432]: 40 - Tuckahoe T...
+          - generic [ref=e3433]: U13
+          - generic [ref=e3434]:
+            - text: Group Play
+            - text: H
+          - generic [ref=e3436]:
+            - paragraph [ref=e3438]: Rhode Island Surf SC
+            - generic [ref=e3439]: TBD
+            - paragraph [ref=e3441]: Cedar Stars Academy Bergen
+          - generic [ref=e3443]: U13 GP
+        - generic [ref=e3444]:
+          - generic [ref=e3445]:
+            - button [ref=e3447]
+            - generic [ref=e3448]:
+              - text: 04/18/26 09:00am
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e3449]: TBD
+            - generic [ref=e3451]: U13 GP
+          - generic [ref=e3452]:
+            - generic [ref=e3453]:
+              - generic [ref=e3454]:
+                - generic [ref=e3455]:
+                  - generic [ref=e3456]: Home Team
+                  - paragraph [ref=e3458]: Rhode Island Surf SC
+                - generic [ref=e3459]: VS
+                - generic [ref=e3460]:
+                  - generic [ref=e3461]: Away Team
+                  - paragraph [ref=e3463]: Cedar Stars Academy Bergen
+              - generic [ref=e3464]:
+                - generic [ref=e3465]:
+                  - generic [ref=e3466]: Match ID
+                  - generic [ref=e3467]: "21876"
+                - generic [ref=e3468]:
+                  - generic [ref=e3469]: Date
+                  - generic [ref=e3470]: 04/18/26 09:00am
+                - generic [ref=e3471]:
+                  - generic [ref=e3472]: Age
+                  - generic [ref=e3473]: U13
+              - generic [ref=e3474]:
+                - generic [ref=e3475]:
+                  - generic [ref=e3476]: Gender
+                  - generic [ref=e3477]: MALE
+                - generic [ref=e3478]:
+                  - generic [ref=e3479]: Competition
+                  - generic [ref=e3480]: Group Play
+                - generic [ref=e3481]:
+                  - generic [ref=e3482]: Division
+                  - generic [ref=e3483]: H
+              - generic [ref=e3484]:
+                - generic [ref=e3485]:
+                  - generic [ref=e3486]: Location Name
+                  - generic [ref=e3487]: Tuckahoe Turf Farm
+                - generic [ref=e3488]:
+                  - generic [ref=e3489]: Field Identifier
+                  - generic [ref=e3490]: "40"
+              - generic [ref=e3492]:
+                - generic [ref=e3493]: Location Address
+                - paragraph [ref=e3496]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3497] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3498]: U13 GP
+      - generic [ref=e3499]:
+        - generic [ref=e3500]:
+          - generic [ref=e3501]:
+            - text: "21910"
+            - text: MALE
+          - generic [ref=e3502]:
+            - text: 04/18/26 09:00am
+            - link "39 - Tuckahoe T..." [ref=e3503] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3505]: 39 - Tuckahoe T...
+          - generic [ref=e3506]: U13
+          - generic [ref=e3507]:
+            - text: Group Play
+            - text: A
+          - generic [ref=e3509]:
+            - paragraph [ref=e3511]: Long Island Slammers
+            - generic [ref=e3512]: TBD
+            - paragraph [ref=e3514]: New England Surf SC
+          - generic [ref=e3516]: U13 GP
+        - generic [ref=e3517]:
+          - generic [ref=e3518]:
+            - button [ref=e3520]
+            - generic [ref=e3521]:
+              - text: 04/18/26 09:00am
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e3522]: TBD
+            - generic [ref=e3524]: U13 GP
+          - generic [ref=e3525]:
+            - generic [ref=e3526]:
+              - generic [ref=e3527]:
+                - generic [ref=e3528]:
+                  - generic [ref=e3529]: Home Team
+                  - paragraph [ref=e3531]: Long Island Slammers
+                - generic [ref=e3532]: VS
+                - generic [ref=e3533]:
+                  - generic [ref=e3534]: Away Team
+                  - paragraph [ref=e3536]: New England Surf SC
+              - generic [ref=e3537]:
+                - generic [ref=e3538]:
+                  - generic [ref=e3539]: Match ID
+                  - generic [ref=e3540]: "21910"
+                - generic [ref=e3541]:
+                  - generic [ref=e3542]: Date
+                  - generic [ref=e3543]: 04/18/26 09:00am
+                - generic [ref=e3544]:
+                  - generic [ref=e3545]: Age
+                  - generic [ref=e3546]: U13
+              - generic [ref=e3547]:
+                - generic [ref=e3548]:
+                  - generic [ref=e3549]: Gender
+                  - generic [ref=e3550]: MALE
+                - generic [ref=e3551]:
+                  - generic [ref=e3552]: Competition
+                  - generic [ref=e3553]: Group Play
+                - generic [ref=e3554]:
+                  - generic [ref=e3555]: Division
+                  - generic [ref=e3556]: A
+              - generic [ref=e3557]:
+                - generic [ref=e3558]:
+                  - generic [ref=e3559]: Location Name
+                  - generic [ref=e3560]: Tuckahoe Turf Farm
+                - generic [ref=e3561]:
+                  - generic [ref=e3562]: Field Identifier
+                  - generic [ref=e3563]: "39"
+              - generic [ref=e3565]:
+                - generic [ref=e3566]: Location Address
+                - paragraph [ref=e3569]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3570] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3571]: U13 GP
+      - generic [ref=e3572]:
+        - generic [ref=e3573]:
+          - generic [ref=e3574]:
+            - text: "21940"
+            - text: MALE
+          - generic [ref=e3575]:
+            - text: 04/18/26 10:30am
+            - link "39 - Tuckahoe T..." [ref=e3576] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3578]: 39 - Tuckahoe T...
+          - generic [ref=e3579]: U13
+          - generic [ref=e3580]:
+            - text: Group Play
+            - text: B
+          - generic [ref=e3582]:
+            - paragraph [ref=e3584]: Intercontinental Football Academy of New England
+            - generic [ref=e3585]: TBD
+            - paragraph [ref=e3587]: Downtown United Soccer Club
+          - generic [ref=e3589]: U13 GP
+        - generic [ref=e3590]:
+          - generic [ref=e3591]:
+            - button [ref=e3593]
+            - generic [ref=e3594]:
+              - text: 04/18/26 10:30am
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e3595]: TBD
+            - generic [ref=e3597]: U13 GP
+          - generic [ref=e3598]:
+            - generic [ref=e3599]:
+              - generic [ref=e3600]:
+                - generic [ref=e3601]:
+                  - generic [ref=e3602]: Home Team
+                  - paragraph [ref=e3604]: Intercontinental Football Academy of New England
+                - generic [ref=e3605]: VS
+                - generic [ref=e3606]:
+                  - generic [ref=e3607]: Away Team
+                  - paragraph [ref=e3609]: Downtown United Soccer Club
+              - generic [ref=e3610]:
+                - generic [ref=e3611]:
+                  - generic [ref=e3612]: Match ID
+                  - generic [ref=e3613]: "21940"
+                - generic [ref=e3614]:
+                  - generic [ref=e3615]: Date
+                  - generic [ref=e3616]: 04/18/26 10:30am
+                - generic [ref=e3617]:
+                  - generic [ref=e3618]: Age
+                  - generic [ref=e3619]: U13
+              - generic [ref=e3620]:
+                - generic [ref=e3621]:
+                  - generic [ref=e3622]: Gender
+                  - generic [ref=e3623]: MALE
+                - generic [ref=e3624]:
+                  - generic [ref=e3625]: Competition
+                  - generic [ref=e3626]: Group Play
+                - generic [ref=e3627]:
+                  - generic [ref=e3628]: Division
+                  - generic [ref=e3629]: B
+              - generic [ref=e3630]:
+                - generic [ref=e3631]:
+                  - generic [ref=e3632]: Location Name
+                  - generic [ref=e3633]: Tuckahoe Turf Farm
+                - generic [ref=e3634]:
+                  - generic [ref=e3635]: Field Identifier
+                  - generic [ref=e3636]: "39"
+              - generic [ref=e3638]:
+                - generic [ref=e3639]: Location Address
+                - paragraph [ref=e3642]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3643] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3644]: U13 GP
+      - generic [ref=e3645]:
+        - generic [ref=e3646]:
+          - generic [ref=e3647]:
+            - text: "21868"
+            - text: MALE
+          - generic [ref=e3648]:
+            - text: 04/18/26 10:30am
+            - link "40 - Tuckahoe T..." [ref=e3649] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3651]: 40 - Tuckahoe T...
+          - generic [ref=e3652]: U13
+          - generic [ref=e3653]:
+            - text: Group Play
+            - text: G
+          - generic [ref=e3655]:
+            - paragraph [ref=e3657]: New York Rush
+            - generic [ref=e3658]: TBD
+            - paragraph [ref=e3660]: Long Island Soccer Club
+          - generic [ref=e3662]: U13 GP
+        - generic [ref=e3663]:
+          - generic [ref=e3664]:
+            - button [ref=e3666]
+            - generic [ref=e3667]:
+              - text: 04/18/26 10:30am
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e3668]: TBD
+            - generic [ref=e3670]: U13 GP
+          - generic [ref=e3671]:
+            - generic [ref=e3672]:
+              - generic [ref=e3673]:
+                - generic [ref=e3674]:
+                  - generic [ref=e3675]: Home Team
+                  - paragraph [ref=e3677]: New York Rush
+                - generic [ref=e3678]: VS
+                - generic [ref=e3679]:
+                  - generic [ref=e3680]: Away Team
+                  - paragraph [ref=e3682]: Long Island Soccer Club
+              - generic [ref=e3683]:
+                - generic [ref=e3684]:
+                  - generic [ref=e3685]: Match ID
+                  - generic [ref=e3686]: "21868"
+                - generic [ref=e3687]:
+                  - generic [ref=e3688]: Date
+                  - generic [ref=e3689]: 04/18/26 10:30am
+                - generic [ref=e3690]:
+                  - generic [ref=e3691]: Age
+                  - generic [ref=e3692]: U13
+              - generic [ref=e3693]:
+                - generic [ref=e3694]:
+                  - generic [ref=e3695]: Gender
+                  - generic [ref=e3696]: MALE
+                - generic [ref=e3697]:
+                  - generic [ref=e3698]: Competition
+                  - generic [ref=e3699]: Group Play
+                - generic [ref=e3700]:
+                  - generic [ref=e3701]: Division
+                  - generic [ref=e3702]: G
+              - generic [ref=e3703]:
+                - generic [ref=e3704]:
+                  - generic [ref=e3705]: Location Name
+                  - generic [ref=e3706]: Tuckahoe Turf Farm
+                - generic [ref=e3707]:
+                  - generic [ref=e3708]: Field Identifier
+                  - generic [ref=e3709]: "40"
+              - generic [ref=e3711]:
+                - generic [ref=e3712]: Location Address
+                - paragraph [ref=e3715]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3716] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3717]: U13 GP
+      - generic [ref=e3718]:
+        - generic [ref=e3719]:
+          - generic [ref=e3720]:
+            - text: "21911"
+            - text: MALE
+          - generic [ref=e3721]:
+            - text: 04/18/26 10:30am
+            - link "34 - Tuckahoe T..." [ref=e3722] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3724]: 34 - Tuckahoe T...
+          - generic [ref=e3725]: U13
+          - generic [ref=e3726]:
+            - text: Group Play
+            - text: B
+          - generic [ref=e3728]:
+            - paragraph [ref=e3730]: Long Island Slammers
+            - generic [ref=e3731]: TBD
+            - paragraph [ref=e3733]: New England Surf SC
+          - generic [ref=e3735]: U13 GP
+        - generic [ref=e3736]:
+          - generic [ref=e3737]:
+            - button [ref=e3739]
+            - generic [ref=e3740]:
+              - text: 04/18/26 10:30am
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e3741]: TBD
+            - generic [ref=e3743]: U13 GP
+          - generic [ref=e3744]:
+            - generic [ref=e3745]:
+              - generic [ref=e3746]:
+                - generic [ref=e3747]:
+                  - generic [ref=e3748]: Home Team
+                  - paragraph [ref=e3750]: Long Island Slammers
+                - generic [ref=e3751]: VS
+                - generic [ref=e3752]:
+                  - generic [ref=e3753]: Away Team
+                  - paragraph [ref=e3755]: New England Surf SC
+              - generic [ref=e3756]:
+                - generic [ref=e3757]:
+                  - generic [ref=e3758]: Match ID
+                  - generic [ref=e3759]: "21911"
+                - generic [ref=e3760]:
+                  - generic [ref=e3761]: Date
+                  - generic [ref=e3762]: 04/18/26 10:30am
+                - generic [ref=e3763]:
+                  - generic [ref=e3764]: Age
+                  - generic [ref=e3765]: U13
+              - generic [ref=e3766]:
+                - generic [ref=e3767]:
+                  - generic [ref=e3768]: Gender
+                  - generic [ref=e3769]: MALE
+                - generic [ref=e3770]:
+                  - generic [ref=e3771]: Competition
+                  - generic [ref=e3772]: Group Play
+                - generic [ref=e3773]:
+                  - generic [ref=e3774]: Division
+                  - generic [ref=e3775]: B
+              - generic [ref=e3776]:
+                - generic [ref=e3777]:
+                  - generic [ref=e3778]: Location Name
+                  - generic [ref=e3779]: Tuckahoe Turf Farm
+                - generic [ref=e3780]:
+                  - generic [ref=e3781]: Field Identifier
+                  - generic [ref=e3782]: "34"
+              - generic [ref=e3784]:
+                - generic [ref=e3785]: Location Address
+                - paragraph [ref=e3788]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3789] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3790]: U13 GP
+      - generic [ref=e3791]:
+        - generic [ref=e3792]:
+          - generic [ref=e3793]:
+            - text: "21745"
+            - text: MALE
+          - generic [ref=e3794]:
+            - text: 04/18/26 10:30am
+            - link "42 - Tuckahoe T..." [ref=e3795] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3797]: 42 - Tuckahoe T...
+          - generic [ref=e3798]: U13
+          - generic [ref=e3799]:
+            - text: Group Play
+            - text: G
+          - generic [ref=e3801]:
+            - paragraph [ref=e3803]: Blau Weiss Gottschee
+            - generic [ref=e3804]: TBD
+            - paragraph [ref=e3806]: NEFC South
+          - generic [ref=e3808]: U13 GP
+        - generic [ref=e3809]:
+          - generic [ref=e3810]:
+            - button [ref=e3812]
+            - generic [ref=e3813]:
+              - text: 04/18/26 10:30am
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e3814]: TBD
+            - generic [ref=e3816]: U13 GP
+          - generic [ref=e3817]:
+            - generic [ref=e3818]:
+              - generic [ref=e3819]:
+                - generic [ref=e3820]:
+                  - generic [ref=e3821]: Home Team
+                  - paragraph [ref=e3823]: Blau Weiss Gottschee
+                - generic [ref=e3824]: VS
+                - generic [ref=e3825]:
+                  - generic [ref=e3826]: Away Team
+                  - paragraph [ref=e3828]: NEFC South
+              - generic [ref=e3829]:
+                - generic [ref=e3830]:
+                  - generic [ref=e3831]: Match ID
+                  - generic [ref=e3832]: "21745"
+                - generic [ref=e3833]:
+                  - generic [ref=e3834]: Date
+                  - generic [ref=e3835]: 04/18/26 10:30am
+                - generic [ref=e3836]:
+                  - generic [ref=e3837]: Age
+                  - generic [ref=e3838]: U13
+              - generic [ref=e3839]:
+                - generic [ref=e3840]:
+                  - generic [ref=e3841]: Gender
+                  - generic [ref=e3842]: MALE
+                - generic [ref=e3843]:
+                  - generic [ref=e3844]: Competition
+                  - generic [ref=e3845]: Group Play
+                - generic [ref=e3846]:
+                  - generic [ref=e3847]: Division
+                  - generic [ref=e3848]: G
+              - generic [ref=e3849]:
+                - generic [ref=e3850]:
+                  - generic [ref=e3851]: Location Name
+                  - generic [ref=e3852]: Tuckahoe Turf Farm
+                - generic [ref=e3853]:
+                  - generic [ref=e3854]: Field Identifier
+                  - generic [ref=e3855]: "42"
+              - generic [ref=e3857]:
+                - generic [ref=e3858]: Location Address
+                - paragraph [ref=e3861]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3862] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3863]: U13 GP
+      - generic [ref=e3864]:
+        - generic [ref=e3865]:
+          - generic [ref=e3866]:
+            - text: "21660"
+            - text: MALE
+          - generic [ref=e3867]:
+            - text: 04/18/26 12:30pm
+            - link "34 - Tuckahoe T..." [ref=e3868] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3870]: 34 - Tuckahoe T...
+          - generic [ref=e3871]: U13
+          - generic [ref=e3872]:
+            - text: Group Play
+            - text: D
+          - generic [ref=e3874]:
+            - paragraph [ref=e3876]: IFA West
+            - generic [ref=e3877]: TBD
+            - paragraph [ref=e3879]: TSF Academy
+          - generic [ref=e3881]: U13 GP
+        - generic [ref=e3882]:
+          - generic [ref=e3883]:
+            - button [ref=e3885]
+            - generic [ref=e3886]:
+              - text: 04/18/26 12:30pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e3887]: TBD
+            - generic [ref=e3889]: U13 GP
+          - generic [ref=e3890]:
+            - generic [ref=e3891]:
+              - generic [ref=e3892]:
+                - generic [ref=e3893]:
+                  - generic [ref=e3894]: Home Team
+                  - paragraph [ref=e3896]: IFA West
+                - generic [ref=e3897]: VS
+                - generic [ref=e3898]:
+                  - generic [ref=e3899]: Away Team
+                  - paragraph [ref=e3901]: TSF Academy
+              - generic [ref=e3902]:
+                - generic [ref=e3903]:
+                  - generic [ref=e3904]: Match ID
+                  - generic [ref=e3905]: "21660"
+                - generic [ref=e3906]:
+                  - generic [ref=e3907]: Date
+                  - generic [ref=e3908]: 04/18/26 12:30pm
+                - generic [ref=e3909]:
+                  - generic [ref=e3910]: Age
+                  - generic [ref=e3911]: U13
+              - generic [ref=e3912]:
+                - generic [ref=e3913]:
+                  - generic [ref=e3914]: Gender
+                  - generic [ref=e3915]: MALE
+                - generic [ref=e3916]:
+                  - generic [ref=e3917]: Competition
+                  - generic [ref=e3918]: Group Play
+                - generic [ref=e3919]:
+                  - generic [ref=e3920]: Division
+                  - generic [ref=e3921]: D
+              - generic [ref=e3922]:
+                - generic [ref=e3923]:
+                  - generic [ref=e3924]: Location Name
+                  - generic [ref=e3925]: Tuckahoe Turf Farm
+                - generic [ref=e3926]:
+                  - generic [ref=e3927]: Field Identifier
+                  - generic [ref=e3928]: "34"
+              - generic [ref=e3930]:
+                - generic [ref=e3931]: Location Address
+                - paragraph [ref=e3934]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e3935] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e3936]: U13 GP
+      - generic [ref=e3937]:
+        - generic [ref=e3938]:
+          - generic [ref=e3939]:
+            - text: "21679"
+            - text: MALE
+          - generic [ref=e3940]:
+            - text: 04/18/26 12:30pm
+            - link "39 - Tuckahoe T..." [ref=e3941] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e3943]: 39 - Tuckahoe T...
+          - generic [ref=e3944]: U13
+          - generic [ref=e3945]:
+            - text: Group Play
+            - text: D
+          - generic [ref=e3947]:
+            - paragraph [ref=e3949]: Seacoast United Mass
+            - generic [ref=e3950]: TBD
+            - paragraph [ref=e3952]: Cedar Stars Academy Newark
+          - generic [ref=e3954]: U13 GP
+        - generic [ref=e3955]:
+          - generic [ref=e3956]:
+            - button [ref=e3958]
+            - generic [ref=e3959]:
+              - text: 04/18/26 12:30pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e3960]: TBD
+            - generic [ref=e3962]: U13 GP
+          - generic [ref=e3963]:
+            - generic [ref=e3964]:
+              - generic [ref=e3965]:
+                - generic [ref=e3966]:
+                  - generic [ref=e3967]: Home Team
+                  - paragraph [ref=e3969]: Seacoast United Mass
+                - generic [ref=e3970]: VS
+                - generic [ref=e3971]:
+                  - generic [ref=e3972]: Away Team
+                  - paragraph [ref=e3974]: Cedar Stars Academy Newark
+              - generic [ref=e3975]:
+                - generic [ref=e3976]:
+                  - generic [ref=e3977]: Match ID
+                  - generic [ref=e3978]: "21679"
+                - generic [ref=e3979]:
+                  - generic [ref=e3980]: Date
+                  - generic [ref=e3981]: 04/18/26 12:30pm
+                - generic [ref=e3982]:
+                  - generic [ref=e3983]: Age
+                  - generic [ref=e3984]: U13
+              - generic [ref=e3985]:
+                - generic [ref=e3986]:
+                  - generic [ref=e3987]: Gender
+                  - generic [ref=e3988]: MALE
+                - generic [ref=e3989]:
+                  - generic [ref=e3990]: Competition
+                  - generic [ref=e3991]: Group Play
+                - generic [ref=e3992]:
+                  - generic [ref=e3993]: Division
+                  - generic [ref=e3994]: D
+              - generic [ref=e3995]:
+                - generic [ref=e3996]:
+                  - generic [ref=e3997]: Location Name
+                  - generic [ref=e3998]: Tuckahoe Turf Farm
+                - generic [ref=e3999]:
+                  - generic [ref=e4000]: Field Identifier
+                  - generic [ref=e4001]: "39"
+              - generic [ref=e4003]:
+                - generic [ref=e4004]: Location Address
+                - paragraph [ref=e4007]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4008] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4009]: U13 GP
+      - generic [ref=e4010]:
+        - generic [ref=e4011]:
+          - generic [ref=e4012]:
+            - text: "21711"
+            - text: MALE
+          - generic [ref=e4013]:
+            - text: 04/18/26 12:30pm
+            - link "40 - Tuckahoe T..." [ref=e4014] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e4016]: 40 - Tuckahoe T...
+          - generic [ref=e4017]: U13
+          - generic [ref=e4018]:
+            - text: Group Play
+            - text: E
+          - generic [ref=e4020]:
+            - paragraph [ref=e4022]: NEFC
+            - generic [ref=e4023]: TBD
+            - paragraph [ref=e4025]: FC Harlem
+          - generic [ref=e4027]: U13 GP
+        - generic [ref=e4028]:
+          - generic [ref=e4029]:
+            - button [ref=e4031]
+            - generic [ref=e4032]:
+              - text: 04/18/26 12:30pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e4033]: TBD
+            - generic [ref=e4035]: U13 GP
+          - generic [ref=e4036]:
+            - generic [ref=e4037]:
+              - generic [ref=e4038]:
+                - generic [ref=e4039]:
+                  - generic [ref=e4040]: Home Team
+                  - paragraph [ref=e4042]: NEFC
+                - generic [ref=e4043]: VS
+                - generic [ref=e4044]:
+                  - generic [ref=e4045]: Away Team
+                  - paragraph [ref=e4047]: FC Harlem
+              - generic [ref=e4048]:
+                - generic [ref=e4049]:
+                  - generic [ref=e4050]: Match ID
+                  - generic [ref=e4051]: "21711"
+                - generic [ref=e4052]:
+                  - generic [ref=e4053]: Date
+                  - generic [ref=e4054]: 04/18/26 12:30pm
+                - generic [ref=e4055]:
+                  - generic [ref=e4056]: Age
+                  - generic [ref=e4057]: U13
+              - generic [ref=e4058]:
+                - generic [ref=e4059]:
+                  - generic [ref=e4060]: Gender
+                  - generic [ref=e4061]: MALE
+                - generic [ref=e4062]:
+                  - generic [ref=e4063]: Competition
+                  - generic [ref=e4064]: Group Play
+                - generic [ref=e4065]:
+                  - generic [ref=e4066]: Division
+                  - generic [ref=e4067]: E
+              - generic [ref=e4068]:
+                - generic [ref=e4069]:
+                  - generic [ref=e4070]: Location Name
+                  - generic [ref=e4071]: Tuckahoe Turf Farm
+                - generic [ref=e4072]:
+                  - generic [ref=e4073]: Field Identifier
+                  - generic [ref=e4074]: "40"
+              - generic [ref=e4076]:
+                - generic [ref=e4077]: Location Address
+                - paragraph [ref=e4080]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4081] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4082]: U13 GP
+      - generic [ref=e4083]:
+        - generic [ref=e4084]:
+          - generic [ref=e4085]:
+            - text: "21737"
+            - text: MALE
+          - generic [ref=e4086]:
+            - text: 04/18/26 12:30pm
+            - link "42 - Tuckahoe T..." [ref=e4087] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e4089]: 42 - Tuckahoe T...
+          - generic [ref=e4090]: U13
+          - generic [ref=e4091]:
+            - text: Group Play
+            - text: E
+          - generic [ref=e4093]:
+            - paragraph [ref=e4095]: Beachside of Connecticut
+            - generic [ref=e4096]: TBD
+            - paragraph [ref=e4098]: Bayside FC
+          - generic [ref=e4100]: U13 GP
+        - generic [ref=e4101]:
+          - generic [ref=e4102]:
+            - button [ref=e4104]
+            - generic [ref=e4105]:
+              - text: 04/18/26 12:30pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e4106]: TBD
+            - generic [ref=e4108]: U13 GP
+          - generic [ref=e4109]:
+            - generic [ref=e4110]:
+              - generic [ref=e4111]:
+                - generic [ref=e4112]:
+                  - generic [ref=e4113]: Home Team
+                  - paragraph [ref=e4115]: Beachside of Connecticut
+                - generic [ref=e4116]: VS
+                - generic [ref=e4117]:
+                  - generic [ref=e4118]: Away Team
+                  - paragraph [ref=e4120]: Bayside FC
+              - generic [ref=e4121]:
+                - generic [ref=e4122]:
+                  - generic [ref=e4123]: Match ID
+                  - generic [ref=e4124]: "21737"
+                - generic [ref=e4125]:
+                  - generic [ref=e4126]: Date
+                  - generic [ref=e4127]: 04/18/26 12:30pm
+                - generic [ref=e4128]:
+                  - generic [ref=e4129]: Age
+                  - generic [ref=e4130]: U13
+              - generic [ref=e4131]:
+                - generic [ref=e4132]:
+                  - generic [ref=e4133]: Gender
+                  - generic [ref=e4134]: MALE
+                - generic [ref=e4135]:
+                  - generic [ref=e4136]: Competition
+                  - generic [ref=e4137]: Group Play
+                - generic [ref=e4138]:
+                  - generic [ref=e4139]: Division
+                  - generic [ref=e4140]: E
+              - generic [ref=e4141]:
+                - generic [ref=e4142]:
+                  - generic [ref=e4143]: Location Name
+                  - generic [ref=e4144]: Tuckahoe Turf Farm
+                - generic [ref=e4145]:
+                  - generic [ref=e4146]: Field Identifier
+                  - generic [ref=e4147]: "42"
+              - generic [ref=e4149]:
+                - generic [ref=e4150]: Location Address
+                - paragraph [ref=e4153]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4154] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4155]: U13 GP
+      - generic [ref=e4156]:
+        - generic [ref=e4157]:
+          - generic [ref=e4158]:
+            - text: "21700"
+            - text: MALE
+          - generic [ref=e4159]:
+            - text: 04/18/26 02:00pm
+            - link "34 - Tuckahoe T..." [ref=e4160] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e4162]: 34 - Tuckahoe T...
+          - generic [ref=e4163]: U13
+          - generic [ref=e4164]:
+            - text: Group Play
+            - text: C
+          - generic [ref=e4166]:
+            - paragraph [ref=e4168]: FC Greater Boston Bolts
+            - generic [ref=e4169]: TBD
+            - paragraph [ref=e4171]: Metropolitan Oval
+          - generic [ref=e4173]: U13 GP
+        - generic [ref=e4174]:
+          - generic [ref=e4175]:
+            - button [ref=e4177]
+            - generic [ref=e4178]:
+              - text: 04/18/26 02:00pm
+              - text: 34 - Tuckahoe Turf Farm
+            - generic [ref=e4179]: TBD
+            - generic [ref=e4181]: U13 GP
+          - generic [ref=e4182]:
+            - generic [ref=e4183]:
+              - generic [ref=e4184]:
+                - generic [ref=e4185]:
+                  - generic [ref=e4186]: Home Team
+                  - paragraph [ref=e4188]: FC Greater Boston Bolts
+                - generic [ref=e4189]: VS
+                - generic [ref=e4190]:
+                  - generic [ref=e4191]: Away Team
+                  - paragraph [ref=e4193]: Metropolitan Oval
+              - generic [ref=e4194]:
+                - generic [ref=e4195]:
+                  - generic [ref=e4196]: Match ID
+                  - generic [ref=e4197]: "21700"
+                - generic [ref=e4198]:
+                  - generic [ref=e4199]: Date
+                  - generic [ref=e4200]: 04/18/26 02:00pm
+                - generic [ref=e4201]:
+                  - generic [ref=e4202]: Age
+                  - generic [ref=e4203]: U13
+              - generic [ref=e4204]:
+                - generic [ref=e4205]:
+                  - generic [ref=e4206]: Gender
+                  - generic [ref=e4207]: MALE
+                - generic [ref=e4208]:
+                  - generic [ref=e4209]: Competition
+                  - generic [ref=e4210]: Group Play
+                - generic [ref=e4211]:
+                  - generic [ref=e4212]: Division
+                  - generic [ref=e4213]: C
+              - generic [ref=e4214]:
+                - generic [ref=e4215]:
+                  - generic [ref=e4216]: Location Name
+                  - generic [ref=e4217]: Tuckahoe Turf Farm
+                - generic [ref=e4218]:
+                  - generic [ref=e4219]: Field Identifier
+                  - generic [ref=e4220]: "34"
+              - generic [ref=e4222]:
+                - generic [ref=e4223]: Location Address
+                - paragraph [ref=e4226]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4227] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4228]: U13 GP
+      - generic [ref=e4229]:
+        - generic [ref=e4230]:
+          - generic [ref=e4231]:
+            - text: "21777"
+            - text: MALE
+          - generic [ref=e4232]:
+            - text: 04/18/26 02:00pm
+            - link "42 - Tuckahoe T..." [ref=e4233] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e4235]: 42 - Tuckahoe T...
+          - generic [ref=e4236]: U13
+          - generic [ref=e4237]:
+            - text: Group Play
+            - text: F
+          - generic [ref=e4239]:
+            - paragraph [ref=e4241]: FC Westchester
+            - generic [ref=e4242]: TBD
+            - paragraph [ref=e4244]: FA Euro New York
+          - generic [ref=e4246]: U13 GP
+        - generic [ref=e4247]:
+          - generic [ref=e4248]:
+            - button [ref=e4250]
+            - generic [ref=e4251]:
+              - text: 04/18/26 02:00pm
+              - text: 42 - Tuckahoe Turf Farm
+            - generic [ref=e4252]: TBD
+            - generic [ref=e4254]: U13 GP
+          - generic [ref=e4255]:
+            - generic [ref=e4256]:
+              - generic [ref=e4257]:
+                - generic [ref=e4258]:
+                  - generic [ref=e4259]: Home Team
+                  - paragraph [ref=e4261]: FC Westchester
+                - generic [ref=e4262]: VS
+                - generic [ref=e4263]:
+                  - generic [ref=e4264]: Away Team
+                  - paragraph [ref=e4266]: FA Euro New York
+              - generic [ref=e4267]:
+                - generic [ref=e4268]:
+                  - generic [ref=e4269]: Match ID
+                  - generic [ref=e4270]: "21777"
+                - generic [ref=e4271]:
+                  - generic [ref=e4272]: Date
+                  - generic [ref=e4273]: 04/18/26 02:00pm
+                - generic [ref=e4274]:
+                  - generic [ref=e4275]: Age
+                  - generic [ref=e4276]: U13
+              - generic [ref=e4277]:
+                - generic [ref=e4278]:
+                  - generic [ref=e4279]: Gender
+                  - generic [ref=e4280]: MALE
+                - generic [ref=e4281]:
+                  - generic [ref=e4282]: Competition
+                  - generic [ref=e4283]: Group Play
+                - generic [ref=e4284]:
+                  - generic [ref=e4285]: Division
+                  - generic [ref=e4286]: F
+              - generic [ref=e4287]:
+                - generic [ref=e4288]:
+                  - generic [ref=e4289]: Location Name
+                  - generic [ref=e4290]: Tuckahoe Turf Farm
+                - generic [ref=e4291]:
+                  - generic [ref=e4292]: Field Identifier
+                  - generic [ref=e4293]: "42"
+              - generic [ref=e4295]:
+                - generic [ref=e4296]: Location Address
+                - paragraph [ref=e4299]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4300] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4301]: U13 GP
+      - generic [ref=e4302]:
+        - generic [ref=e4303]:
+          - generic [ref=e4304]:
+            - text: "21885"
+            - text: MALE
+          - generic [ref=e4305]:
+            - text: 04/18/26 02:00pm
+            - link "40 - Tuckahoe T..." [ref=e4306] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e4308]: 40 - Tuckahoe T...
+          - generic [ref=e4309]: U13
+          - generic [ref=e4310]:
+            - text: Group Play
+            - text: F
+          - generic [ref=e4312]:
+            - paragraph [ref=e4314]: Syracuse Development Academy
+            - generic [ref=e4315]: TBD
+            - paragraph [ref=e4317]: Ginga FC
+          - generic [ref=e4319]: U13 GP
+        - generic [ref=e4320]:
+          - generic [ref=e4321]:
+            - button [ref=e4323]
+            - generic [ref=e4324]:
+              - text: 04/18/26 02:00pm
+              - text: 40 - Tuckahoe Turf Farm
+            - generic [ref=e4325]: TBD
+            - generic [ref=e4327]: U13 GP
+          - generic [ref=e4328]:
+            - generic [ref=e4329]:
+              - generic [ref=e4330]:
+                - generic [ref=e4331]:
+                  - generic [ref=e4332]: Home Team
+                  - paragraph [ref=e4334]: Syracuse Development Academy
+                - generic [ref=e4335]: VS
+                - generic [ref=e4336]:
+                  - generic [ref=e4337]: Away Team
+                  - paragraph [ref=e4339]: Ginga FC
+              - generic [ref=e4340]:
+                - generic [ref=e4341]:
+                  - generic [ref=e4342]: Match ID
+                  - generic [ref=e4343]: "21885"
+                - generic [ref=e4344]:
+                  - generic [ref=e4345]: Date
+                  - generic [ref=e4346]: 04/18/26 02:00pm
+                - generic [ref=e4347]:
+                  - generic [ref=e4348]: Age
+                  - generic [ref=e4349]: U13
+              - generic [ref=e4350]:
+                - generic [ref=e4351]:
+                  - generic [ref=e4352]: Gender
+                  - generic [ref=e4353]: MALE
+                - generic [ref=e4354]:
+                  - generic [ref=e4355]: Competition
+                  - generic [ref=e4356]: Group Play
+                - generic [ref=e4357]:
+                  - generic [ref=e4358]: Division
+                  - generic [ref=e4359]: F
+              - generic [ref=e4360]:
+                - generic [ref=e4361]:
+                  - generic [ref=e4362]: Location Name
+                  - generic [ref=e4363]: Tuckahoe Turf Farm
+                - generic [ref=e4364]:
+                  - generic [ref=e4365]: Field Identifier
+                  - generic [ref=e4366]: "40"
+              - generic [ref=e4368]:
+                - generic [ref=e4369]: Location Address
+                - paragraph [ref=e4372]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4373] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4374]: U13 GP
+      - generic [ref=e4375]:
+        - generic [ref=e4376]:
+          - generic [ref=e4377]:
+            - text: "21921"
+            - text: MALE
+          - generic [ref=e4378]:
+            - text: 04/18/26 02:00pm
+            - link "39 - Tuckahoe T..." [ref=e4379] [cursor=pointer]:
+              - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+              - paragraph [ref=e4381]: 39 - Tuckahoe T...
+          - generic [ref=e4382]: U13
+          - generic [ref=e4383]:
+            - text: Group Play
+            - text: C
+          - generic [ref=e4385]:
+            - paragraph [ref=e4387]: Atlantic United
+            - generic [ref=e4388]: TBD
+            - paragraph [ref=e4390]: Oakwood Soccer Club
+          - generic [ref=e4392]: U13 GP
+        - generic [ref=e4393]:
+          - generic [ref=e4394]:
+            - button [ref=e4396]
+            - generic [ref=e4397]:
+              - text: 04/18/26 02:00pm
+              - text: 39 - Tuckahoe Turf Farm
+            - generic [ref=e4398]: TBD
+            - generic [ref=e4400]: U13 GP
+          - generic [ref=e4401]:
+            - generic [ref=e4402]:
+              - generic [ref=e4403]:
+                - generic [ref=e4404]:
+                  - generic [ref=e4405]: Home Team
+                  - paragraph [ref=e4407]: Atlantic United
+                - generic [ref=e4408]: VS
+                - generic [ref=e4409]:
+                  - generic [ref=e4410]: Away Team
+                  - paragraph [ref=e4412]: Oakwood Soccer Club
+              - generic [ref=e4413]:
+                - generic [ref=e4414]:
+                  - generic [ref=e4415]: Match ID
+                  - generic [ref=e4416]: "21921"
+                - generic [ref=e4417]:
+                  - generic [ref=e4418]: Date
+                  - generic [ref=e4419]: 04/18/26 02:00pm
+                - generic [ref=e4420]:
+                  - generic [ref=e4421]: Age
+                  - generic [ref=e4422]: U13
+              - generic [ref=e4423]:
+                - generic [ref=e4424]:
+                  - generic [ref=e4425]: Gender
+                  - generic [ref=e4426]: MALE
+                - generic [ref=e4427]:
+                  - generic [ref=e4428]: Competition
+                  - generic [ref=e4429]: Group Play
+                - generic [ref=e4430]:
+                  - generic [ref=e4431]: Division
+                  - generic [ref=e4432]: C
+              - generic [ref=e4433]:
+                - generic [ref=e4434]:
+                  - generic [ref=e4435]: Location Name
+                  - generic [ref=e4436]: Tuckahoe Turf Farm
+                - generic [ref=e4437]:
+                  - generic [ref=e4438]: Field Identifier
+                  - generic [ref=e4439]: "39"
+              - generic [ref=e4441]:
+                - generic [ref=e4442]: Location Address
+                - paragraph [ref=e4445]:
+                  - link "401 N Myrtle St, Hammonton, NJ 08037, USA" [ref=e4446] [cursor=pointer]:
+                    - /url: https://www.google.com/maps/search/?api=1&query=39.6800666,-74.7822885&query_place_id=ChIJ9RwQxp0owYkR5C4846AM4Ow
+            - generic [ref=e4447]: U13 GP
+    - generic [ref=e4449]:
+      - generic [ref=e4450]: 1 page out of 1
+      - list [ref=e4452]:
+        - listitem [ref=e4453]: First
+        - listitem [ref=e4454]: Prev
+        - listitem [ref=e4455]: "1"
+        - listitem [ref=e4456]: Next
+        - listitem [ref=e4457]: Last

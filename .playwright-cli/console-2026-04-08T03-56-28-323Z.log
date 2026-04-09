@@ -1,0 +1,6 @@
+[     314ms] ReferenceError: $ is not defined
+    at https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age=21&UID_gender=1&UID_event=84&list_type=groupplay:10111:2
+[     317ms] ReferenceError: $ is not defined
+    at https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age=21&UID_gender=1&UID_event=84&list_type=groupplay:13696:2
+[     317ms] ReferenceError: ListTeamsGroups is not defined
+    at https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age=21&UID_gender=1&UID_event=84&list_type=groupplay:13705:2

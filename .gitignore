@@ -79,6 +79,7 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+*.sql
 
 # Temporary files
 *.tmp
@@ -111,4 +112,5 @@ coverage.json
 deprecated/
 
 # Project instructions (sensitive config details)
-CLAUDE.md
+CLAUDE.local.md
+To-Fix.md

@@ -1,0 +1,386 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - button "Open navigation menu" [ref=e6] [cursor=pointer]:
+        - img [ref=e7]
+      - heading "YSI - Standings" [level=1] [ref=e8]:
+        - text: YSI
+        - generic [ref=e9]: "- Standings"
+  - navigation [ref=e10]:
+    - generic [ref=e11]:
+      - heading "Navigation" [level=2] [ref=e12]
+      - button "Close menu" [ref=e13] [cursor=pointer]:
+        - img [ref=e14]
+    - list [ref=e17]:
+      - listitem [ref=e18]:
+        - button "Home" [ref=e19] [cursor=pointer]
+      - listitem [ref=e20]:
+        - button "Schedules" [ref=e21] [cursor=pointer]
+      - listitem [ref=e22]:
+        - button "Standings" [ref=e23] [cursor=pointer]
+      - listitem [ref=e24]:
+        - button "Analytics" [ref=e25] [cursor=pointer]
+  - main [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: Program
+          - generic [ref=e33]:
+            - button "Homegrown" [ref=e34] [cursor=pointer]:
+              - img [ref=e35]
+              - text: Homegrown
+            - button "Academy" [ref=e41] [cursor=pointer]:
+              - img [ref=e42]
+              - text: Academy
+        - generic [ref=e45]:
+          - generic [ref=e46]: Season
+          - generic [ref=e48] [cursor=pointer]: 2025–2026
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: Age Group
+          - combobox "Age Group" [ref=e52] [cursor=pointer]:
+            - option "Select an age group"
+            - option "U13"
+            - option "U14"
+            - option "U15"
+            - option "U16"
+            - option "U17" [selected]
+            - option "U19"
+        - generic [ref=e53]:
+          - generic [ref=e54]: Region
+          - combobox "Region" [ref=e55] [cursor=pointer]:
+            - option "All regions"
+            - option "Central (Pro Player Pathway)"
+            - option "Florida"
+            - option "Frontier"
+            - option "Mid-America"
+            - option "Mid-Atlantic"
+            - option "Northeast" [selected]
+            - option "Northeast (Pro Player Pathway)"
+            - option "Northwest"
+            - option "Southeast"
+            - option "Southeast (Pro Player Pathway)"
+            - option "Southwest"
+            - option "West (Pro Player Pathway)"
+      - generic [ref=e2315]:
+        - heading "Northeast" [level=3] [ref=e2316]
+        - table [ref=e2318]:
+          - rowgroup [ref=e2319]:
+            - row "# Team GP W-D-L GF GA GD Pts PPM WPM GDPM GPM" [ref=e2320]:
+              - columnheader "#" [ref=e2321]
+              - columnheader "Team" [ref=e2322]
+              - columnheader "GP" [ref=e2323]
+              - columnheader "W-D-L" [ref=e2324]
+              - columnheader "GF" [ref=e2325]
+              - columnheader "GA" [ref=e2326]
+              - columnheader "GD" [ref=e2327]
+              - columnheader "Pts" [ref=e2328]
+              - columnheader "PPM" [ref=e2329]
+              - columnheader "WPM" [ref=e2330]
+              - columnheader "GDPM" [ref=e2331]
+              - columnheader "GPM" [ref=e2332]
+          - rowgroup [ref=e2333]:
+            - row "1 ▶ Intercontinental Football Academy of New England Intercontinental Football Academy of New England 9 5-4-0 0 0 0 19 2.110 0.556 0.000 0.000" [ref=e2334] [cursor=pointer]:
+              - cell "1" [ref=e2335]
+              - cell "▶ Intercontinental Football Academy of New England Intercontinental Football Academy of New England" [ref=e2336]:
+                - generic [ref=e2337]: ▶
+                - img "Intercontinental Football Academy of New England" [ref=e2338]
+                - generic [ref=e2339]: Intercontinental Football Academy of New England
+              - cell "9" [ref=e2340]
+              - cell "5-4-0" [ref=e2341]
+              - cell "0" [ref=e2342]
+              - cell "0" [ref=e2343]
+              - cell "0" [ref=e2344]
+              - cell "19" [ref=e2345]
+              - cell "2.110" [ref=e2346]
+              - cell "0.556" [ref=e2347]
+              - cell "0.000" [ref=e2348]
+              - cell "0.000" [ref=e2349]
+            - row "2 ▶ Metropolitan Oval Metropolitan Oval 10 6-3-1 0 0 0 21 2.100 0.600 0.000 0.000" [ref=e2350] [cursor=pointer]:
+              - cell "2" [ref=e2351]
+              - cell "▶ Metropolitan Oval Metropolitan Oval" [ref=e2352]:
+                - generic [ref=e2353]: ▶
+                - img "Metropolitan Oval" [ref=e2354]
+                - generic [ref=e2355]: Metropolitan Oval
+              - cell "10" [ref=e2356]
+              - cell "6-3-1" [ref=e2357]
+              - cell "0" [ref=e2358]
+              - cell "0" [ref=e2359]
+              - cell "0" [ref=e2360]
+              - cell "21" [ref=e2361]
+              - cell "2.100" [ref=e2362]
+              - cell "0.600" [ref=e2363]
+              - cell "0.000" [ref=e2364]
+              - cell "0.000" [ref=e2365]
+            - row "3 ▶ Blau Weiss Gottschee Blau Weiss Gottschee 11 7-2-2 0 0 0 23 2.090 0.636 0.000 0.000" [ref=e2366] [cursor=pointer]:
+              - cell "3" [ref=e2367]
+              - cell "▶ Blau Weiss Gottschee Blau Weiss Gottschee" [ref=e2368]:
+                - generic [ref=e2369]: ▶
+                - img "Blau Weiss Gottschee" [ref=e2370]
+                - generic [ref=e2371]: Blau Weiss Gottschee
+              - cell "11" [ref=e2372]
+              - cell "7-2-2" [ref=e2373]
+              - cell "0" [ref=e2374]
+              - cell "0" [ref=e2375]
+              - cell "0" [ref=e2376]
+              - cell "23" [ref=e2377]
+              - cell "2.090" [ref=e2378]
+              - cell "0.636" [ref=e2379]
+              - cell "0.000" [ref=e2380]
+              - cell "0.000" [ref=e2381]
+            - row "4 ▶ Cedar Stars Academy Bergen Cedar Stars Academy Bergen 8 5-1-2 0 0 0 16 2.000 0.625 0.000 0.000" [ref=e2382] [cursor=pointer]:
+              - cell "4" [ref=e2383]
+              - cell "▶ Cedar Stars Academy Bergen Cedar Stars Academy Bergen" [ref=e2384]:
+                - generic [ref=e2385]: ▶
+                - img "Cedar Stars Academy Bergen" [ref=e2386]
+                - generic [ref=e2387]: Cedar Stars Academy Bergen
+              - cell "8" [ref=e2388]
+              - cell "5-1-2" [ref=e2389]
+              - cell "0" [ref=e2390]
+              - cell "0" [ref=e2391]
+              - cell "0" [ref=e2392]
+              - cell "16" [ref=e2393]
+              - cell "2.000" [ref=e2394]
+              - cell "0.625" [ref=e2395]
+              - cell "0.000" [ref=e2396]
+              - cell "0.000" [ref=e2397]
+            - row "5 ▶ New York SC New York SC 7 4-2-1 0 0 0 14 2.000 0.571 0.000 0.000" [ref=e2398] [cursor=pointer]:
+              - cell "5" [ref=e2399]
+              - cell "▶ New York SC New York SC" [ref=e2400]:
+                - generic [ref=e2401]: ▶
+                - img "New York SC" [ref=e2402]
+                - generic [ref=e2403]: New York SC
+              - cell "7" [ref=e2404]
+              - cell "4-2-1" [ref=e2405]
+              - cell "0" [ref=e2406]
+              - cell "0" [ref=e2407]
+              - cell "0" [ref=e2408]
+              - cell "14" [ref=e2409]
+              - cell "2.000" [ref=e2410]
+              - cell "0.571" [ref=e2411]
+              - cell "0.000" [ref=e2412]
+              - cell "0.000" [ref=e2413]
+            - row "6 ▶ TSF Academy TSF Academy 10 6-1-3 0 0 0 19 1.900 0.600 0.000 0.000" [ref=e2414] [cursor=pointer]:
+              - cell "6" [ref=e2415]
+              - cell "▶ TSF Academy TSF Academy" [ref=e2416]:
+                - generic [ref=e2417]: ▶
+                - img "TSF Academy" [ref=e2418]
+                - generic [ref=e2419]: TSF Academy
+              - cell "10" [ref=e2420]
+              - cell "6-1-3" [ref=e2421]
+              - cell "0" [ref=e2422]
+              - cell "0" [ref=e2423]
+              - cell "0" [ref=e2424]
+              - cell "19" [ref=e2425]
+              - cell "1.900" [ref=e2426]
+              - cell "0.600" [ref=e2427]
+              - cell "0.000" [ref=e2428]
+              - cell "0.000" [ref=e2429]
+            - row "7 ▶ FC Greater Boston Bolts FC Greater Boston Bolts 9 5-1-3 0 0 0 16 1.780 0.556 0.000 0.000" [ref=e2430] [cursor=pointer]:
+              - cell "7" [ref=e2431]
+              - cell "▶ FC Greater Boston Bolts FC Greater Boston Bolts" [ref=e2432]:
+                - generic [ref=e2433]: ▶
+                - img "FC Greater Boston Bolts" [ref=e2434]
+                - generic [ref=e2435]: FC Greater Boston Bolts
+              - cell "9" [ref=e2436]
+              - cell "5-1-3" [ref=e2437]
+              - cell "0" [ref=e2438]
+              - cell "0" [ref=e2439]
+              - cell "0" [ref=e2440]
+              - cell "16" [ref=e2441]
+              - cell "1.780" [ref=e2442]
+              - cell "0.556" [ref=e2443]
+              - cell "0.000" [ref=e2444]
+              - cell "0.000" [ref=e2445]
+            - row "8 ▶ Seacoast United Seacoast United 9 4-3-2 0 0 0 15 1.670 0.444 0.000 0.000" [ref=e2446] [cursor=pointer]:
+              - cell "8" [ref=e2447]
+              - cell "▶ Seacoast United Seacoast United" [ref=e2448]:
+                - generic [ref=e2449]: ▶
+                - img "Seacoast United" [ref=e2450]
+                - generic [ref=e2451]: Seacoast United
+              - cell "9" [ref=e2452]
+              - cell "4-3-2" [ref=e2453]
+              - cell "0" [ref=e2454]
+              - cell "0" [ref=e2455]
+              - cell "0" [ref=e2456]
+              - cell "15" [ref=e2457]
+              - cell "1.670" [ref=e2458]
+              - cell "0.444" [ref=e2459]
+              - cell "0.000" [ref=e2460]
+              - cell "0.000" [ref=e2461]
+            - row "9 ▶ NEFC NEFC 11 5-2-4 0 0 0 17 1.550 0.455 0.000 0.000" [ref=e2462] [cursor=pointer]:
+              - cell "9" [ref=e2463]
+              - cell "▶ NEFC NEFC" [ref=e2464]:
+                - generic [ref=e2465]: ▶
+                - img "NEFC" [ref=e2466]
+                - generic [ref=e2467]: NEFC
+              - cell "11" [ref=e2468]
+              - cell "5-2-4" [ref=e2469]
+              - cell "0" [ref=e2470]
+              - cell "0" [ref=e2471]
+              - cell "0" [ref=e2472]
+              - cell "17" [ref=e2473]
+              - cell "1.550" [ref=e2474]
+              - cell "0.455" [ref=e2475]
+              - cell "0.000" [ref=e2476]
+              - cell "0.000" [ref=e2477]
+            - row "10 ▶ Bayside FC Bayside FC 9 3-3-3 0 0 0 12 1.330 0.333 0.000 0.000" [ref=e2478] [cursor=pointer]:
+              - cell "10" [ref=e2479]
+              - cell "▶ Bayside FC Bayside FC" [ref=e2480]:
+                - generic [ref=e2481]: ▶
+                - img "Bayside FC" [ref=e2482]
+                - generic [ref=e2483]: Bayside FC
+              - cell "9" [ref=e2484]
+              - cell "3-3-3" [ref=e2485]
+              - cell "0" [ref=e2486]
+              - cell "0" [ref=e2487]
+              - cell "0" [ref=e2488]
+              - cell "12" [ref=e2489]
+              - cell "1.330" [ref=e2490]
+              - cell "0.333" [ref=e2491]
+              - cell "0.000" [ref=e2492]
+              - cell "0.000" [ref=e2493]
+            - row "11 ▶ Rochester NY FC Rochester NY FC 10 4-1-5 0 0 0 13 1.300 0.400 0.000 0.000" [ref=e2494] [cursor=pointer]:
+              - cell "11" [ref=e2495]
+              - cell "▶ Rochester NY FC Rochester NY FC" [ref=e2496]:
+                - generic [ref=e2497]: ▶
+                - img "Rochester NY FC" [ref=e2498]
+                - generic [ref=e2499]: Rochester NY FC
+              - cell "10" [ref=e2500]
+              - cell "4-1-5" [ref=e2501]
+              - cell "0" [ref=e2502]
+              - cell "0" [ref=e2503]
+              - cell "0" [ref=e2504]
+              - cell "13" [ref=e2505]
+              - cell "1.300" [ref=e2506]
+              - cell "0.400" [ref=e2507]
+              - cell "0.000" [ref=e2508]
+              - cell "0.000" [ref=e2509]
+            - row "12 ▶ Long Island Soccer Club Long Island Soccer Club 9 3-0-6 0 0 0 9 1.000 0.333 0.000 0.000" [ref=e2510] [cursor=pointer]:
+              - cell "12" [ref=e2511]
+              - cell "▶ Long Island Soccer Club Long Island Soccer Club" [ref=e2512]:
+                - generic [ref=e2513]: ▶
+                - img "Long Island Soccer Club" [ref=e2514]
+                - generic [ref=e2515]: Long Island Soccer Club
+              - cell "9" [ref=e2516]
+              - cell "3-0-6" [ref=e2517]
+              - cell "0" [ref=e2518]
+              - cell "0" [ref=e2519]
+              - cell "0" [ref=e2520]
+              - cell "9" [ref=e2521]
+              - cell "1.000" [ref=e2522]
+              - cell "0.333" [ref=e2523]
+              - cell "0.000" [ref=e2524]
+              - cell "0.000" [ref=e2525]
+            - row "13 ▶ FA Euro New York FA Euro New York 10 3-1-6 0 0 0 10 1.000 0.300 0.000 0.000" [ref=e2526] [cursor=pointer]:
+              - cell "13" [ref=e2527]
+              - cell "▶ FA Euro New York FA Euro New York" [ref=e2528]:
+                - generic [ref=e2529]: ▶
+                - img "FA Euro New York" [ref=e2530]
+                - generic [ref=e2531]: FA Euro New York
+              - cell "10" [ref=e2532]
+              - cell "3-1-6" [ref=e2533]
+              - cell "0" [ref=e2534]
+              - cell "0" [ref=e2535]
+              - cell "0" [ref=e2536]
+              - cell "10" [ref=e2537]
+              - cell "1.000" [ref=e2538]
+              - cell "0.300" [ref=e2539]
+              - cell "0.000" [ref=e2540]
+              - cell "0.000" [ref=e2541]
+            - row "14 ▶ Beachside of Connecticut Beachside of Connecticut 10 2-4-4 0 0 0 10 1.000 0.200 0.000 0.000" [ref=e2542] [cursor=pointer]:
+              - cell "14" [ref=e2543]
+              - cell "▶ Beachside of Connecticut Beachside of Connecticut" [ref=e2544]:
+                - generic [ref=e2545]: ▶
+                - img "Beachside of Connecticut" [ref=e2546]
+                - generic [ref=e2547]: Beachside of Connecticut
+              - cell "10" [ref=e2548]
+              - cell "2-4-4" [ref=e2549]
+              - cell "0" [ref=e2550]
+              - cell "0" [ref=e2551]
+              - cell "0" [ref=e2552]
+              - cell "10" [ref=e2553]
+              - cell "1.000" [ref=e2554]
+              - cell "0.200" [ref=e2555]
+              - cell "0.000" [ref=e2556]
+              - cell "0.000" [ref=e2557]
+            - row "15 ▶ FC Westchester FC Westchester 10 2-3-5 0 0 0 9 0.900 0.200 0.000 0.000" [ref=e2558] [cursor=pointer]:
+              - cell "15" [ref=e2559]
+              - cell "▶ FC Westchester FC Westchester" [ref=e2560]:
+                - generic [ref=e2561]: ▶
+                - img "FC Westchester" [ref=e2562]
+                - generic [ref=e2563]: FC Westchester
+              - cell "10" [ref=e2564]
+              - cell "2-3-5" [ref=e2565]
+              - cell "0" [ref=e2566]
+              - cell "0" [ref=e2567]
+              - cell "0" [ref=e2568]
+              - cell "9" [ref=e2569]
+              - cell "0.900" [ref=e2570]
+              - cell "0.200" [ref=e2571]
+              - cell "0.000" [ref=e2572]
+              - cell "0.000" [ref=e2573]
+            - row "16 ▶ Valeo Futbol Club Valeo Futbol Club 7 2-0-5 0 0 0 6 0.860 0.286 0.000 0.000" [ref=e2574] [cursor=pointer]:
+              - cell "16" [ref=e2575]
+              - cell "▶ Valeo Futbol Club Valeo Futbol Club" [ref=e2576]:
+                - generic [ref=e2577]: ▶
+                - img "Valeo Futbol Club" [ref=e2578]
+                - generic [ref=e2579]: Valeo Futbol Club
+              - cell "7" [ref=e2580]
+              - cell "2-0-5" [ref=e2581]
+              - cell "0" [ref=e2582]
+              - cell "0" [ref=e2583]
+              - cell "0" [ref=e2584]
+              - cell "6" [ref=e2585]
+              - cell "0.860" [ref=e2586]
+              - cell "0.286" [ref=e2587]
+              - cell "0.000" [ref=e2588]
+              - cell "0.000" [ref=e2589]
+            - row "17 ▶ Downtown United Soccer Club Downtown United Soccer Club 10 2-2-6 0 0 0 8 0.800 0.200 0.000 0.000" [ref=e2590] [cursor=pointer]:
+              - cell "17" [ref=e2591]
+              - cell "▶ Downtown United Soccer Club Downtown United Soccer Club" [ref=e2592]:
+                - generic [ref=e2593]: ▶
+                - img "Downtown United Soccer Club" [ref=e2594]
+                - generic [ref=e2595]: Downtown United Soccer Club
+              - cell "10" [ref=e2596]
+              - cell "2-2-6" [ref=e2597]
+              - cell "0" [ref=e2598]
+              - cell "0" [ref=e2599]
+              - cell "0" [ref=e2600]
+              - cell "8" [ref=e2601]
+              - cell "0.800" [ref=e2602]
+              - cell "0.200" [ref=e2603]
+              - cell "0.000" [ref=e2604]
+              - cell "0.000" [ref=e2605]
+            - row "18 ▶ Ironbound Soccer Club Ironbound Soccer Club 9 2-1-6 0 0 0 7 0.780 0.222 0.000 0.000" [ref=e2606] [cursor=pointer]:
+              - cell "18" [ref=e2607]
+              - cell "▶ Ironbound Soccer Club Ironbound Soccer Club" [ref=e2608]:
+                - generic [ref=e2609]: ▶
+                - img "Ironbound Soccer Club" [ref=e2610]
+                - generic [ref=e2611]: Ironbound Soccer Club
+              - cell "9" [ref=e2612]
+              - cell "2-1-6" [ref=e2613]
+              - cell "0" [ref=e2614]
+              - cell "0" [ref=e2615]
+              - cell "0" [ref=e2616]
+              - cell "7" [ref=e2617]
+              - cell "0.780" [ref=e2618]
+              - cell "0.222" [ref=e2619]
+              - cell "0.000" [ref=e2620]
+              - cell "0.000" [ref=e2621]
+            - row "19 ▶ Oakwood Soccer Club Oakwood Soccer Club 9 1-2-6 0 0 0 5 0.560 0.111 0.000 0.000" [ref=e2622] [cursor=pointer]:
+              - cell "19" [ref=e2623]
+              - cell "▶ Oakwood Soccer Club Oakwood Soccer Club" [ref=e2624]:
+                - generic [ref=e2625]: ▶
+                - img "Oakwood Soccer Club" [ref=e2626]
+                - generic [ref=e2627]: Oakwood Soccer Club
+              - cell "9" [ref=e2628]
+              - cell "1-2-6" [ref=e2629]
+              - cell "0" [ref=e2630]
+              - cell "0" [ref=e2631]
+              - cell "0" [ref=e2632]
+              - cell "5" [ref=e2633]
+              - cell "0.560" [ref=e2634]
+              - cell "0.111" [ref=e2635]
+              - cell "0.000" [ref=e2636]
+              - cell "0.000" [ref=e2637]

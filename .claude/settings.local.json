@@ -12,7 +12,19 @@
       "Bash(az storage:*)",
       "Bash(az functionapp:*)",
       "Bash(git:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(az account:*)",
+      "Bash(pwsh -Command '\n$token = az account get-access-token --resource https://database.windows.net/ --query accessToken -o tsv\n$conn = New-Object System.Data.SqlClient.SqlConnection\n$conn.ConnectionString = \"Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;\"\n$conn.AccessToken = $token\n$conn.Open\\(\\)\n$cmd = $conn.CreateCommand\\(\\)\n$cmd.CommandText = \"SELECT ag.Name AS AgeGroup, COUNT\\(*\\) AS MatchCount FROM Matches m JOIN Regions r ON m.RegionId = r.Id JOIN AgeGroups ag ON m.AgeGroupId = ag.Id WHERE r.Name = N'\\\\''FEST'\\\\'' GROUP BY ag.Name ORDER BY ag.Name\"\n$reader = $cmd.ExecuteReader\\(\\)\nwhile \\($reader.Read\\(\\)\\) {\n    Write-Host \"$\\($reader[\"AgeGroup\"]\\)`t$\\($reader[\"MatchCount\"]\\)\"\n}\n$conn.Close\\(\\)\n' 2>&1)",
+      "Bash(dotnet ef:*)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(f''''{r[\"\"Rank\"\"]:>3}. {r[\"\"TeamName\"\"]:<40} ELO={r[\"\"EloRating\"\"]}''''\\) for r in data[:5]]\")",
+      "Bash(find YSS.Data YSS.Ingestion YSS.Functions YSS.Tests YSS.Verification -name *.cs)",
+      "WebFetch(domain:www.modular11.com)",
+      "Skill(playwright-cli)",
+      "Bash(list_type=groupplay 2>&1)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "mssql"
+  ]
 }

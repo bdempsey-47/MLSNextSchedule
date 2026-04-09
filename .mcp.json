@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "mssql": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "dab",
+        "start",
+        "--mcp-stdio",
+        "role:anonymous",
+        "--config",
+        "C:/Projects/MLSNextSchedule/dab-config.json",
+        "--LogLevel",
+        "none"
+      ],
+      "env": {}
+    }
+  }
+}

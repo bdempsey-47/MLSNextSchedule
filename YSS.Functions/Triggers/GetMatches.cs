@@ -207,7 +207,7 @@ public class GetMatches
             errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
             errorResponse.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
             errorResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
-            await errorResponse.WriteAsJsonAsync(new { error = ex.Message, stackTrace = ex.StackTrace });
+            await errorResponse.WriteAsJsonAsync(new { error = ex.Message });
             return errorResponse;
         }
     }

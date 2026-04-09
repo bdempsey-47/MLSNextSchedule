@@ -21,7 +21,7 @@ public class TriggerIngestion
 
     [Function("TriggerIngestion")]
     public async Task<HttpResponseData> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "ingestion/trigger")] HttpRequestData req)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ingestion/trigger")] HttpRequestData req)
     {
         try
         {
