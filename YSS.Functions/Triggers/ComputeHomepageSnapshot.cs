@@ -1,5 +1,7 @@
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using System.Net;
 using YSS.Functions.Services;
 
 namespace YSS.Functions.Triggers;
@@ -34,6 +36,29 @@ public class ComputeHomepageSnapshot
         {
             _logger.LogError(ex, "Error in ComputeHomepageSnapshot");
             throw;
+        }
+    }
+
+    // Manual trigger: POST /api/TriggerHomepageSnapshot
+    [Function("TriggerHomepageSnapshot")]
+    public async Task<HttpResponseData> RunHttp(
+        [HttpTrigger(AuthorizationLevel.Admin, "post", Route = "TriggerHomepageSnapshot")] HttpRequestData req,
+        CancellationToken ct)
+    {
+        _logger.LogInformation("TriggerHomepageSnapshot HTTP trigger invoked");
+        try
+        {
+            await _snapshotService.ComputeAndStoreAsync(ct);
+            var ok = req.CreateResponse(HttpStatusCode.OK);
+            await ok.WriteStringAsync("HomepageSnapshot computed successfully.");
+            return ok;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in TriggerHomepageSnapshot");
+            var err = req.CreateResponse(HttpStatusCode.InternalServerError);
+            await err.WriteStringAsync($"Error: {ex.Message}");
+            return err;
         }
     }
 }
