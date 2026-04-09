@@ -201,7 +201,8 @@ function AnalyticsPage() {
       params.set('team', teamName)
       const res = await fetch(`${apiBase}/matches?${params.toString()}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data: any[] = await res.json()
+      const json = await res.json()
+      const data: any[] = Array.isArray(json) ? json : (json.matches ?? [])
       const matches: Match[] = data.map((m: any) => ({
         matchId:      m.matchId      ?? m.MatchId,
         matchDateUtc: m.matchDateUtc ?? m.MatchDateUtc,

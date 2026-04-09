@@ -20,7 +20,15 @@
       "Bash(find YSS.Data YSS.Ingestion YSS.Functions YSS.Tests YSS.Verification -name *.cs)",
       "WebFetch(domain:www.modular11.com)",
       "Skill(playwright-cli)",
-      "Bash(list_type=groupplay 2>&1)"
+      "Bash(list_type=groupplay 2>&1)",
+      "Bash(dotnet clean:*)",
+      "Bash(az monitor app-insights query:*)",
+      "Bash(az resource list:*)",
+      "Bash(az sql db show:*)",
+      "Bash(az sql:*)",
+      "WebFetch(domain:www.youthsoccerintelligence.com)",
+      "WebFetch(domain:yss-func-prod-cqcnb3dfgze4b7ap.centralus-01.azurewebsites.net)",
+      "WebFetch(domain:happy-smoke-0edf8100f.2.azurestaticapps.net)"
     ]
   },
   "enableAllProjectMcpServers": true,
