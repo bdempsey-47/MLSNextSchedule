@@ -40,8 +40,12 @@ public class GetMatches
             // Support multiple program values: ?program=homegrown&program=academy
             var programs = queryParams.GetValues("program")?.ToList() ?? new List<string>();
 
-            _logger.LogInformation("GetMatches called with: league={League}, seasons={Seasons}, programs={Programs}, startDate={StartDate}, endDate={EndDate}", 
-                league ?? "(all)", string.Join(",", seasons), string.Join(",", programs), startDateStr ?? "(none)", endDateStr ?? "(none)");
+            // Pagination parameters
+            var pageSize = int.TryParse(queryParams["pageSize"], out var ps) ? Math.Min(ps, 500) : 100;
+            var offset = int.TryParse(queryParams["offset"], out var o) ? Math.Max(o, 0) : 0;
+
+            _logger.LogInformation("GetMatches called with: league={League}, seasons={Seasons}, programs={Programs}, startDate={StartDate}, endDate={EndDate}, pageSize={PageSize}, offset={Offset}",
+                league ?? "(all)", string.Join(",", seasons), string.Join(",", programs), startDateStr ?? "(none)", endDateStr ?? "(none)", pageSize, offset);
 
             var matches = _context.Matches
                 .Include(m => m.HomeTeam)
@@ -129,12 +133,16 @@ public class GetMatches
                 matches = matches.Where(m => m.Region.Name == division);
             }
 
+            // Get total count before pagination
+            var totalCount = await matches.CountAsync();
+
             var results = await matches
                 .OrderBy(m => m.MatchDateUtc)
-                .Take(100)
+                .Skip(offset)
+                .Take(pageSize)
                 .ToListAsync();
 
-            _logger.LogInformation("GetMatches returning {Count} results", results.Count);
+            _logger.LogInformation("GetMatches returning {Count}/{Total} results (offset={Offset}, pageSize={PageSize})", results.Count, totalCount, offset, pageSize);
 
             // Load per-age-group ELO ratings for all teams in the result set
             var teamIds = results.SelectMany(m => new[] { m.HomeTeamId, m.AwayTeamId }).Distinct().ToList();
@@ -196,7 +204,18 @@ public class GetMatches
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 ReferenceHandler = ReferenceHandler.IgnoreCycles
             };
-            var json = JsonSerializer.Serialize(results, jsonOptions);
+
+            // Wrap results with pagination metadata
+            var paginatedResponse = new
+            {
+                matches = results,
+                totalCount = totalCount,
+                pageSize = pageSize,
+                offset = offset,
+                hasMore = offset + results.Count < totalCount
+            };
+
+            var json = JsonSerializer.Serialize(paginatedResponse, jsonOptions);
             await response.WriteStringAsync(json);
             return response;
         }
