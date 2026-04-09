@@ -37,10 +37,12 @@ public class Modular11Client
     /// <param name="ct">Cancellation token</param>
     /// <param name="startDateOverride">Optional start date override (yyyy-MM-dd HH:mm:ss). Overrides settings when provided.</param>
     /// <param name="endDateOverride">Optional end date override (yyyy-MM-dd HH:mm:ss). Overrides settings when provided.</param>
+    /// <param name="ageGroupsOverride">Optional age groups override. Overrides settings when provided.</param>
+    /// <param name="tournamentIdOverride">Optional tournament ID override. Overrides settings when provided.</param>
     /// <returns>Raw HTML response body</returns>
     public virtual async Task<string> FetchPageAsync(int pageNumber, CancellationToken ct = default,
         string? startDateOverride = null, string? endDateOverride = null,
-        List<string>? ageGroupsOverride = null)
+        List<string>? ageGroupsOverride = null, string? tournamentIdOverride = null)
     {
         var throttleMs = Random.Shared.Next(MinThrottleMilliseconds, MaxThrottleMilliseconds + 1);
         _logger.LogDebug("Throttling request for page {PageNumber} by {ThrottleMs}ms", pageNumber, throttleMs);
@@ -63,7 +65,7 @@ public class Modular11Client
         }
         else
         {
-            var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride, ageGroupsOverride);
+            var queryParams = BuildQueryParams(pageNumber, startDateOverride, endDateOverride, ageGroupsOverride, tournamentIdOverride);
             url = $"https://www.modular11.com/public_schedule/league/get_matches?{queryParams}";
             _logger.LogInformation("Fetching Modular11 page {PageNumber}: {Url}", pageNumber, url);
             request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -87,12 +89,13 @@ public class Modular11Client
     }
 
     private string BuildQueryParams(int pageNumber, string? startDateOverride = null, string? endDateOverride = null,
-        List<string>? ageGroupsOverride = null)
+        List<string>? ageGroupsOverride = null, string? tournamentIdOverride = null)
     {
         var sb = new StringBuilder();
 
         // Required parameters
-        sb.Append($"tournament={Uri.EscapeDataString(_settings.TournamentId)}");
+        var tournamentId = tournamentIdOverride ?? _settings.TournamentId;
+        sb.Append($"tournament={Uri.EscapeDataString(tournamentId)}");
         sb.Append($"&gender={Uri.EscapeDataString(_settings.Gender)}");
         sb.Append($"&status={Uri.EscapeDataString(_settings.Status)}");
         sb.Append($"&match_type={Uri.EscapeDataString(_settings.MatchType)}");

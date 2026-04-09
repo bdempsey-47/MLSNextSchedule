@@ -12,18 +12,15 @@ public class WeeklyIngestion
     private static readonly List<string> Batch3 = ["15", "26"]; // u17, u19
 
     private readonly IngestionOrchestrator _orchestrator;
-    private readonly Modular11Settings _settings;
     private readonly List<TournamentSeason> _seasons;
     private readonly ILogger _logger;
 
     public WeeklyIngestion(
         IngestionOrchestrator orchestrator,
-        Modular11Settings settings,
         List<TournamentSeason> seasons,
         ILoggerFactory loggerFactory)
     {
         _orchestrator = orchestrator;
-        _settings = settings;
         _seasons = seasons;
         _logger = loggerFactory.CreateLogger<WeeklyIngestion>();
     }
@@ -62,11 +59,10 @@ public class WeeklyIngestion
             var end = season.SeasonEnd.ToString("yyyy-MM-dd 23:59:59");
             _logger.LogInformation("Processing season: {Label} (tournament {TournamentId}) [{Batch}] — window: {Start} to {End}",
                 season.Label, season.TournamentId, batchLabel, start, end);
-            _settings.TournamentId = season.TournamentId;
 
             try
             {
-                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, ageGroups: ageGroups);
+                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, ageGroups: ageGroups, tournamentId: season.TournamentId);
             }
             catch (Exception ex)
             {

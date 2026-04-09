@@ -42,6 +42,9 @@ public class IngestionOrchestrator
     /// <param name="leagueName">Name of the league to ingest (e.g., 'MLS Next', 'ECNL', 'EDP'). Defaults to 'MLS Next'.</param>
     /// <param name="startDate">Optional start date override (yyyy-MM-dd HH:mm:ss). Overrides Modular11Settings when provided.</param>
     /// <param name="endDate">Optional end date override (yyyy-MM-dd HH:mm:ss). Overrides Modular11Settings when provided.</param>
+    /// <param name="ageGroups">Optional age groups override. Overrides Modular11Settings when provided.</param>
+    /// <param name="startPage">Starting page number for pagination. Defaults to 1.</param>
+    /// <param name="tournamentId">Optional tournament ID override (as string). Overrides Modular11Settings when provided.</param>
     public async Task RunAsync(
         CancellationToken ct = default,
         int? maxMatches = null,
@@ -49,7 +52,8 @@ public class IngestionOrchestrator
         string? startDate = null,
         string? endDate = null,
         List<string>? ageGroups = null,
-        int startPage = 1)
+        int startPage = 1,
+        string? tournamentId = null)
     {
         var startTime = DateTime.UtcNow;
         var totalMatches = 0;
@@ -65,8 +69,8 @@ public class IngestionOrchestrator
             {
                 _logger.LogInformation("Fetching page {PageNumber}", pageNumber);
 
-                // Fetch page
-                var htmlContent = await _client.FetchPageAsync(pageNumber, ct, startDate, endDate, ageGroups);
+                // Fetch page (pass tournamentId to avoid singleton mutation)
+                var htmlContent = await _client.FetchPageAsync(pageNumber, ct, startDate, endDate, ageGroups, tournamentId);
 
                 // Check for end-of-pagination marker
                 if (htmlContent.Contains("No data available"))
@@ -75,8 +79,9 @@ public class IngestionOrchestrator
                     break;
                 }
 
-                // Parse matches from HTML
-                var parsedMatches = _parser.ParseMatches(htmlContent, _client.TournamentId);
+                // Parse matches from HTML (use provided tournamentId or fall back to client's default)
+                var effectiveTournamentId = int.TryParse(tournamentId ?? _client.TournamentId.ToString(), out var id) ? id : 0;
+                var parsedMatches = _parser.ParseMatches(htmlContent, effectiveTournamentId);
 
                 // In-memory deduplication
                 var newMatches = new List<Models.ParsedMatch>();

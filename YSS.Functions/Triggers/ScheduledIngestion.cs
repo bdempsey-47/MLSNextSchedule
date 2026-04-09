@@ -9,20 +9,17 @@ namespace YSS.Functions.Triggers;
 public class ScheduledIngestion
 {
     private readonly IngestionOrchestrator _orchestrator;
-    private readonly Modular11Settings _settings;
     private readonly List<TournamentSeason> _seasons;
     private readonly EloRecomputeService _eloService;
     private readonly ILogger _logger;
 
     public ScheduledIngestion(
         IngestionOrchestrator orchestrator,
-        Modular11Settings settings,
         List<TournamentSeason> seasons,
         EloRecomputeService eloService,
         ILoggerFactory loggerFactory)
     {
         _orchestrator = orchestrator;
-        _settings = settings;
         _seasons = seasons;
         _eloService = eloService;
         _logger = loggerFactory.CreateLogger<ScheduledIngestion>();
@@ -65,11 +62,10 @@ public class ScheduledIngestion
         {
             _logger.LogInformation("Processing season: {Label} (tournament {TournamentId}) [{RunLabel}]",
                 season.Label, season.TournamentId, label);
-            _settings.TournamentId = season.TournamentId;
 
             try
             {
-                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end);
+                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, tournamentId: season.TournamentId);
             }
             catch (Exception ex)
             {
