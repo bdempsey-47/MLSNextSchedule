@@ -26,10 +26,11 @@ function SchedulesPage() {
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
+  const [paginationState, setPaginationState] = useState({ totalCount: 0, pageSize: 100, offset: 0, hasMore: false })
 
   // Load matches whenever program or season changes, preserving current filter state
   useEffect(() => {
-    fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups)
+    fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups, 0, false)
   }, [selectedSeasons, selectedPrograms])
 
   // Keep URL in sync with filter state so the page can be bookmarked or shared
@@ -58,7 +59,7 @@ function SchedulesPage() {
     setSelectedRegion(region)
     setSelectedTeam(team)
     setSelectedAgeGroups(ageGroups)
-    fetchMatches(region, team, ageGroups)
+    fetchMatches(region, team, ageGroups, 0)
   }
 
   const handleBadgeClick = (type: 'region' | 'ageGroup' | 'team', value: string) => {
@@ -69,6 +70,11 @@ function SchedulesPage() {
     } else if (type === 'team') {
       handleFilterChange(selectedRegion, value, selectedAgeGroups)
     }
+  }
+
+  const handleLoadMore = () => {
+    const nextOffset = paginationState.offset + paginationState.pageSize
+    fetchMatches(selectedRegion, selectedTeam, selectedAgeGroups, nextOffset, true)
   }
 
   // Transform API response from PascalCase to camelCase
@@ -126,7 +132,7 @@ function SchedulesPage() {
     return match.division.tournamentId === 12 ? 'homegrown' : 'academy'
   }
 
-  const fetchMatches = async (region: string, team: string, ageGroups: string[]) => {
+  const fetchMatches = async (region: string, team: string, ageGroups: string[], offset: number = 0, appendResults: boolean = false) => {
     // If no programs or seasons selected, show no matches
     if (selectedPrograms.length === 0 || selectedSeasons.length === 0) {
       setMatches([])
@@ -163,7 +169,20 @@ function SchedulesPage() {
           filteredMock = filteredMock.filter(m => ageGroups.includes(m.ageGroup.name))
         }
 
-        setMatches(filteredMock)
+        const pageSize = 100
+        const paginatedMock = filteredMock.slice(offset, offset + pageSize)
+        setPaginationState({
+          totalCount: filteredMock.length,
+          pageSize: pageSize,
+          offset: offset,
+          hasMore: offset + pageSize < filteredMock.length
+        })
+
+        if (appendResults) {
+          setMatches(prev => [...prev, ...paginatedMock])
+        } else {
+          setMatches(paginatedMock)
+        }
         setError('(Using mock data - API not configured)')
         setLoading(false)
         return
@@ -176,6 +195,8 @@ function SchedulesPage() {
       if (team) params.append('team', team)
       if (region) params.append('division', region)
       ageGroups.forEach(ag => params.append('ageGroup', ag))
+      params.append('offset', offset.toString())
+      params.append('pageSize', '100')
 
       console.log('📡 Fetching from:', `${apiBase}/matches?${params.toString()}`)
       try {
@@ -185,13 +206,27 @@ function SchedulesPage() {
         if (!response.ok) throw new Error('Failed to fetch matches')
 
         const data = await response.json()
-        console.log('🎯 Data received:', data.length, 'matches')
+        console.log('🎯 Data received:', data.matches?.length ?? 0, 'matches, total:', data.totalCount)
 
         // Transform API response to match expected format
-        let transformedMatches = data.map((match: any) => transformApiMatch(match))
+        let transformedMatches = (data.matches || []).map((match: any) => transformApiMatch(match))
+
+        // Update pagination state
+        setPaginationState({
+          totalCount: data.totalCount,
+          pageSize: data.pageSize,
+          offset: data.offset,
+          hasMore: data.hasMore
+        })
 
         console.log('📊 After transform:', transformedMatches.length, 'matches')
-        setMatches(transformedMatches || [])
+
+        // If appending (load more), concatenate with existing matches; otherwise replace
+        if (appendResults) {
+          setMatches(prev => [...prev, ...transformedMatches])
+        } else {
+          setMatches(transformedMatches || [])
+        }
       } catch (fetchErr) {
         console.warn('API unavailable, using mock data:', fetchErr)
         let filteredMock = [...mockMatches]
@@ -211,7 +246,20 @@ function SchedulesPage() {
           filteredMock = filteredMock.filter(m => ageGroups.includes(m.ageGroup.name))
         }
 
-        setMatches(filteredMock)
+        const pageSize = 100
+        const paginatedMock = filteredMock.slice(offset, offset + pageSize)
+        setPaginationState({
+          totalCount: filteredMock.length,
+          pageSize: pageSize,
+          offset: offset,
+          hasMore: offset + pageSize < filteredMock.length
+        })
+
+        if (appendResults) {
+          setMatches(prev => [...prev, ...paginatedMock])
+        } else {
+          setMatches(paginatedMock)
+        }
         setError('(Using mock data - API unavailable)')
       }
     } catch (err) {
@@ -279,11 +327,33 @@ function SchedulesPage() {
       )}
 
       {matches.length > 0 && (
-        <MatchList
-          matches={matches}
-          programs={selectedPrograms}
-          onBadgeClick={handleBadgeClick}
-        />
+        <>
+          <MatchList
+            matches={matches}
+            programs={selectedPrograms}
+            onBadgeClick={handleBadgeClick}
+          />
+          {paginationState.hasMore && (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem 0' }}>
+              <button
+                onClick={handleLoadMore}
+                disabled={loading}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.6 : 1,
+                  fontSize: '1rem'
+                }}
+              >
+                {loading ? 'Loading…' : `Load More (${paginationState.totalCount - matches.length} remaining)`}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
