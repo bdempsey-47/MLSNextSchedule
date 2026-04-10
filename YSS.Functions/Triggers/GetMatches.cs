@@ -160,9 +160,36 @@ public class GetMatches
                     match.AwayTeam.EloRating = awayElo;
             }
 
-            // Compute ELO ranks for all teams across age groups
+            // Compute ELO ranks scoped to the requested program(s) + age groups
+            // to avoid mixing Academy and Homegrown rankings together
+            IQueryable<YSS.Data.Entities.Match> programScopeQuery = _context.Matches
+                .Include(m => m.Region).ThenInclude(r => r.Division)
+                .Include(m => m.Competition)
+                .Where(m => ageGroupIds.Contains(m.AgeGroupId));
+
+            if (programs.Any())
+            {
+                var normalizedPrograms2 = programs.Select(p => p.ToLower()).ToList();
+                var isHomegrown2 = normalizedPrograms2.Contains("homegrown");
+                var isAcademy2 = normalizedPrograms2.Contains("academy");
+                programScopeQuery = programScopeQuery.Where(m =>
+                    (isAcademy2 && (
+                        m.Region.Division.TournamentId == 35 ||
+                        m.Region.Division.TournamentId == 84 ||
+                        m.Competition.Name.StartsWith("AD"))) ||
+                    (isHomegrown2 && (
+                        new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
+                        !m.Competition.Name.StartsWith("AD"))));
+            }
+
+            var programTeamIds = await programScopeQuery
+                .SelectMany(m => new[] { m.HomeTeamId, m.AwayTeamId })
+                .Distinct()
+                .ToListAsync();
+
             var allElosForAgeGroups = await _context.TeamAgeGroupElos
-                .Where(e => ageGroupIds.Contains(e.AgeGroupId))
+                .Where(e => ageGroupIds.Contains(e.AgeGroupId) &&
+                            (!programs.Any() || programTeamIds.Contains(e.TeamId)))
                 .ToListAsync();
 
             var rankLookup = new Dictionary<(int teamId, int ageGroupId), (int rank, int total)>();
