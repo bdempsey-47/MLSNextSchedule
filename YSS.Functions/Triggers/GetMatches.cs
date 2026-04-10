@@ -163,8 +163,6 @@ public class GetMatches
             // Compute ELO ranks scoped to the requested program(s) + age groups
             // to avoid mixing Academy and Homegrown rankings together
             IQueryable<YSS.Data.Entities.Match> programScopeQuery = _context.Matches
-                .Include(m => m.Region).ThenInclude(r => r.Division)
-                .Include(m => m.Competition)
                 .Where(m => ageGroupIds.Contains(m.AgeGroupId));
 
             if (programs.Any())
