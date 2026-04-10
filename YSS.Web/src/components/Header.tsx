@@ -1,5 +1,6 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Menu } from 'lucide-react'
+import ysiLogo from '../../images/ysi_logo.png'
 import './Header.css'
 
 interface HeaderProps {
@@ -18,11 +19,12 @@ function Header({ onMenuClick }: HeaderProps) {
       case '/Analytics':
         return 'Analytics'
       default:
-        return ''
+        return 'Home'
     }
   }
 
   const pageTitle = getPageTitle()
+  const navigate = useNavigate()
 
   return (
     <header className="app-header">
@@ -31,7 +33,7 @@ function Header({ onMenuClick }: HeaderProps) {
           <Menu size={24} />
         </button>
         <h1 className="header-title">
-          YSI
+          <img src={ysiLogo} alt="YSI" title="Youth Soccer Intelligence" className="header-logo" onClick={() => navigate('/')} />
           {pageTitle && <span className="header-subtitle"> - {pageTitle}</span>}
         </h1>
       </div>
