@@ -183,8 +183,8 @@ public class GetMatches
             }
 
             var programTeamIds = await programScopeQuery
-                .SelectMany(m => new[] { m.HomeTeamId, m.AwayTeamId })
-                .Distinct()
+                .Select(m => m.HomeTeamId)
+                .Union(programScopeQuery.Select(m => m.AwayTeamId))
                 .ToListAsync();
 
             var allElosForAgeGroups = await _context.TeamAgeGroupElos
