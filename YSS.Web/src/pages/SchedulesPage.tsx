@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AlertCircle, Loader2, SearchX } from 'lucide-react'
 import LeagueSelector from '../components/LeagueSelector'
 import ProgramSelector from '../components/ProgramSelector'
@@ -27,6 +27,7 @@ function SchedulesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
   const [paginationState, setPaginationState] = useState({ totalCount: 0, pageSize: 100, offset: 0, hasMore: false })
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Load matches whenever program or season changes, preserving current filter state
   useEffect(() => {
@@ -141,6 +142,13 @@ function SchedulesPage() {
       return
     }
 
+    // Cancel any in-flight request (only for fresh fetches, not load-more appends)
+    if (!appendResults) {
+      abortControllerRef.current?.abort()
+      abortControllerRef.current = new AbortController()
+    }
+    const signal = abortControllerRef.current?.signal
+
     try {
       setLoading(true)
       setError('')
@@ -200,7 +208,7 @@ function SchedulesPage() {
 
       console.log('📡 Fetching from:', `${apiBase}/matches?${params.toString()}`)
       try {
-        const response = await fetch(`${apiBase}/matches?${params.toString()}`)
+        const response = await fetch(`${apiBase}/matches?${params.toString()}`, { signal })
         console.log('✅ API Response status:', response.status)
 
         if (!response.ok) throw new Error('Failed to fetch matches')
@@ -228,6 +236,7 @@ function SchedulesPage() {
           setMatches(transformedMatches || [])
         }
       } catch (fetchErr) {
+        if (fetchErr instanceof Error && fetchErr.name === 'AbortError') return
         console.warn('API unavailable, using mock data:', fetchErr)
         let filteredMock = [...mockMatches]
 
