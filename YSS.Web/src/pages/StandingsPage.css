@@ -324,6 +324,15 @@
   text-align: center;
 }
 
+.team-match-row.unplayed {
+  opacity: 0.6;
+}
+
+.team-match-row.unplayed .match-score {
+  font-weight: 400;
+  color: var(--color-text-muted, #888);
+}
+
 @media (max-width: 400px) {
   .match-home, .match-away { max-width: 130px; }
 }

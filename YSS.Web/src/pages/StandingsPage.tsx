@@ -445,20 +445,20 @@ function StandingsPage() {
                               ) : (
                                 <ul className="team-matches-list">
                                   {(teamMatchesCache[teamKey] ?? [])
-                                    .filter(m => m.score && m.score !== 'TBD'
-                                      && m.competition.name !== 'MLS NEXT Flex (Regular Season)'
+                                    .filter(m => m.competition.name !== 'MLS NEXT Flex (Regular Season)'
                                       && m.region.name === group.regionName)
                                     .sort((a, b) => new Date(a.matchDateUtc).getTime() - new Date(b.matchDateUtc).getTime())
                                     .map(m => {
                                       const date = new Date(m.matchDateUtc).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                      const isPlayed = m.score && m.score !== 'TBD'
                                       return (
-                                        <li key={m.matchId} className="team-match-row">
+                                        <li key={m.matchId} className={`team-match-row${isPlayed ? '' : ' unplayed'}`}>
                                           <span className="match-date">{date}</span>
                                           <span className="match-home">
                                             <span className="match-name">{m.homeTeam.name.trim()}</span>
                                             {m.homeTeam.logoUrl && <img src={m.homeTeam.logoUrl} alt="" className="match-logo" />}
                                           </span>
-                                          <span className="match-score">{m.score}</span>
+                                          <span className="match-score">{isPlayed ? m.score : '-VS-'}</span>
                                           <span className="match-away">
                                             {m.awayTeam.logoUrl && <img src={m.awayTeam.logoUrl} alt="" className="match-logo" />}
                                             <span className="match-name">{m.awayTeam.name.trim()}</span>
