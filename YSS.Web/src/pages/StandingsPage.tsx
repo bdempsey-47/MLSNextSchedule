@@ -373,7 +373,7 @@ function StandingsPage() {
                       <th className="col-team">Team</th>
                       <th className="col-gp">GP</th>
                       <th className="col-record">W-D-L</th>
-                      <th className="col-sors" title="Strength of Remaining Schedule: average points per game (PPG) of upcoming opponents. Higher = tougher remaining schedule.">SORS</th>
+                      <th className="col-sors" title="Strength of Remaining Schedule: average points per game (PPG) of upcoming opponents within this region. Higher = tougher remaining schedule.">SORS</th>
                       <th className="col-goals" title={selectedProgram === 'homegrown' ? "Goals For per Match" : "Goals For"}>
                         {selectedProgram === 'homegrown' ? 'GF/M' : 'GF'}
                       </th>

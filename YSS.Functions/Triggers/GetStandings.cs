@@ -412,13 +412,18 @@ public class GetStandings
             .Where(m => m.Score == null || m.Score == "" || m.Score == "TBD")
             .ToList();
 
-        var teamPpg = BuildTeamPpgByName(completedMatches);
-
         foreach (var group in groups)
         {
+            // Scope both PPG and remaining matches to this region so SORS matches
+            // what the user sees in the regional standings table.
+            var regionCompleted = completedMatches
+                .Where(m => m.Region.Name == group.RegionName)
+                .ToList();
             var regionRemaining = remainingMatches
                 .Where(m => m.Region.Name == group.RegionName)
                 .ToList();
+
+            var teamPpg = BuildTeamPpgByName(regionCompleted);
 
             foreach (var row in group.Standings)
             {
