@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using YSS.Data;
 using YSS.Data.Entities;
 using YSS.Ingestion.Models;
+using YSS.Constants;
 
 namespace YSS.Ingestion.Services;
 
@@ -143,10 +144,10 @@ public class MatchUpsertService
 
     private static string DeriveProgram(int tournamentId, string competitionName)
     {
-        if (competitionName.StartsWith("AD")) return "AG";
-        if (tournamentId == 35) return "AG";
-        if (tournamentId == 84) return "AG";  // NJ Cup Qualifier
-        return "HG";
+        if (competitionName.StartsWith("AD")) return ProgramConstants.Academy;
+        if (tournamentId == int.Parse(TournamentConstants.AcademyTournamentId)) return ProgramConstants.Academy;
+        if (tournamentId == TournamentConstants.NjCupQualifierTournamentId) return ProgramConstants.Academy;  // NJ Cup Qualifier
+        return ProgramConstants.Homegrown;
     }
 
     private async Task<Team> LookupOrCreateTeamAsync(string name, string? logoUrl, string program, CancellationToken ct)
@@ -211,13 +212,13 @@ public class MatchUpsertService
         if (_divisionCache.TryGetValue(tournamentId, out var cached))
             return cached;
 
-        // Map tournament ID to division name: 12=Homegrown, 35=Academy, 75=FEST (Homegrown), 84=NJ Cup
+        // Map tournament ID to division name
         var divisionName = tournamentId switch
         {
-            12 => "Homegrown",
-            35 => "Academy",
+            _ when tournamentId == int.Parse(TournamentConstants.HomegrownTournamentId) => "Homegrown",
+            _ when tournamentId == int.Parse(TournamentConstants.AcademyTournamentId) => "Academy",
             75 => "Homegrown",    // FEST (Pro Player Pathway)
-            84 => "Academy",      // NJ Cup Qualifier
+            _ when tournamentId == TournamentConstants.NjCupQualifierTournamentId => "Academy",  // NJ Cup Qualifier
             _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };
 

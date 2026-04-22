@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text;
 using System.Text.Json.Serialization;
+using YSS.Constants;
 
 namespace YSS.Functions.Triggers
 {
@@ -47,7 +48,7 @@ namespace YSS.Functions.Triggers
             var program = req.Query["program"];
 
             // Minimum 2 characters to avoid overly broad queries
-            if (query.Length < 2)
+            if (query.Length < ValidationConstants.MinSearchQueryLength)
             {
                 _logger.LogDebug($"Search query too short: {query.Length} chars");
                 var briefResponse = req.CreateResponse();

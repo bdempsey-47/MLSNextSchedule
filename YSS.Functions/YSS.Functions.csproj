@@ -23,5 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\YSS.Data\YSS.Data.csproj" />
     <ProjectReference Include="..\YSS.Ingestion\YSS.Ingestion.csproj" />
+    <ProjectReference Include="..\YSS.Constants\YSS.Constants.csproj" />
   </ItemGroup>
 </Project>

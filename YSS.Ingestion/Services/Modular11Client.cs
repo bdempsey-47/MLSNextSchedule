@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using YSS.Constants;
 
 namespace YSS.Ingestion.Services;
 
@@ -13,8 +14,8 @@ public class Modular11Client
     private readonly HttpClient _httpClient;
     private readonly ILogger<Modular11Client> _logger;
     private readonly Modular11Settings _settings;
-    private const int MinThrottleMilliseconds = 1000;
-    private const int MaxThrottleMilliseconds = 3000;
+    private const int MinThrottleMilliseconds = Modular11ApiConstants.MinThrottleMilliseconds;
+    private const int MaxThrottleMilliseconds = Modular11ApiConstants.MaxThrottleMilliseconds;
 
     public Modular11Client(HttpClient httpClient, ILogger<Modular11Client> logger, Modular11Settings settings)
     {

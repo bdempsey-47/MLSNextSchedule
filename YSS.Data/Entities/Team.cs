@@ -2,6 +2,7 @@ namespace YSS.Data.Entities;
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using YSS.Constants;
 
 public class Team
 {
@@ -9,7 +10,7 @@ public class Team
     public required string Name { get; set; }
     public required string Program { get; set; }  // "AG" or "HG"
     public string? LogoUrl { get; set; }  // CloudFront CDN URL from Modular11
-    public int EloRating { get; set; } = 1500;
+    public int EloRating { get; set; } = EloConstants.DefaultEloRating;
 
     // Navigation
     [JsonIgnore]

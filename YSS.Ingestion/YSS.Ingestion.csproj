@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YSS.Data\YSS.Data.csproj" />
+    <ProjectReference Include="..\YSS.Constants\YSS.Constants.csproj" />
   </ItemGroup>
 
   <ItemGroup>
