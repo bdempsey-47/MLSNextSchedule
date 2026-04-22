@@ -374,6 +374,12 @@
   font-weight: 500;
 }
 
+.col-sors {
+  width: 55px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
 .col-goals {
   width: 45px;
   text-align: center;
@@ -539,6 +545,10 @@
 
   .col-wpm, .col-gdpm { width: 50px; }
 
+  .col-sors {
+    width: 48px;
+  }
+
   .col-ppm {
     width: 55px;
     font-size: 0.85rem;
@@ -577,6 +587,10 @@
   .col-wpm,
   .col-gdpm {
     width: 45px;
+  }
+
+  .col-sors {
+    width: 42px;
   }
 
   .col-ppm {

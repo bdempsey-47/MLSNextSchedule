@@ -118,6 +118,7 @@ function StandingsPage() {
               w:        row.W        ?? row.w        ?? 0,
               d:        row.D        ?? row.d        ?? 0,
               l:        row.L        ?? row.l        ?? 0,
+              sors:     row.Sors     ?? row.sors     ?? 0,
               gf:       row.GF       ?? row.gf       ?? 0,
               ga:       row.GA       ?? row.ga       ?? 0,
               gd:       row.GD       ?? row.gd       ?? 0,
@@ -372,6 +373,7 @@ function StandingsPage() {
                       <th className="col-team">Team</th>
                       <th className="col-gp">GP</th>
                       <th className="col-record">W-D-L</th>
+                      <th className="col-sors" title="Strength of Remaining Schedule: average points per game (PPG) of upcoming opponents. Higher = tougher remaining schedule.">SORS</th>
                       <th className="col-goals" title={selectedProgram === 'homegrown' ? "Goals For per Match" : "Goals For"}>
                         {selectedProgram === 'homegrown' ? 'GF/M' : 'GF'}
                       </th>
@@ -411,6 +413,7 @@ function StandingsPage() {
                           </td>
                           <td className="col-gp">{row.gp}</td>
                           <td className="col-record">{row.w}-{row.d}-{row.l}</td>
+                          <td className="col-sors">{typeof row.sors === 'number' ? row.sors.toFixed(2) : row.sors}</td>
                           <td className="col-goals">
                             {selectedProgram === 'homegrown' ? row.gf.toFixed(2) : row.gf}
                           </td>
@@ -435,7 +438,7 @@ function StandingsPage() {
 
                         {expandedTeam === teamKey && (
                           <tr className="team-matches-expansion">
-                            <td colSpan={selectedProgram === 'homegrown' ? 9 : 12}>
+                            <td colSpan={selectedProgram === 'homegrown' ? 10 : 13}>
                               {teamMatchesLoading === teamKey ? (
                                 <div className="team-matches-loading">
                                   <div className="standings-spinner small" /> Loading matches…

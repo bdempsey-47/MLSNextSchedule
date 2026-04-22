@@ -5,12 +5,15 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using System.Web;
+using YSS.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace YSS.Functions.Triggers;
 
 public class GetStandings
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly AppDbContext _context;
     private readonly ILogger _logger;
 
     // Maps our age group display names to Modular11's UID_age parameter
@@ -32,9 +35,10 @@ public class GetStandings
     private static readonly Regex RegionNameRegex =
         new(@"U\d+\s+(.+?)\s+Division", RegexOptions.Compiled);
 
-    public GetStandings(IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+    public GetStandings(IHttpClientFactory httpClientFactory, AppDbContext context, ILoggerFactory loggerFactory)
     {
         _httpClientFactory = httpClientFactory;
+        _context = context;
         _logger = loggerFactory.CreateLogger<GetStandings>();
     }
 
@@ -102,6 +106,7 @@ public class GetStandings
             else
             {
                 var groups = ParseStandings(html);
+                await ComputeSorsAsync(groups, program, ageGroup);
                 _logger.LogInformation("Parsed {Count} standing groups", groups.Count);
                 await response.WriteAsJsonAsync(new { Type = "standings", Groups = groups });
             }
@@ -369,6 +374,7 @@ public class GetStandings
         public int W { get; set; }
         public int D { get; set; }
         public int L { get; set; }
+        public decimal Sors { get; set; }
         public decimal GF { get; set; }
         public decimal GA { get; set; }
         public decimal GD { get; set; }
@@ -377,5 +383,111 @@ public class GetStandings
         public decimal WPM { get; set; }
         public decimal GDPM { get; set; }
         public decimal GPM { get; set; }
+    }
+
+    private async Task ComputeSorsAsync(List<StandingsGroupDto> groups, string program, string ageGroup)
+    {
+        var isAcademy   = program.Equals("academy",   StringComparison.OrdinalIgnoreCase);
+        var isHomegrown = program.Equals("homegrown", StringComparison.OrdinalIgnoreCase);
+
+        var allMatches = await _context.Matches
+            .Include(m => m.HomeTeam)
+            .Include(m => m.AwayTeam)
+            .Include(m => m.AgeGroup)
+            .Include(m => m.Region)
+                .ThenInclude(r => r.Division)
+            .Include(m => m.Competition)
+            .Where(m =>
+                (isAcademy
+                    ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
+                    : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
+                m.AgeGroup.Name == ageGroup &&
+                m.Competition.Name != "MLS NEXT Flex (Regular Season)")
+            .ToListAsync();
+
+        var completedMatches = allMatches
+            .Where(m => m.Score != null && m.Score != "" && m.Score != "TBD")
+            .ToList();
+        var remainingMatches = allMatches
+            .Where(m => m.Score == null || m.Score == "" || m.Score == "TBD")
+            .ToList();
+
+        var teamPpg = BuildTeamPpgByName(completedMatches);
+
+        foreach (var group in groups)
+        {
+            var regionRemaining = remainingMatches
+                .Where(m => m.Region.Name == group.RegionName)
+                .ToList();
+
+            foreach (var row in group.Standings)
+            {
+                var name = row.TeamName.Trim();
+
+                var opponentNames = regionRemaining
+                    .Where(m =>
+                        string.Equals(m.HomeTeam.Name.Trim(), name, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(m.AwayTeam.Name.Trim(), name, StringComparison.OrdinalIgnoreCase))
+                    .Select(m =>
+                        string.Equals(m.HomeTeam.Name.Trim(), name, StringComparison.OrdinalIgnoreCase)
+                            ? m.AwayTeam.Name.Trim()
+                            : m.HomeTeam.Name.Trim())
+                    .ToList();
+
+                if (opponentNames.Count == 0)
+                {
+                    row.Sors = 0m;
+                    continue;
+                }
+
+                var opponentPpgs = opponentNames
+                    .Select(n => teamPpg.TryGetValue(n.ToLowerInvariant(), out var ppg) ? ppg : 0.0)
+                    .ToList();
+
+                row.Sors = (decimal)Math.Round(opponentPpgs.Average(), 2);
+            }
+        }
+    }
+
+    private static Dictionary<string, double> BuildTeamPpgByName(List<YSS.Data.Entities.Match> completedMatches)
+    {
+        var wins   = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var draws  = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var played = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var m in completedMatches)
+        {
+            if (!TryParseScore(m.Score!, out var homeGoals, out var awayGoals)) continue;
+
+            var home = m.HomeTeam.Name.Trim();
+            var away = m.AwayTeam.Name.Trim();
+
+            foreach (var t in new[] { home, away })
+            {
+                if (!played.ContainsKey(t)) { played[t] = 0; wins[t] = 0; draws[t] = 0; }
+            }
+
+            played[home]++; played[away]++;
+
+            if (homeGoals > awayGoals)      wins[home]++;
+            else if (homeGoals < awayGoals) wins[away]++;
+            else                            { draws[home]++; draws[away]++; }
+        }
+
+        return played
+            .Where(kvp => kvp.Value > 0)
+            .ToDictionary(
+                kvp => kvp.Key.ToLowerInvariant(),
+                kvp => (double)(wins[kvp.Key] * 3 + draws[kvp.Key]) / kvp.Value);
+    }
+
+    private static bool TryParseScore(string score, out int homeScore, out int awayScore)
+    {
+        homeScore = 0; awayScore = 0;
+        if (string.IsNullOrWhiteSpace(score)) return false;
+        var parts = score.Split('-');
+        if (parts.Length != 2) return false;
+        return int.TryParse(parts[0].Trim(), out homeScore) &&
+               int.TryParse(parts[1].Trim(), out awayScore);
     }
 }

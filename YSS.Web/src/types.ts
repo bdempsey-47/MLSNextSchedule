@@ -68,6 +68,7 @@ export interface StandingRow {
   w: number
   d: number
   l: number
+  sors: number
   gf: number
   ga: number
   gd: number
