@@ -28,9 +28,10 @@ public class GetPowerRankings
             var queryParams = HttpUtility.ParseQueryString(req.Url.Query);
             var program  = queryParams["program"]  ?? string.Empty;
             var ageGroup = queryParams["ageGroup"] ?? string.Empty;
+            var region   = queryParams["region"]   ?? string.Empty;
 
-            _logger.LogInformation("GetPowerRankings called: program={Program}, ageGroup={AgeGroup}",
-                program, ageGroup);
+            _logger.LogInformation("GetPowerRankings called: program={Program}, ageGroup={AgeGroup}, region={Region}",
+                program, ageGroup, region ?? "(all)");
 
             if (string.IsNullOrEmpty(program) || string.IsNullOrEmpty(ageGroup))
                 return await BadRequest(req, "Missing required parameters: program, ageGroup");
@@ -57,7 +58,8 @@ public class GetPowerRankings
                         : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD" &&
-                    m.MatchDateUtc >= oneYearAgo)
+                    m.MatchDateUtc >= oneYearAgo &&
+                    (string.IsNullOrEmpty(region) || m.Region.Name == region))
                 .OrderBy(m => m.MatchDateUtc)
                 .ToListAsync();
 

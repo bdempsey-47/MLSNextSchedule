@@ -124,6 +124,7 @@ function AnalyticsPage() {
         const prParams = new URLSearchParams()
         prParams.set('program', selectedProgram)
         prParams.set('ageGroup', selectedAgeGroup)
+        if (selectedRegion) prParams.set('region', selectedRegion)
 
         const [analyticsRes, prRes] = await Promise.all([
           fetch(`${apiBase}/analytics?${analyticsParams.toString()}`),
