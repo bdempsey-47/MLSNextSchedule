@@ -16,7 +16,7 @@ interface CombinedTeamRow {
   momentumScore: number
   eloRating: number | null
   eloDelta: number | null
-  rankChange: number | null
+  rankChange: number | null | undefined
 }
 
 function EloInfoModal({ onClose }: { onClose: () => void }) {
@@ -156,7 +156,7 @@ function AnalyticsPage() {
             regionNames: t.RegionNames ?? t.regionNames ?? [],
             eloRating:   t.EloRating   ?? t.eloRating   ?? 0,
             eloDelta:    t.EloDelta    ?? t.eloDelta    ?? 0,
-            rankChange:  t.RankChange  ?? t.rankChange  ?? 0,
+            rankChange:  t.RankChange  !== undefined ? (t.RankChange ?? t.rankChange) : null,
             gp:          t.GP          ?? t.gp          ?? 0,
           }))
           setPowerRankings(rankings)
@@ -412,7 +412,7 @@ function AnalyticsPage() {
                       )}
                     </td>
                     <td className="col-rank-change">
-                      {team.rankChange != null ? (
+                      {team.rankChange !== null && team.rankChange !== undefined ? (
                         <span className={`rank-change ${team.rankChange > 0 ? 'positive' : team.rankChange < 0 ? 'negative' : 'neutral'}`}>
                           {team.rankChange > 0 ? '↑' : team.rankChange < 0 ? '↓' : '–'}{' '}
                           {team.rankChange > 0 ? '+' : ''}{team.rankChange}

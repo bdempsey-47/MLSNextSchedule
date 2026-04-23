@@ -100,7 +100,10 @@ public class GetPowerRankings
                 : new List<YSS.Data.Entities.TeamAgeGroupElo>();
 
             var currentEloDict = storedElos.ToDictionary(e => e.TeamId, e => e.EloRating);
-            var previousEloDict = storedElos.ToDictionary(e => e.TeamId, e => e.PreviousEloRating ?? 1500);
+            var teamsWithHistory = storedElos.Where(e => e.PreviousEloRating.HasValue).Select(e => e.TeamId).ToHashSet();
+            var previousEloDict = storedElos
+                .Where(e => e.PreviousEloRating.HasValue)
+                .ToDictionary(e => e.TeamId, e => e.PreviousEloRating.Value);
 
             // Rank all eligible teams by current ELO
             var eligibleTeamIds = teamInfo.Where(kvp => kvp.Value.GP >= 3).Select(kvp => kvp.Key).ToHashSet();
@@ -110,7 +113,7 @@ public class GetPowerRankings
                 .Select((kvp, idx) => new { kvp.Key, Rank = idx + 1 })
                 .ToDictionary(x => x.Key, x => x.Rank);
 
-            // Rank all eligible teams by previous ELO
+            // Rank only teams with history by previous ELO
             var previousRanks = previousEloDict
                 .Where(kvp => eligibleTeamIds.Contains(kvp.Key))
                 .OrderByDescending(kvp => kvp.Value)
@@ -129,8 +132,9 @@ public class GetPowerRankings
                         ? Math.Round(state.RecentDeltas.Sum(), 1)
                         : 0.0;
                     var currentRank = currentRanks.GetValueOrDefault(teamId, 0);
-                    var previousRank = previousRanks.GetValueOrDefault(teamId, currentRank);
-                    var rankChange = previousRank - currentRank;
+                    var rankChange = teamsWithHistory.Contains(teamId)
+                        ? (int?)(previousRanks.GetValueOrDefault(teamId, currentRank) - currentRank)
+                        : null;
 
                     return new PowerRankingDto
                     {
@@ -202,7 +206,7 @@ public class GetPowerRankings
         public List<string> RegionNames { get; set; } = new();
         public int EloRating { get; set; }
         public double EloDelta { get; set; }
-        public int RankChange { get; set; }
+        public int? RankChange { get; set; }
         public int GP { get; set; }
     }
 }

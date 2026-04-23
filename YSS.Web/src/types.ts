@@ -92,7 +92,7 @@ export interface PowerRanking {
   regionNames: string[]
   eloRating: number
   eloDelta: number
-  rankChange: number
+  rankChange: number | null
   gp: number
 }
 
