@@ -96,29 +96,52 @@ public class GetPowerRankings
             var storedElos = ageGroupEntity != null
                 ? await _context.TeamAgeGroupElos
                     .Where(e => e.AgeGroupId == ageGroupEntity.Id)
-                    .ToDictionaryAsync(e => e.TeamId, e => e.EloRating)
-                : new Dictionary<int, int>();
+                    .ToListAsync()
+                : new List<YSS.Data.Entities.TeamAgeGroupElo>();
 
-            // Build rankings using stored ELO with on-the-fly deltas
+            var currentEloDict = storedElos.ToDictionary(e => e.TeamId, e => e.EloRating);
+            var previousEloDict = storedElos.ToDictionary(e => e.TeamId, e => e.PreviousEloRating ?? 1500);
+
+            // Rank all eligible teams by current ELO
+            var eligibleTeamIds = teamInfo.Where(kvp => kvp.Value.GP >= 3).Select(kvp => kvp.Key).ToHashSet();
+            var currentRanks = currentEloDict
+                .Where(kvp => eligibleTeamIds.Contains(kvp.Key))
+                .OrderByDescending(kvp => kvp.Value)
+                .Select((kvp, idx) => new { kvp.Key, Rank = idx + 1 })
+                .ToDictionary(x => x.Key, x => x.Rank);
+
+            // Rank all eligible teams by previous ELO
+            var previousRanks = previousEloDict
+                .Where(kvp => eligibleTeamIds.Contains(kvp.Key))
+                .OrderByDescending(kvp => kvp.Value)
+                .Select((kvp, idx) => new { kvp.Key, Rank = idx + 1 })
+                .ToDictionary(x => x.Key, x => x.Rank);
+
+            // Build rankings using stored ELO with rank deltas
             var rankings = teamInfo
                 .Where(kvp => kvp.Value.GP >= 3)
                 .Select(kvp =>
                 {
                     var teamId = kvp.Key;
                     var info = kvp.Value;
-                    var elo = storedElos.GetValueOrDefault(teamId, 1500);
+                    var elo = currentEloDict.GetValueOrDefault(teamId, 1500);
                     var delta = eloResults.TryGetValue(teamId, out var state)
                         ? Math.Round(state.RecentDeltas.Sum(), 1)
                         : 0.0;
+                    var currentRank = currentRanks.GetValueOrDefault(teamId, 0);
+                    var previousRank = previousRanks.GetValueOrDefault(teamId, currentRank);
+                    var rankChange = previousRank - currentRank;
+
                     return new PowerRankingDto
                     {
-                        Rank        = 0,
+                        Rank        = currentRank,
                         TeamName    = info.Name,
                         LogoUrl     = info.LogoUrl,
                         RegionName  = info.PrimaryRegion,
                         RegionNames = info.RegionNames.OrderBy(x => x).ToList(),
                         EloRating   = elo,
                         EloDelta    = delta,
+                        RankChange  = rankChange,
                         GP          = info.GP
                     };
                 })
@@ -179,6 +202,7 @@ public class GetPowerRankings
         public List<string> RegionNames { get; set; } = new();
         public int EloRating { get; set; }
         public double EloDelta { get; set; }
+        public int RankChange { get; set; }
         public int GP { get; set; }
     }
 }

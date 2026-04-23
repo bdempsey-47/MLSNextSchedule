@@ -246,6 +246,11 @@
   text-align: center;
 }
 
+.analytics-table .col-rank-change {
+  width: 80px;
+  text-align: center;
+}
+
 .elo-rating {
   font-weight: 700;
   font-size: 0.95rem;
@@ -259,6 +264,15 @@
 .elo-delta.positive { color: #16a34a; }
 .elo-delta.negative { color: #dc2626; }
 .elo-delta.neutral  { color: var(--color-text-secondary); }
+
+.rank-change {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.rank-change.positive { color: #16a34a; }
+.rank-change.negative { color: #dc2626; }
+.rank-change.neutral  { color: var(--color-text-secondary); }
 
 .elo-na {
   color: var(--color-text-secondary);

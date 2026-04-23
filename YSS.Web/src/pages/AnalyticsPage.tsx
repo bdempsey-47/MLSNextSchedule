@@ -16,6 +16,7 @@ interface CombinedTeamRow {
   momentumScore: number
   eloRating: number | null
   eloDelta: number | null
+  rankChange: number | null
 }
 
 function EloInfoModal({ onClose }: { onClose: () => void }) {
@@ -155,6 +156,7 @@ function AnalyticsPage() {
             regionNames: t.RegionNames ?? t.regionNames ?? [],
             eloRating:   t.EloRating   ?? t.eloRating   ?? 0,
             eloDelta:    t.EloDelta    ?? t.eloDelta    ?? 0,
+            rankChange:  t.RankChange  ?? t.rankChange  ?? 0,
             gp:          t.GP          ?? t.gp          ?? 0,
           }))
           setPowerRankings(rankings)
@@ -247,6 +249,7 @@ function AnalyticsPage() {
       momentumScore: team.momentumScore,
       eloRating: elo?.eloRating ?? null,
       eloDelta: elo?.eloDelta ?? null,
+      rankChange: elo?.rankChange ?? null,
     }
   }).sort((a, b) => {
     // Teams with ELO first, sorted descending; teams without ELO at the bottom by momentum
@@ -349,6 +352,7 @@ function AnalyticsPage() {
                 <th className="col-momentum">Momentum</th>
                 <th className="col-elo">ELO <button className="elo-info-btn" onClick={() => setShowEloInfo(true)} title="How ELO works">?</button></th>
                 <th className="col-delta">Δ</th>
+                <th className="col-rank-change">↑↓</th>
               </tr>
             </thead>
             <tbody>
@@ -407,11 +411,21 @@ function AnalyticsPage() {
                         <span className="elo-na">—</span>
                       )}
                     </td>
+                    <td className="col-rank-change">
+                      {team.rankChange != null ? (
+                        <span className={`rank-change ${team.rankChange > 0 ? 'positive' : team.rankChange < 0 ? 'negative' : 'neutral'}`}>
+                          {team.rankChange > 0 ? '↑' : team.rankChange < 0 ? '↓' : '–'}{' '}
+                          {team.rankChange > 0 ? '+' : ''}{team.rankChange}
+                        </span>
+                      ) : (
+                        <span className="elo-na">—</span>
+                      )}
+                    </td>
                   </tr>
 
                   {expandedTeam === team.teamName && (
                     <tr className="team-matches-expansion">
-                      <td colSpan={9}>
+                      <td colSpan={10}>
                         {teamMatchesLoading === team.teamName ? (
                           <div className="team-matches-loading">
                             <div className="analytics-spinner small" /> Loading matches…

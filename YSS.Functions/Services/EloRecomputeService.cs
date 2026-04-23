@@ -91,12 +91,21 @@ public class EloRecomputeService
         var created = 0;
         var updated = 0;
 
+        var now = DateTime.UtcNow;
+        var sixDaysAgo = now.AddDays(-6);
+
         foreach (var ((teamId, ageGroupId), rating) in allRatings)
         {
             if (existingLookup.TryGetValue((teamId, ageGroupId), out var elo))
             {
                 if (elo.EloRating != rating)
                 {
+                    // Snapshot previous rating if not already snapshotted or older than 6 days
+                    if (elo.PreviousEloSnapshotAt == null || elo.PreviousEloSnapshotAt < sixDaysAgo)
+                    {
+                        elo.PreviousEloRating = elo.EloRating;
+                        elo.PreviousEloSnapshotAt = now;
+                    }
                     elo.EloRating = rating;
                     updated++;
                 }
