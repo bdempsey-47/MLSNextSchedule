@@ -11,9 +11,10 @@ interface FilterBarProps {
   selectedAgeGroups: string[]
   initialTeam?: string
   onFiltersChange: (region: string, team: string, ageGroups: string[]) => void
+  onLoadingChange?: (isLoading: boolean) => void
 }
 
-export default function FilterBar({ programs, seasons, region, selectedAgeGroups, initialTeam = '', onFiltersChange }: FilterBarProps) {
+export default function FilterBar({ programs, seasons, region, selectedAgeGroups, initialTeam = '', onFiltersChange, onLoadingChange }: FilterBarProps) {
   const [teamSearch, setTeamSearch] = useState(initialTeam)
   const [showSuggestions, setShowSuggestions] = useState(false)
 
@@ -35,6 +36,8 @@ export default function FilterBar({ programs, seasons, region, selectedAgeGroups
   const [regions, setRegions] = useState<any[]>([])
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => { onLoadingChange?.(loading) }, [loading])
 
   // Map programs to division names for filtering
   const getDivisionNamesForPrograms = (progs: Program[]): string[] => {

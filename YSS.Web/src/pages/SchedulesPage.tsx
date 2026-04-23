@@ -27,6 +27,7 @@ function SchedulesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
   const [paginationState, setPaginationState] = useState({ totalCount: 0, pageSize: 100, offset: 0, hasMore: false })
+  const [filtersLoading, setFiltersLoading] = useState(true)
   const abortControllerRef = useRef<AbortController | null>(null)
 
   // Load matches whenever program or season changes, preserving current filter state
@@ -303,6 +304,7 @@ function SchedulesPage() {
         selectedAgeGroups={selectedAgeGroups}
         initialTeam={selectedTeam}
         onFiltersChange={handleFilterChange}
+        onLoadingChange={setFiltersLoading}
       />
 
       {error && (
@@ -322,8 +324,10 @@ function SchedulesPage() {
       {!loading && matches.length === 0 && !error && (
         <div className="no-matches">
           <SearchX size={48} />
-          <p>Select filters to view matches</p>
-          <span className="no-matches-hint">Choose a program and season above to get started</span>
+          <p>{filtersLoading ? 'Fetching data…' : 'Select filters to view matches'}</p>
+          <span className="no-matches-hint">
+            {filtersLoading ? 'Loading regions and age groups' : 'Choose a program and season above to get started'}
+          </span>
         </div>
       )}
 
