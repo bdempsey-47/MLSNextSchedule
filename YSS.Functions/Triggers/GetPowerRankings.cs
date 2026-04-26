@@ -115,11 +115,15 @@ public class GetPowerRankings
                 .Select((kvp, idx) => new { kvp.Key, Rank = idx + 1 })
                 .ToDictionary(x => x.Key, x => x.Rank);
 
-            // Rank only teams with history by previous ELO
-            var previousRanks = previousEloDict
-                .Where(kvp => eligibleTeamIds.Contains(kvp.Key))
-                .OrderByDescending(kvp => kvp.Value)
-                .Select((kvp, idx) => new { kvp.Key, Rank = idx + 1 })
+            // Rank ALL eligible teams by previous ELO — use stored snapshot if available, current ELO otherwise.
+            // This ensures previous ranks and current ranks are on the same scale (same pool size).
+            var previousRanks = eligibleTeamIds
+                .Select(teamId => new {
+                    Key = teamId,
+                    PrevElo = previousEloDict.TryGetValue(teamId, out var prevElo) ? prevElo : currentEloDict.GetValueOrDefault(teamId, 1500)
+                })
+                .OrderByDescending(x => x.PrevElo)
+                .Select((x, idx) => new { x.Key, Rank = idx + 1 })
                 .ToDictionary(x => x.Key, x => x.Rank);
 
             // Build rankings using stored ELO with rank deltas
