@@ -1,9 +1,7 @@
 # Project Todos
 
 ## Standings Page
-- [ ] Add "Strength of Remaining Schedule" stat to Standings table
-  - Calculate average ELO of remaining opponents
-  - Display per team in standings view
+- [x] Add "Strength of Remaining Schedule" (SORS) column — done April 22, 2026
 
 ## Analytics & Rankings
 - [ ] ELO Power Rankings (cross-region leaderboard)
@@ -17,6 +15,14 @@
 - [ ] Copy team logos to Azure Blob Storage
   - Remove dependency on Modular11 CDN
   - Update Team.LogoUrl to point to blob URLs
+
+## Homepage Stats
+- [ ] Road Warriors leaderboard
+  - Teams that win away more than at home
+  - Metric: away GD minus home GD (per match to normalize game counts)
+  - Filter: only teams with meaningful away sample (e.g. >= 3 away games played)
+  - Backend: compute from match data in GetHomepageStats or dedicated section
+  - Display: ranked list on homepage, similar to ELO leaderboard cards
 
 ## UI/UX
 - [ ] Mobile UI improvements
