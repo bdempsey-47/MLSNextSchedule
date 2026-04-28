@@ -118,3 +118,6 @@ To-Fix.md
 # PNG files (except assets in YSS.Web/images)
 *.png
 !YSS.Web/images/*.png
+
+# One-off debugging scripts
+*.csx
