@@ -37,7 +37,7 @@ public class IngestionOrchestratorIntegrationTests
             new Mock<ILogger<Modular11Client>>().Object,
             new Modular11Settings
             {
-                TournamentId = "35",
+                TournamentId = 35,
                 Gender = "1",
                 Status = "scheduled",
                 MatchType = "2",

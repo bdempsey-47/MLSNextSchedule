@@ -62,7 +62,7 @@ public class WeeklyIngestion
 
             try
             {
-                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, ageGroups: ageGroups, tournamentId: season.TournamentId);
+                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, ageGroups: ageGroups, tournamentId: season.TournamentId.ToString());
             }
             catch (Exception ex)
             {

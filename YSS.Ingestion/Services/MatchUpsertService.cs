@@ -145,7 +145,7 @@ public class MatchUpsertService
     private static string DeriveProgram(int tournamentId, string competitionName)
     {
         if (competitionName.StartsWith("AD")) return ProgramConstants.Academy;
-        if (tournamentId == int.Parse(TournamentConstants.AcademyTournamentId)) return ProgramConstants.Academy;
+        if (tournamentId == TournamentConstants.AcademyTournamentId) return ProgramConstants.Academy;
         if (tournamentId == TournamentConstants.NjCupQualifierTournamentId) return ProgramConstants.Academy;  // NJ Cup Qualifier
         return ProgramConstants.Homegrown;
     }
@@ -215,9 +215,9 @@ public class MatchUpsertService
         // Map tournament ID to division name
         var divisionName = tournamentId switch
         {
-            _ when tournamentId == int.Parse(TournamentConstants.HomegrownTournamentId) => "Homegrown",
-            _ when tournamentId == int.Parse(TournamentConstants.AcademyTournamentId) => "Academy",
-            75 => "Homegrown",    // FEST (Pro Player Pathway)
+            _ when tournamentId == TournamentConstants.HomegrownTournamentId => "Homegrown",
+            _ when tournamentId == TournamentConstants.AcademyTournamentId => "Academy",
+            _ when tournamentId == TournamentConstants.FestTournamentId => "Homegrown",    // FEST (Pro Player Pathway)
             _ when tournamentId == TournamentConstants.NjCupQualifierTournamentId => "Academy",  // NJ Cup Qualifier
             _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };

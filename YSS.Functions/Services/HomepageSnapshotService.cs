@@ -3,6 +3,7 @@ using System.Text.Json;
 using YSS.Data;
 using YSS.Data.Entities;
 using YSS.Functions.Triggers;
+using YSS.Functions.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace YSS.Functions.Services;
@@ -194,9 +195,7 @@ public class HomepageSnapshotService
 
         var programMatches = allMatches
             .Where(m => !string.IsNullOrEmpty(m.Score) && m.Score != "TBD")
-            .Where(m => isAcademy
-                ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
-                : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD")))
+            .FilterByProgram(isAcademy, !isAcademy)
             .GroupBy(m => NormalizeAgeGroup(m.AgeGroup.Name));
 
         foreach (var group in programMatches)

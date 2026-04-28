@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using YSS.Data;
 using Microsoft.EntityFrameworkCore;
+using YSS.Constants;
 
 namespace YSS.Functions.Triggers;
 
@@ -58,12 +59,10 @@ public class GetStandings
                 return await BadRequest(req, "Missing required parameters: program, ageGroup");
 
             // Program-specific Modular11 parameters
-            // Homegrown: UID_event=12, UID_gender=1, list_type=53
-            // Academy:   UID_event=35, UID_gender=3, list_type=71
             var (uidEvent, uidGender, listType, referer) = program.ToLower() switch
             {
-                "homegrown" => (12, 1, 53, "https://www.modular11.com/standings?year=21&gender=1"),
-                "academy"   => (35, 3, 71, "https://www.modular11.com/league-standings/mls-next-academy-division/21"),
+                "homegrown" => (TournamentConstants.HomegrownTournamentId, 1, 53, "https://www.modular11.com/standings?year=21&gender=1"),
+                "academy"   => (TournamentConstants.AcademyTournamentId, 3, 71, "https://www.modular11.com/league-standings/mls-next-academy-division/21"),
                 _           => (0,  0,  0,  "")
             };
             if (uidEvent == 0)
@@ -399,8 +398,8 @@ public class GetStandings
             .Include(m => m.Competition)
             .Where(m =>
                 (isAcademy
-                    ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
-                    : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
+                    ? (m.Region.Division.TournamentId == TournamentConstants.AcademyTournamentId || m.Competition.Name.StartsWith("AD"))
+                    : (new[] { TournamentConstants.HomegrownTournamentId, TournamentConstants.FestTournamentId }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
                 m.AgeGroup.Name == ageGroup &&
                 m.Competition.Name != "MLS NEXT Flex (Regular Season)")
             .ToListAsync();

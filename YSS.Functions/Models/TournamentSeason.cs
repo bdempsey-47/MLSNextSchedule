@@ -1,7 +1,7 @@
 namespace YSS.Functions.Models;
 
 public record TournamentSeason(
-    string TournamentId,
+    int TournamentId,
     string Label,
     string LeagueName,
     DateTime SeasonStart,

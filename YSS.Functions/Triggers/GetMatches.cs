@@ -2,6 +2,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using YSS.Data;
+using YSS.Functions.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Web;
 using System.Text.Json;
@@ -76,14 +77,7 @@ public class GetMatches
 
                 _logger.LogInformation("Filtering by programs: {Programs}", string.Join(", ", programs));
 
-                matches = matches.Where(m =>
-                    (isAcademy && (
-                        m.Region.Division.TournamentId == 35 ||
-                        m.Region.Division.TournamentId == 84 ||
-                        m.Competition.Name.StartsWith("AD"))) ||
-                    (isHomegrown && (
-                        new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
-                        !m.Competition.Name.StartsWith("AD"))));
+                matches = matches.FilterByProgram(isAcademy, isHomegrown);
             }
 
             // Map seasons to combined date range
@@ -170,14 +164,7 @@ public class GetMatches
                 var normalizedPrograms2 = programs.Select(p => p.ToLower()).ToList();
                 var isHomegrown2 = normalizedPrograms2.Contains("homegrown");
                 var isAcademy2 = normalizedPrograms2.Contains("academy");
-                programScopeQuery = programScopeQuery.Where(m =>
-                    (isAcademy2 && (
-                        m.Region.Division.TournamentId == 35 ||
-                        m.Region.Division.TournamentId == 84 ||
-                        m.Competition.Name.StartsWith("AD"))) ||
-                    (isHomegrown2 && (
-                        new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
-                        !m.Competition.Name.StartsWith("AD"))));
+                programScopeQuery = programScopeQuery.FilterByProgram(isAcademy2, isHomegrown2);
             }
 
             var programTeamIds = await programScopeQuery

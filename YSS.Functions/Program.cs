@@ -38,9 +38,10 @@ var host = new HostBuilder()
             .Select(s => s.Trim())
             .ToList();
 
+        var tournamentIdStr = modular11Config["TournamentId"] ?? TournamentConstants.AcademyTournamentId.ToString();
         var settings = new Modular11Settings
         {
-            TournamentId = modular11Config["TournamentId"] ?? TournamentConstants.AcademyTournamentId,
+            TournamentId = int.Parse(tournamentIdStr),
             Gender = modular11Config["Gender"] ?? Modular11ApiConstants.GenderMale,
             Status = modular11Config["Status"] ?? Modular11ApiConstants.StatusScheduled,
             MatchType = modular11Config["MatchType"] ?? Modular11ApiConstants.MatchType,

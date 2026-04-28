@@ -27,7 +27,7 @@ public class Modular11Client
     /// <summary>
     /// Get the tournament ID for this client instance.
     /// </summary>
-    public int TournamentId => int.TryParse(_settings.TournamentId, out var id) ? id : 0;
+    public int TournamentId => _settings.TournamentId;
 
     /// <summary>
     /// Fetch a page of match data from Modular11.
@@ -95,7 +95,7 @@ public class Modular11Client
         var sb = new StringBuilder();
 
         // Required parameters
-        var tournamentId = tournamentIdOverride ?? _settings.TournamentId;
+        var tournamentId = tournamentIdOverride ?? _settings.TournamentId.ToString();
         sb.Append($"tournament={Uri.EscapeDataString(tournamentId)}");
         sb.Append($"&gender={Uri.EscapeDataString(_settings.Gender)}");
         sb.Append($"&status={Uri.EscapeDataString(_settings.Status)}");
@@ -128,7 +128,7 @@ public class Modular11Client
 /// </summary>
 public class Modular11Settings
 {
-    public required string TournamentId { get; set; }
+    public required int TournamentId { get; set; }
     public required string Gender { get; set; }
     public required string Status { get; set; }
     public required string MatchType { get; set; }

@@ -79,7 +79,7 @@ foreach (var t in tournaments)
 
     var settings = new Modular11Settings
     {
-        TournamentId = t.TournamentId,
+        TournamentId = int.Parse(t.TournamentId),
         Gender = "1",
         Status = "scheduled",
         MatchType = "2",
@@ -371,7 +371,7 @@ static async Task RunFestIngestion(string[] args, Microsoft.Extensions.Configura
 
     var settings = new Modular11Settings
     {
-        TournamentId = tournamentId,
+        TournamentId = int.Parse(tournamentId),
         Gender = "1",
         Status = "scheduled",
         MatchType = "1",

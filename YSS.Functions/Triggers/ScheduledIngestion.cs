@@ -65,7 +65,7 @@ public class ScheduledIngestion
 
             try
             {
-                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, tournamentId: season.TournamentId);
+                await _orchestrator.RunAsync(ct, leagueName: season.LeagueName, startDate: start, endDate: end, tournamentId: season.TournamentId.ToString());
             }
             catch (Exception ex)
             {

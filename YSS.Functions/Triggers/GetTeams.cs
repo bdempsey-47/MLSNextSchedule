@@ -2,6 +2,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using YSS.Data;
+using YSS.Functions.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Web;
 
@@ -46,11 +47,7 @@ public class GetTeams
 
                 matchQuery = matchQuery
                     .Include(m => m.Competition)
-                    .Where(m =>
-                        (isAcademy && (m.Region.Division.TournamentId == 35 ||
-                            m.Competition.Name.StartsWith("AD"))) ||
-                        (isHomegrown && (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) &&
-                            !m.Competition.Name.StartsWith("AD"))));
+                    .FilterByProgram(isAcademy, isHomegrown);
             }
 
             // Filter by seasons

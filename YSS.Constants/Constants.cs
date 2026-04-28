@@ -31,12 +31,17 @@ public static class TournamentConstants
     /// <summary>
     /// Modular11 tournament ID for MLS Next Homegrown program.
     /// </summary>
-    public const string HomegrownTournamentId = "12";
+    public const int HomegrownTournamentId = 12;
 
     /// <summary>
     /// Modular11 tournament ID for MLS Next Academy program.
     /// </summary>
-    public const string AcademyTournamentId = "35";
+    public const int AcademyTournamentId = 35;
+
+    /// <summary>
+    /// Modular11 tournament ID for FEST (Pro Player Pathway).
+    /// </summary>
+    public const int FestTournamentId = 75;
 
     /// <summary>
     /// Modular11 tournament ID for NJ Cup Qualifier.

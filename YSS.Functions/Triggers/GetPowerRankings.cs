@@ -52,10 +52,8 @@ public class GetPowerRankings
                 .Include(m => m.Region)
                     .ThenInclude(r => r.Division)
                 .Include(m => m.Competition)
+                .FilterByProgram(isAcademy, !isAcademy)
                 .Where(m =>
-                    (isAcademy
-                        ? (m.Region.Division.TournamentId == 35 || m.Competition.Name.StartsWith("AD"))
-                        : (new[] { 12, 75 }.Contains(m.Region.Division.TournamentId) && !m.Competition.Name.StartsWith("AD"))) &&
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD" &&
                     m.MatchDateUtc >= oneYearAgo &&
