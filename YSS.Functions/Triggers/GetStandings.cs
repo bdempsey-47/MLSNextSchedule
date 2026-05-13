@@ -98,13 +98,13 @@ public class GetStandings
 
             if (isQoP)
             {
-                var rankings = ParseQoPRankings(html);
+                var rankings = await ParseQoPRankingsAsync(html);
                 _logger.LogInformation("Parsed {Count} QoP rankings", rankings.Count);
                 await response.WriteAsJsonAsync(new { Type = "qop", Rankings = rankings });
             }
             else
             {
-                var groups = ParseStandings(html);
+                var groups = await ParseStandingsAsync(html);
                 await ComputeSorsAsync(groups, program, ageGroup);
                 _logger.LogInformation("Parsed {Count} standing groups", groups.Count);
                 await response.WriteAsJsonAsync(new { Type = "standings", Groups = groups });
@@ -130,10 +130,10 @@ public class GetStandings
         return r;
     }
 
-    private List<StandingsGroupDto> ParseStandings(string html)
+    private async Task<List<StandingsGroupDto>> ParseStandingsAsync(string html)
     {
         var context  = BrowsingContext.New(Configuration.Default);
-        var document = context.OpenAsync(req => req.Content(html)).Result;
+        var document = await context.OpenAsync(req => req.Content(html));
 
         // Extract division heading names in DOM order → ["Central", "West", ...]
         var headingElements = document.QuerySelectorAll(".container-group-text p[data-title]");
@@ -243,10 +243,10 @@ public class GetStandings
         }
     }
 
-    private List<QoPRankingDto> ParseQoPRankings(string html)
+    private async Task<List<QoPRankingDto>> ParseQoPRankingsAsync(string html)
     {
         var context  = BrowsingContext.New(Configuration.Default);
-        var document = context.OpenAsync(req => req.Content(html)).Result;
+        var document = await context.OpenAsync(req => req.Content(html));
 
         // Extract division headings in DOM order for group → division mapping
         var headingElements = document.QuerySelectorAll(".container-group-text p[data-title]");

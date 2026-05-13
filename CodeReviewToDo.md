@@ -37,36 +37,16 @@ Converted `HomegrownTournamentId` (12) and `AcademyTournamentId` (35) from `stri
 ---
 
 ### 3. Fix sync-over-async in `GetStandings`
-**Files:** `GetStandings.cs` lines 137–138, 249
+**Status:** DONE (May 13, 2026)
 
-`.Result` on async task inside async method = thread-pool starvation risk.
-
-```csharp
-// Before
-var document = context.OpenAsync(req => req.Content(html)).Result;
-
-// After
-var document = await context.OpenAsync(req => req.Content(html));
-```
-
-Make `ParseStandings` and `ParseQoPRankings` return `async Task<List<...>>`.
+Renamed `ParseStandings` → `ParseStandingsAsync` and `ParseQoPRankings` → `ParseQoPRankingsAsync`. Both now return `async Task<List<...>>`. Replaced `.Result` with `await`. Updated callers in `Run`.
 
 ---
 
 ### 4. Switch URL param management to `useSearchParams`
-**Files:** `SchedulesPage.tsx` lines 13/46, `StandingsPage.tsx` lines 11/39, `AnalyticsPage.tsx` lines 51/78
+**Status:** DONE (May 13, 2026)
 
-All 3 pages use `new URLSearchParams(window.location.search)` + `history.replaceState`. Reads URL only at mount (not reactive), bypasses router history management, copy-pasted 3 times.
-
-```tsx
-// Before
-const params = new URLSearchParams(window.location.search)
-history.replaceState(null, '', `?${params.toString()}`)
-
-// After
-const [searchParams, setSearchParams] = useSearchParams()
-setSearchParams(params, { replace: true })
-```
+All 3 pages now use `useSearchParams` from react-router-dom. Removed `new URLSearchParams(window.location.search)` and `history.replaceState` from `SchedulesPage.tsx`, `StandingsPage.tsx`, `AnalyticsPage.tsx`. URL sync uses `setSearchParams(params, { replace: true })`.
 
 ---
 

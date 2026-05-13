@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { AlertCircle, Loader2, SearchX } from 'lucide-react'
 import LeagueSelector from '../components/LeagueSelector'
 import ProgramSelector from '../components/ProgramSelector'
@@ -9,20 +10,19 @@ import { Match, Program, Season } from '../types'
 import { mockMatches } from '../mockData'
 
 function SchedulesPage() {
-  // Parse URL query params so bookmarked/shared links restore filter state
-  const urlParams = new URLSearchParams(window.location.search)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [selectedPrograms, setSelectedPrograms] = useState<Program[]>(() => {
-    const programs = urlParams.getAll('program') as Program[]
+    const programs = searchParams.getAll('program') as Program[]
     return programs.length > 0 ? programs : ['homegrown']
   })
   const [selectedSeasons, setSelectedSeasons] = useState<Season[]>(() => {
-    const seasons = urlParams.getAll('season') as Season[]
+    const seasons = searchParams.getAll('season') as Season[]
     return seasons.length > 0 ? seasons : ['fall2025']
   })
-  const [selectedRegion, setSelectedRegion] = useState<string>(urlParams.get('region') || '')
-  const [selectedTeam, setSelectedTeam] = useState<string>(urlParams.get('team') || '')
-  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(urlParams.getAll('ageGroup'))
+  const [selectedRegion, setSelectedRegion] = useState<string>(searchParams.get('region') || '')
+  const [selectedTeam, setSelectedTeam] = useState<string>(searchParams.get('team') || '')
+  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>(searchParams.getAll('ageGroup'))
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
@@ -43,7 +43,7 @@ function SchedulesPage() {
     if (selectedRegion) params.set('region', selectedRegion)
     if (selectedTeam) params.set('team', selectedTeam)
     selectedAgeGroups.forEach(ag => params.append('ageGroup', ag))
-    history.replaceState(null, '', `?${params.toString()}`)
+    setSearchParams(params, { replace: true })
   }, [selectedPrograms, selectedSeasons, selectedRegion, selectedTeam, selectedAgeGroups])
 
   const handleProgramChange = (programs: Program[]) => {

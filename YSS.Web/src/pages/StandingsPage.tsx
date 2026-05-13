@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { AlertCircle } from 'lucide-react'
 import ProgramSelector from '../components/ProgramSelector'
 import { Program, AgeGroup, StandingsGroup, QoPRanking, Match } from '../types'
@@ -8,15 +9,15 @@ import './StandingsPage.css'
 type StandingsType = 'standings' | 'qop'
 
 function StandingsPage() {
-  const urlParams = new URLSearchParams(window.location.search)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [selectedProgram, setSelectedProgram] = useState<Program>(() => {
-    const p = urlParams.get('program') as Program
+    const p = searchParams.get('program') as Program
     return p === 'homegrown' || p === 'academy' ? p : 'homegrown'
   })
 
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>(urlParams.get('ageGroup') || '')
-  const [selectedRegion, setSelectedRegion]     = useState<string>(urlParams.get('region') || '')
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>(searchParams.get('ageGroup') || '')
+  const [selectedRegion, setSelectedRegion]     = useState<string>(searchParams.get('region') || '')
 
   const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([])
   const [allGroups, setAllGroups] = useState<StandingsGroup[]>([])
@@ -36,7 +37,7 @@ function StandingsPage() {
     params.set('program', selectedProgram)
     if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
     if (selectedRegion)   params.set('region', selectedRegion)
-    history.replaceState(null, '', `?${params.toString()}`)
+    setSearchParams(params, { replace: true })
   }, [selectedProgram, selectedAgeGroup, selectedRegion])
 
   // Fetch age groups on mount
