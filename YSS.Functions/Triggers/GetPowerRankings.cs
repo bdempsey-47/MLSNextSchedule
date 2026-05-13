@@ -56,8 +56,7 @@ public class GetPowerRankings
                 .Where(m =>
                     m.AgeGroup.Name == ageGroup &&
                     m.Score != null && m.Score != "" && m.Score != "TBD" &&
-                    m.MatchDateUtc >= oneYearAgo &&
-                    (string.IsNullOrEmpty(region) || m.Region.Name == region))
+                    m.MatchDateUtc >= oneYearAgo)
                 .OrderBy(m => m.MatchDateUtc)
                 .ToListAsync();
 
@@ -158,6 +157,11 @@ public class GetPowerRankings
 
             for (int i = 0; i < rankings.Count; i++)
                 rankings[i].Rank = i + 1;
+
+            // Apply region filter after global ranking so rank numbers are preserved.
+            // A team's global rank (and rank change) stays consistent regardless of region filter.
+            if (!string.IsNullOrEmpty(region))
+                rankings = rankings.Where(r => r.RegionNames.Contains(region)).ToList();
 
             var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
             response.Headers.Add("Access-Control-Allow-Origin", "*");

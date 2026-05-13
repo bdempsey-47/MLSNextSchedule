@@ -154,10 +154,11 @@ public class GetMatches
                     match.AwayTeam.EloRating = awayElo;
             }
 
-            // Compute ELO ranks scoped to the requested program(s) + age groups
-            // to avoid mixing Academy and Homegrown rankings together
+            // Compute ELO ranks using same eligibility rules as GetPowerRankings:
+            // program-scoped, last 12 months, GP >= 3 minimum.
+            var oneYearAgo = DateTime.UtcNow.AddYears(-1);
             IQueryable<YSS.Data.Entities.Match> programScopeQuery = _context.Matches
-                .Where(m => ageGroupIds.Contains(m.AgeGroupId));
+                .Where(m => ageGroupIds.Contains(m.AgeGroupId) && m.MatchDateUtc >= oneYearAgo);
 
             if (programs.Any())
             {
@@ -167,14 +168,27 @@ public class GetMatches
                 programScopeQuery = programScopeQuery.FilterByProgram(isAcademy2, isHomegrown2);
             }
 
-            var programTeamIds = await programScopeQuery
-                .Select(m => m.HomeTeamId)
-                .Union(programScopeQuery.Select(m => m.AwayTeamId))
+            var completedForScope = await programScopeQuery
+                .Where(m => m.Score != null && m.Score != "" && m.Score != "TBD")
+                .Select(m => new { m.HomeTeamId, m.AwayTeamId, m.AgeGroupId })
                 .ToListAsync();
 
+            var gpPerTeam = new Dictionary<(int teamId, int ageGroupId), int>();
+            foreach (var m in completedForScope)
+            {
+                var hk = (m.HomeTeamId, m.AgeGroupId);
+                var ak = (m.AwayTeamId, m.AgeGroupId);
+                gpPerTeam[hk] = gpPerTeam.GetValueOrDefault(hk) + 1;
+                gpPerTeam[ak] = gpPerTeam.GetValueOrDefault(ak) + 1;
+            }
+
+            var eligibleTeamIds = gpPerTeam
+                .Where(kvp => kvp.Value >= 3)
+                .Select(kvp => kvp.Key.teamId)
+                .ToHashSet();
+
             var allElosForAgeGroups = await _context.TeamAgeGroupElos
-                .Where(e => ageGroupIds.Contains(e.AgeGroupId) &&
-                            (!programs.Any() || programTeamIds.Contains(e.TeamId)))
+                .Where(e => ageGroupIds.Contains(e.AgeGroupId) && eligibleTeamIds.Contains(e.TeamId))
                 .ToListAsync();
 
             var rankLookup = new Dictionary<(int teamId, int ageGroupId), (int rank, int total)>();

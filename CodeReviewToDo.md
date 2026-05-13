@@ -50,12 +50,15 @@ All 3 pages now use `useSearchParams` from react-router-dom. Removed `new URLSea
 
 ---
 
-### 5. Store ELO rank in `TeamAgeGroupElo` table
-**Files:** `GetMatches.cs` lines 163–216, `EloRecomputeService.cs`
+### 5. Fix ELO rank mismatch between MatchCard and Analytics
+**Status:** DONE (May 13, 2026)
 
-`GetMatches` runs full ELO rank computation scan on every request — loads all team IDs + all ELO records per request. Also produces different rank values than `GetPowerRankings` (different scope filters), which is the rank-mismatch bug.
+Root cause: `GetMatches` ranked ALL teams (no GP minimum, no time window); `GetPowerRankings` requires GP ≥ 3 + last 12 months. No DB change needed.
 
-**Fix:** Add `Rank` column to `TeamAgeGroupElo`, compute+store nightly in `EloRecomputeService`. `GetMatches` reads stored rank via single join instead of full scan.
+Fixed `GetMatches.cs` rank computation to match `GetPowerRankings` rules:
+- Added 1-year window (`MatchDateUtc >= oneYearAgo`)
+- Count GP per team from completed matches; filter to GP ≥ 3 before ranking
+- Both endpoints now rank the same eligible pool → consistent rank shown in MatchCard and Analytics
 
 ---
 
