@@ -7,6 +7,7 @@ import '../components/SeasonSelector.css'
 import './AnalyticsPage.css'
 
 interface CombinedTeamRow {
+  rank: number
   teamName: string
   logoUrl?: string
   regionName: string
@@ -241,6 +242,7 @@ function AnalyticsPage() {
   ).map(team => {
     const elo = eloByTeam.get(team.teamName)
     return {
+      rank: elo?.rank ?? 0,
       teamName: team.teamName,
       logoUrl: team.logoUrl,
       regionName: team.regionName,
@@ -364,7 +366,7 @@ function AnalyticsPage() {
                     className={`${idx % 2 === 0 ? 'even' : 'odd'} analytics-team-row${expandedTeam === team.teamName ? ' expanded' : ''}`}
                     onClick={() => handleTeamClick(team.teamName)}
                   >
-                    <td className="col-rank">{idx + 1}</td>
+                    <td className="col-rank">{team.rank || '—'}</td>
                     <td className="col-team">
                       <div className="team-cell-inner">
                         <span className={`analytics-chevron${expandedTeam === team.teamName ? ' open' : ''}`}>▶</span>
