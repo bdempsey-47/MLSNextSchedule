@@ -142,69 +142,71 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
 {
     if (args.Length < 2 || !int.TryParse(args[1], out var eventId))
     {
-        Console.WriteLine("Usage: dotnet run -- --event <eventId> [sessionToken]");
+        Console.WriteLine("Usage: dotnet run -- --event <eventId>");
         return;
     }
 
-    // Optional session token — required to fetch the authenticated event page
-    var sessionToken = args.Length > 2 ? args[2] : null;
-    if (string.IsNullOrEmpty(sessionToken))
+    // Add new events here when page auto-discovery isn't available (page requires auth)
+    var knownEvents = new Dictionary<int, (string Title, Dictionary<string, List<string>> BracketConfig)>
     {
-        Console.Write("Paste Modular11 session token (_token value, or leave blank to try unauthenticated): ");
-        var input = Console.ReadLine()?.Trim();
-        if (!string.IsNullOrEmpty(input)) sessionToken = input;
-    }
+        [87] = ("MLS Next Cup", new()
+        {
+            ["21"] = ["championship", "premier", "showcase"],
+            ["22"] = ["championship", "premier", "showcase"],
+            ["33"] = ["homegrown", "academy", "hdshowcase", "adshowcase"],
+            ["14"] = ["homegrown", "academy", "hdshowcase", "adshowcase"],
+            ["15"] = ["homegrown", "academy", "hdshowcase", "adshowcase"],
+            ["26"] = ["homegrown", "academy", "hdshowcase", "adshowcase"],
+        }),
+    };
 
-    var cookieContainer = new System.Net.CookieContainer();
     using var httpClient = new HttpClient(new HttpClientHandler
     {
         AutomaticDecompression = System.Net.DecompressionMethods.GZip
             | System.Net.DecompressionMethods.Deflate
-            | System.Net.DecompressionMethods.Brotli,
-        CookieContainer = cookieContainer,
-        UseCookies = true
+            | System.Net.DecompressionMethods.Brotli
     });
-
-    if (!string.IsNullOrEmpty(sessionToken))
-    {
-        cookieContainer.Add(new Uri("https://www.modular11.com"), new System.Net.Cookie("_token", sessionToken));
-        httpClient.DefaultRequestHeaders.Add("x-csrf-token", sessionToken);
-    }
 
     Console.WriteLine($"=== Generic Event Ingestion: event {eventId} ===");
 
-    // Step A: Fetch event page and extract bracket config
-    string pageUrl = $"https://www.modular11.com/events/event/view/groupplay/{eventId}";
-    Console.WriteLine($"Fetching event page: {pageUrl}");
-    string pageHtml;
-    try
-    {
-        var pageRequest = new HttpRequestMessage(HttpMethod.Get, pageUrl);
-        pageRequest.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        pageRequest.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36");
-        var pageResponse = await httpClient.SendAsync(pageRequest);
-        pageResponse.EnsureSuccessStatusCode();
-        pageHtml = await pageResponse.Content.ReadAsStringAsync();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"ERROR fetching event page: {ex.Message}");
-        return;
-    }
+    // Resolve title and bracket config — known events take priority over page scraping
+    string eventTitle;
+    Dictionary<string, List<string>> bracketConfig;
 
-    var eventTitle = ExtractEventTitle(pageHtml);
-    Console.WriteLine($"Event title: \"{eventTitle}\"");
-
-    var bracketConfig = ExtractBracketConfig(pageHtml);
-    if (bracketConfig.Count == 0)
+    if (knownEvents.TryGetValue(eventId, out var known))
     {
-        Console.WriteLine("ERROR: Could not parse bracketConfig from page.");
-        Console.WriteLine("The page likely requires authentication. Provide your Modular11 session token:");
-        Console.WriteLine("  dotnet run -- --event {eventId} <sessionToken>");
-        Console.WriteLine("Get _token from browser DevTools → Application → Cookies → modular11.com");
-        return;
+        eventTitle = known.Title;
+        bracketConfig = known.BracketConfig;
+        Console.WriteLine($"Using hardcoded config for event {eventId}: \"{eventTitle}\"");
     }
-    Console.WriteLine($"Bracket config: {bracketConfig.Count} age groups found");
+    else
+    {
+        // Attempt auto-discovery from public page HTML
+        string pageUrl = $"https://www.modular11.com/events/event/view/groupplay/{eventId}";
+        Console.WriteLine($"Fetching event page: {pageUrl}");
+        string pageHtml;
+        try
+        {
+            pageHtml = await httpClient.GetStringAsync(pageUrl);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR fetching event page: {ex.Message}");
+            return;
+        }
+
+        eventTitle = ExtractEventTitle(pageHtml);
+        bracketConfig = ExtractBracketConfig(pageHtml);
+
+        if (bracketConfig.Count == 0)
+        {
+            Console.WriteLine($"ERROR: Could not parse bracketConfig for event {eventId}.");
+            Console.WriteLine("Add this event to the KnownEvents dictionary in Program.cs.");
+            return;
+        }
+
+        Console.WriteLine($"Event title: \"{eventTitle}\" — {bracketConfig.Count} age groups found");
+    }
 
     var credential = new Azure.Identity.AzureCliCredential();
     var connectionString = config.GetConnectionString("DefaultConnection");
