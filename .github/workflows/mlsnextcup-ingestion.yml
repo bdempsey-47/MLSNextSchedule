@@ -18,7 +18,7 @@ jobs:
         run: |
           DATE_EDT=$(TZ="America/New_York" date +%Y-%m-%d)
           echo "date_edt=$DATE_EDT" >> $GITHUB_OUTPUT
-          if [[ "$DATE_EDT" < "2026-05-23" || "$DATE_EDT" > "2026-06-04" ]]; then
+          if [[ "$DATE_EDT" < "2026-05-19" || "$DATE_EDT" > "2026-06-04" ]]; then
             echo "Outside MLS Next Cup window ($DATE_EDT) — skipping."
             echo "skip=true" >> $GITHUB_OUTPUT
           else
