@@ -50,4 +50,4 @@ jobs:
 
       - name: Run MLS Next Cup ingestion
         if: steps.check.outputs.skip == 'false'
-        run: dotnet run --project YSS.Verification -- --event 87
+        run: dotnet run --project YSS.Verification -- --event 87 "${{ secrets.MODULAR11_SESSION_TOKEN }}"

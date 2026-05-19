@@ -142,16 +142,34 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
 {
     if (args.Length < 2 || !int.TryParse(args[1], out var eventId))
     {
-        Console.WriteLine("Usage: dotnet run -- --event <eventId>");
+        Console.WriteLine("Usage: dotnet run -- --event <eventId> [sessionToken]");
         return;
     }
 
+    // Optional session token — required to fetch the authenticated event page
+    var sessionToken = args.Length > 2 ? args[2] : null;
+    if (string.IsNullOrEmpty(sessionToken))
+    {
+        Console.Write("Paste Modular11 session token (_token value, or leave blank to try unauthenticated): ");
+        var input = Console.ReadLine()?.Trim();
+        if (!string.IsNullOrEmpty(input)) sessionToken = input;
+    }
+
+    var cookieContainer = new System.Net.CookieContainer();
     using var httpClient = new HttpClient(new HttpClientHandler
     {
         AutomaticDecompression = System.Net.DecompressionMethods.GZip
             | System.Net.DecompressionMethods.Deflate
-            | System.Net.DecompressionMethods.Brotli
+            | System.Net.DecompressionMethods.Brotli,
+        CookieContainer = cookieContainer,
+        UseCookies = true
     });
+
+    if (!string.IsNullOrEmpty(sessionToken))
+    {
+        cookieContainer.Add(new Uri("https://www.modular11.com"), new System.Net.Cookie("_token", sessionToken));
+        httpClient.DefaultRequestHeaders.Add("x-csrf-token", sessionToken);
+    }
 
     Console.WriteLine($"=== Generic Event Ingestion: event {eventId} ===");
 
@@ -161,7 +179,12 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
     string pageHtml;
     try
     {
-        pageHtml = await httpClient.GetStringAsync(pageUrl);
+        var pageRequest = new HttpRequestMessage(HttpMethod.Get, pageUrl);
+        pageRequest.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        pageRequest.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36");
+        var pageResponse = await httpClient.SendAsync(pageRequest);
+        pageResponse.EnsureSuccessStatusCode();
+        pageHtml = await pageResponse.Content.ReadAsStringAsync();
     }
     catch (Exception ex)
     {
@@ -175,7 +198,10 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
     var bracketConfig = ExtractBracketConfig(pageHtml);
     if (bracketConfig.Count == 0)
     {
-        Console.WriteLine("ERROR: Could not parse bracketConfig from page. Check HTML structure.");
+        Console.WriteLine("ERROR: Could not parse bracketConfig from page.");
+        Console.WriteLine("The page likely requires authentication. Provide your Modular11 session token:");
+        Console.WriteLine("  dotnet run -- --event {eventId} <sessionToken>");
+        Console.WriteLine("Get _token from browser DevTools → Application → Cookies → modular11.com");
         return;
     }
     Console.WriteLine($"Bracket config: {bracketConfig.Count} age groups found");
