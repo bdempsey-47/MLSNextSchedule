@@ -20,6 +20,13 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+// Check for --event mode (generic event ingestion)
+if (args.Length > 0 && args[0] == "--event")
+{
+    await RunEventIngestion(args, config);
+    return;
+}
+
 // Check for --fest mode
 if (args.Length > 0 && args[0] == "--fest")
 {
@@ -128,6 +135,243 @@ Console.WriteLine("\n=== All ingestion runs complete ===");
     var teamsWithLogos = await db.Teams.Where(t => t.LogoUrl != null).CountAsync();
     Console.WriteLine($"\nMatches: {matchCount}  |  Teams: {teamCount}  |  With logos: {teamsWithLogos}");
     await sp.DisposeAsync();
+}
+
+// --- Generic event ingestion helper ---
+static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configuration.IConfiguration config)
+{
+    if (args.Length < 2 || !int.TryParse(args[1], out var eventId))
+    {
+        Console.WriteLine("Usage: dotnet run -- --event <eventId>");
+        return;
+    }
+
+    using var httpClient = new HttpClient(new HttpClientHandler
+    {
+        AutomaticDecompression = System.Net.DecompressionMethods.GZip
+            | System.Net.DecompressionMethods.Deflate
+            | System.Net.DecompressionMethods.Brotli
+    });
+
+    Console.WriteLine($"=== Generic Event Ingestion: event {eventId} ===");
+
+    // Step A: Fetch event page and extract bracket config
+    string pageUrl = $"https://www.modular11.com/events/event/view/groupplay/{eventId}";
+    Console.WriteLine($"Fetching event page: {pageUrl}");
+    string pageHtml;
+    try
+    {
+        pageHtml = await httpClient.GetStringAsync(pageUrl);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"ERROR fetching event page: {ex.Message}");
+        return;
+    }
+
+    var eventTitle = ExtractEventTitle(pageHtml);
+    Console.WriteLine($"Event title: \"{eventTitle}\"");
+
+    var bracketConfig = ExtractBracketConfig(pageHtml);
+    if (bracketConfig.Count == 0)
+    {
+        Console.WriteLine("ERROR: Could not parse bracketConfig from page. Check HTML structure.");
+        return;
+    }
+    Console.WriteLine($"Bracket config: {bracketConfig.Count} age groups found");
+
+    var credential = new Azure.Identity.AzureCliCredential();
+    var connectionString = config.GetConnectionString("DefaultConnection");
+    var isAzure = string.IsNullOrEmpty(connectionString) || connectionString.Contains("windows.net");
+
+    var ageGroupMap = new Dictionary<string, string>
+    {
+        ["21"] = "U13",
+        ["22"] = "U14",
+        ["33"] = "U15",
+        ["14"] = "U16",
+        ["15"] = "U17",
+        ["26"] = "U18/19"
+    };
+
+    var parser = new ScheduleParser(LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ScheduleParser>());
+    var seenMatchIds = new HashSet<string>();
+    var totalStored = 0;
+
+    // Step B: For each age group, iterate all its brackets
+    foreach (var (ageUid, bracketNickNames) in bracketConfig)
+    {
+        if (!ageGroupMap.TryGetValue(ageUid, out var ageGroupName))
+        {
+            Console.WriteLine($"  Skipping unknown age UID: {ageUid}");
+            continue;
+        }
+
+        Console.WriteLine($"\n=== Processing {ageGroupName} (UID={ageUid}) — brackets: {string.Join(", ", bracketNickNames)} ===");
+
+        var ageGroupMatches = new List<ParsedMatch>();
+
+        foreach (var nickName in bracketNickNames)
+        {
+            var divisionOverride = DeriveDivisionFromBracket(nickName);
+            Console.WriteLine($"\n  Bracket: {nickName} → {divisionOverride}");
+
+            // Discover teams for this age+bracket
+            string teamsUrl = $"https://www.modular11.com/events/event/get_teams?tournament_type=event&UID_age={ageUid}&UID_gender=1&UID_event={eventId}&list_type={nickName}&open_page=1";
+            var teamRequest = new HttpRequestMessage(HttpMethod.Get, teamsUrl);
+            teamRequest.Headers.Add("x-request-type", "ajax");
+            teamRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+            teamRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+            HttpResponseMessage teamsResponse;
+            try
+            {
+                teamsResponse = await httpClient.SendAsync(teamRequest);
+                teamsResponse.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  ⚠ Skipping {ageGroupName}/{nickName}: get_teams failed — {ex.Message}");
+                continue;
+            }
+
+            var teamsHtml = await teamsResponse.Content.ReadAsStringAsync();
+            var teamIds = ExtractTeamIdsFromGroupPlayHtml(teamsHtml);
+
+            if (teamIds.Count == 0)
+            {
+                Console.WriteLine($"  ⚠ No teams found for {ageGroupName}/{nickName}");
+                continue;
+            }
+
+            Console.WriteLine($"  ✓ {teamIds.Count} teams found");
+
+            // Fetch matches per team
+            foreach (var teamId in teamIds)
+            {
+                string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=&age={ageUid}&tournament={eventId}&group=&list_type={nickName}";
+                var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
+                matchRequest.Headers.Add("x-request-type", "ajax");
+                matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+                matchRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+                try
+                {
+                    await Task.Delay(Random.Shared.Next(500, 1500));
+                    var matchResponse = await httpClient.SendAsync(matchRequest);
+                    matchResponse.EnsureSuccessStatusCode();
+                    var matchHtml = await matchResponse.Content.ReadAsStringAsync();
+
+                    var parsedMatches = parser.ParseMatches(matchHtml, eventId);
+                    foreach (var match in parsedMatches)
+                    {
+                        match.Division = eventTitle;
+                        match.AgeGroup = ageGroupName;
+                        match.DivisionNameOverride = divisionOverride;
+                        if (seenMatchIds.Add(match.MatchId))
+                            ageGroupMatches.Add(match);
+                    }
+
+                    Console.WriteLine($"    Team {teamId}: {parsedMatches.Count} matches");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"    Team {teamId}: ERROR — {ex.Message}");
+                }
+            }
+        }
+
+        if (ageGroupMatches.Count == 0)
+        {
+            Console.WriteLine($"⚠ {ageGroupName}: No matches parsed, skipping upsert.");
+            continue;
+        }
+
+        // Step C: Upsert with fresh token
+        Console.WriteLine($"\nUpserting {ageGroupMatches.Count} {ageGroupName} matches...");
+        Action<DbContextOptionsBuilder> configureDb = options =>
+        {
+            if (isAzure)
+            {
+                var tokenResult = credential.GetToken(
+                    new Azure.Core.TokenRequestContext(["https://database.windows.net/.default"]),
+                    CancellationToken.None);
+                var connection = new SqlConnection(
+                    "Server=tcp:yss-sql-prod.database.windows.net,1433;Initial Catalog=yss-prod;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                connection.AccessToken = tokenResult.Token;
+                options.UseSqlServer(connection);
+            }
+            else
+            {
+                options.UseSqlServer(connectionString);
+            }
+        };
+
+        var services = new ServiceCollection();
+        services.AddDbContext<AppDbContext>(configureDb);
+        services.AddScoped<MatchUpsertService>();
+        services.AddLogging(b => { b.AddConsole(); b.SetMinimumLevel(LogLevel.Warning); });
+
+        await using var sp = services.BuildServiceProvider();
+        var upsertService = sp.GetRequiredService<MatchUpsertService>();
+        try
+        {
+            await upsertService.UpsertMatchesAsync(ageGroupMatches, "MLS Next", CancellationToken.None);
+            totalStored += ageGroupMatches.Count;
+            Console.WriteLine($"✅ {ageGroupName}: {ageGroupMatches.Count} matches stored.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ {ageGroupName} upsert failed: {ex.Message}");
+        }
+    }
+
+    Console.WriteLine($"\n=== Done: {totalStored} total matches stored across all age groups ===");
+}
+
+static string DeriveDivisionFromBracket(string nickName) => nickName switch
+{
+    "homegrown" or "hdshowcase" => "Homegrown",
+    _ => "Academy"
+};
+
+static string ExtractEventTitle(string html)
+{
+    var m = System.Text.RegularExpressions.Regex.Match(html, @"<title>([^<]+)</title>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    if (!m.Success) return "Event";
+    var raw = System.Net.WebUtility.HtmlDecode(m.Groups[1].Value.Trim());
+    var pipeIdx = raw.IndexOf('|');
+    return pipeIdx > 0 ? raw[..pipeIdx].Trim() : raw;
+}
+
+static Dictionary<string, List<string>> ExtractBracketConfig(string html)
+{
+    var result = new Dictionary<string, List<string>>();
+    try
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(
+            html,
+            @"let\s+bracketConfig\s*=\s*(\{[^;]+\})\s*;",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
+
+        if (!m.Success)
+        {
+            Console.WriteLine("  Could not locate bracketConfig in page HTML.");
+            return result;
+        }
+
+        var json = m.Groups[1].Value;
+        var parsed = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string[]>>(json);
+        if (parsed == null) return result;
+
+        foreach (var (ageUid, nickNames) in parsed)
+            result[ageUid] = new List<string>(nickNames);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"  ERROR parsing bracketConfig: {ex.Message}");
+    }
+    return result;
 }
 
 // --- NJ Cup ingestion helper ---

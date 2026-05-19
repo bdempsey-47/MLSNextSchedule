@@ -69,11 +69,11 @@ public class MatchUpsertService
                 if (existingMatch != null)
                 {
                     // Update all mutable fields on existing match
-                    var program = DeriveProgram(parsedMatch.TournamentId, parsedMatch.Competition);
+                    var program = DeriveProgram(parsedMatch.TournamentId, parsedMatch.Competition, parsedMatch.DivisionNameOverride);
                     var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, program, ct);
                     var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, program, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
-                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, ct);
+                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, parsedMatch.DivisionNameOverride, ct);
                     var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
                     var competition = await LookupOrCreateCompetitionAsync(parsedMatch.Competition, ct);
                     var ageGroup = await LookupOrCreateAgeGroupAsync(parsedMatch.AgeGroup, ct);
@@ -93,11 +93,11 @@ public class MatchUpsertService
                 else
                 {
                     // Create new match with lookup-or-create for reference entities
-                    var program = DeriveProgram(parsedMatch.TournamentId, parsedMatch.Competition);
+                    var program = DeriveProgram(parsedMatch.TournamentId, parsedMatch.Competition, parsedMatch.DivisionNameOverride);
                     var homeTeam = await LookupOrCreateTeamAsync(parsedMatch.HomeTeamName, parsedMatch.HomeTeamLogoUrl, program, ct);
                     var awayTeam = await LookupOrCreateTeamAsync(parsedMatch.AwayTeamName, parsedMatch.AwayTeamLogoUrl, program, ct);
                     var venue = await LookupOrCreateVenueAsync(parsedMatch.VenueName, ct);
-                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, ct);
+                    var division = await LookupOrCreateDivisionAsync(parsedMatch.TournamentId, leagueName, parsedMatch.DivisionNameOverride, ct);
                     var region = await LookupOrCreateRegionAsync(division.Id, parsedMatch.Division, ct);
                     var competition = await LookupOrCreateCompetitionAsync(parsedMatch.Competition, ct);
                     var ageGroup = await LookupOrCreateAgeGroupAsync(parsedMatch.AgeGroup, ct);
@@ -142,11 +142,13 @@ public class MatchUpsertService
             newMatches, updatedMatches, duplicateMatches);
     }
 
-    private static string DeriveProgram(int tournamentId, string competitionName)
+    private static string DeriveProgram(int tournamentId, string competitionName, string? divisionNameOverride)
     {
+        if (divisionNameOverride == "Homegrown") return ProgramConstants.Homegrown;
+        if (divisionNameOverride == "Academy") return ProgramConstants.Academy;
         if (competitionName.StartsWith("AD")) return ProgramConstants.Academy;
         if (tournamentId == TournamentConstants.AcademyTournamentId) return ProgramConstants.Academy;
-        if (tournamentId == TournamentConstants.NjCupQualifierTournamentId) return ProgramConstants.Academy;  // NJ Cup Qualifier
+        if (tournamentId == TournamentConstants.NjCupQualifierTournamentId) return ProgramConstants.Academy;
         return ProgramConstants.Homegrown;
     }
 
@@ -207,19 +209,20 @@ public class MatchUpsertService
         return venue;
     }
 
-    private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, string leagueName, CancellationToken ct)
+    private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, string leagueName, string? divisionNameOverride, CancellationToken ct)
     {
         if (_divisionCache.TryGetValue(tournamentId, out var cached))
             return cached;
 
-        // Map tournament ID to division name
+        // Map tournament ID to division name; fall back to divisionNameOverride for generic events
         var divisionName = tournamentId switch
         {
             _ when tournamentId == TournamentConstants.HomegrownTournamentId => "Homegrown",
             _ when tournamentId == TournamentConstants.AcademyTournamentId => "Academy",
-            _ when tournamentId == TournamentConstants.FestTournamentId => "Homegrown",    // FEST (Pro Player Pathway)
-            _ when tournamentId == TournamentConstants.NjCupQualifierTournamentId => "Academy",  // NJ Cup Qualifier
-            _ => throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
+            _ when tournamentId == TournamentConstants.FestTournamentId => "Homegrown",
+            _ when tournamentId == TournamentConstants.NjCupQualifierTournamentId => "Academy",
+            _ => divisionNameOverride
+                ?? throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };
 
         // First try exact tournamentId, then fall back to division name (e.g. 75 shares "Homegrown" with 12)

@@ -18,5 +18,7 @@ public class ParsedMatch
     public required int TournamentId { get; set; } // 12 = Homegrown, 35 = Academy
     public required string VenueName { get; set; }
     public string? Score { get; set; }
+    // For event-type tournaments: overrides the tournament-ID switch in MatchUpsertService ("Academy" or "Homegrown")
+    public string? DivisionNameOverride { get; set; }
 }
 
