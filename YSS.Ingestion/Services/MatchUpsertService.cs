@@ -19,7 +19,7 @@ public class MatchUpsertService
     // Per-run in-memory caches — avoids repeated DB lookups for the same reference entities
     private readonly Dictionary<(string Name, string Program), Team> _teamCache = new();
     private readonly Dictionary<string, Venue> _venueCache = new();
-    private readonly Dictionary<int, Division> _divisionCache = new();
+    private readonly Dictionary<(int TournamentId, string DivisionName), Division> _divisionCache = new();
     private readonly Dictionary<(int DivisionId, string Name), Region> _regionCache = new();
     private readonly Dictionary<string, Competition> _competitionCache = new();
     private readonly Dictionary<string, AgeGroup> _ageGroupCache = new();
@@ -211,9 +211,6 @@ public class MatchUpsertService
 
     private async Task<Division> LookupOrCreateDivisionAsync(int tournamentId, string leagueName, string? divisionNameOverride, CancellationToken ct)
     {
-        if (_divisionCache.TryGetValue(tournamentId, out var cached))
-            return cached;
-
         // Map tournament ID to division name; fall back to divisionNameOverride for generic events
         var divisionName = tournamentId switch
         {
@@ -224,6 +221,12 @@ public class MatchUpsertService
             _ => divisionNameOverride
                 ?? throw new InvalidOperationException($"Unknown tournament ID: {tournamentId}")
         };
+
+        // Cache key includes divisionName so event tournaments with multiple bracket types
+        // (e.g. event 87 has both Academy and Homegrown brackets) don't collide
+        var cacheKey = (tournamentId, divisionName);
+        if (_divisionCache.TryGetValue(cacheKey, out var cached))
+            return cached;
 
         // First try exact tournamentId, then fall back to division name (e.g. 75 shares "Homegrown" with 12)
         var division = await _dbContext.Divisions
@@ -256,7 +259,7 @@ public class MatchUpsertService
             _logger.LogInformation("Created {DivisionName} division for tournament {TournamentId} in league {LeagueName}", divisionName, tournamentId, leagueName);
         }
 
-        _divisionCache[tournamentId] = division;
+        _divisionCache[cacheKey] = division;
         return division;
     }
 
