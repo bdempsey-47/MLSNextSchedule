@@ -264,47 +264,77 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
             }
 
             var teamsHtml = await teamsResponse.Content.ReadAsStringAsync();
-            var teamIds = ExtractTeamIdsFromGroupPlayHtml(teamsHtml);
 
-            if (teamIds.Count == 0)
+            // Detect response format and extract matches accordingly:
+            //   Group play (showcase): get_teams returns full match HTML — parse directly
+            //   Knockout (championship/premier): get_teams returns TournamentBracket JSON — extract team IDs, then fetch per-team
+            //   NJ Cup style: get_teams returns matchLists JS — extract team IDs, then fetch per-team
+            if (teamsHtml.Contains("events-matches-block") || teamsHtml.Contains("container-row"))
             {
-                Console.WriteLine($"  ⚠ No teams found for {ageGroupName}/{nickName}");
-                continue;
-            }
-
-            Console.WriteLine($"  ✓ {teamIds.Count} teams found");
-
-            // Fetch matches per team
-            foreach (var teamId in teamIds)
-            {
-                string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=&age={ageUid}&tournament={eventId}&group=&list_type={nickName}";
-                var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
-                matchRequest.Headers.Add("x-request-type", "ajax");
-                matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
-                matchRequest.Headers.Add("accept", "text/html, */*; q=0.01");
-
-                try
+                // Group play: matches are already in the response HTML
+                var directMatches = parser.ParseMatches(teamsHtml, eventId);
+                Console.WriteLine($"  ✓ Group play format — {directMatches.Count} matches parsed directly");
+                foreach (var match in directMatches)
                 {
-                    await Task.Delay(Random.Shared.Next(500, 1500));
-                    var matchResponse = await httpClient.SendAsync(matchRequest);
-                    matchResponse.EnsureSuccessStatusCode();
-                    var matchHtml = await matchResponse.Content.ReadAsStringAsync();
-
-                    var parsedMatches = parser.ParseMatches(matchHtml, eventId);
-                    foreach (var match in parsedMatches)
-                    {
-                        match.Division = eventTitle;
-                        match.AgeGroup = ageGroupName;
-                        match.DivisionNameOverride = divisionOverride;
-                        if (seenMatchIds.Add(match.MatchId))
-                            ageGroupMatches.Add(match);
-                    }
-
-                    Console.WriteLine($"    Team {teamId}: {parsedMatches.Count} matches");
+                    match.Division = eventTitle;
+                    match.AgeGroup = ageGroupName;
+                    match.DivisionNameOverride = divisionOverride;
+                    if (seenMatchIds.Add(match.MatchId))
+                        ageGroupMatches.Add(match);
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+                // Knockout or NJ Cup style — discover team IDs then fetch per-team
+                List<int> teamIds;
+                if (teamsHtml.Contains("TournamentBracket"))
                 {
-                    Console.WriteLine($"    Team {teamId}: ERROR — {ex.Message}");
+                    teamIds = ExtractTeamIdsFromTournamentBracket(teamsHtml);
+                    Console.WriteLine($"  ✓ Knockout format — {teamIds.Count} teams extracted from bracket JSON");
+                }
+                else
+                {
+                    teamIds = ExtractTeamIdsFromGroupPlayHtml(teamsHtml);
+                    Console.WriteLine($"  ✓ Group play matchLists format — {teamIds.Count} teams found");
+                }
+
+                if (teamIds.Count == 0)
+                {
+                    Console.WriteLine($"  ⚠ No teams found for {ageGroupName}/{nickName}");
+                    continue;
+                }
+
+                foreach (var teamId in teamIds)
+                {
+                    string matchUrl = $"https://www.modular11.com/events/event/get_partial_matches_by_team?open_page=1&pagination_data=%5B{teamId}%5D&bracket=&age={ageUid}&tournament={eventId}&group=&list_type={nickName}";
+                    var matchRequest = new HttpRequestMessage(HttpMethod.Get, matchUrl);
+                    matchRequest.Headers.Add("x-request-type", "ajax");
+                    matchRequest.Headers.Add("x-requested-with", "XMLHttpRequest");
+                    matchRequest.Headers.Add("accept", "text/html, */*; q=0.01");
+
+                    try
+                    {
+                        await Task.Delay(Random.Shared.Next(500, 1500));
+                        var matchResponse = await httpClient.SendAsync(matchRequest);
+                        matchResponse.EnsureSuccessStatusCode();
+                        var matchHtml = await matchResponse.Content.ReadAsStringAsync();
+
+                        var parsedMatches = parser.ParseMatches(matchHtml, eventId);
+                        foreach (var match in parsedMatches)
+                        {
+                            match.Division = eventTitle;
+                            match.AgeGroup = ageGroupName;
+                            match.DivisionNameOverride = divisionOverride;
+                            if (seenMatchIds.Add(match.MatchId))
+                                ageGroupMatches.Add(match);
+                        }
+
+                        Console.WriteLine($"    Team {teamId}: {parsedMatches.Count} matches");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"    Team {teamId}: ERROR — {ex.Message}");
+                    }
                 }
             }
         }
@@ -400,6 +430,22 @@ static Dictionary<string, List<string>> ExtractBracketConfig(string html)
         Console.WriteLine($"  ERROR parsing bracketConfig: {ex.Message}");
     }
     return result;
+}
+
+static List<int> ExtractTeamIdsFromTournamentBracket(string html)
+{
+    var teamIds = new HashSet<int>();
+    var matches = System.Text.RegularExpressions.Regex.Matches(
+        html,
+        @"""UID_team_(?:home|away)"":""(\d+)""");
+    foreach (System.Text.RegularExpressions.Match m in matches)
+        if (int.TryParse(m.Groups[1].Value, out var id))
+            teamIds.Add(id);
+    if (teamIds.Count == 0)
+        Console.WriteLine("  No team IDs found in TournamentBracket JSON.");
+    else
+        Console.WriteLine($"  Extracted {teamIds.Count} team IDs from bracket JSON");
+    return teamIds.ToList();
 }
 
 // --- NJ Cup ingestion helper ---
