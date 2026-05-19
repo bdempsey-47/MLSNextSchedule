@@ -120,7 +120,7 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
             onClick={() => onBadgeClick?.('team', match.homeTeam.name)}
             title={onBadgeClick ? `Filter by ${match.homeTeam.name}` : undefined}
           >
-            {match.homeTeam.logoUrl
+            {match.homeTeam.logoUrl && match.homeTeam.name !== 'TBD'
               ? <img src={match.homeTeam.logoUrl} alt={match.homeTeam.name} className="team-logo" />
               : getInitials(match.homeTeam.name)
             }
@@ -163,7 +163,7 @@ export default function MatchCard({ match, program, onBadgeClick }: MatchCardPro
             onClick={() => onBadgeClick?.('team', match.awayTeam.name)}
             title={onBadgeClick ? `Filter by ${match.awayTeam.name}` : undefined}
           >
-            {match.awayTeam.logoUrl
+            {match.awayTeam.logoUrl && match.awayTeam.name !== 'TBD'
               ? <img src={match.awayTeam.logoUrl} alt={match.awayTeam.name} className="team-logo" />
               : getInitials(match.awayTeam.name)
             }
