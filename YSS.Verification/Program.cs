@@ -219,7 +219,7 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
         ["33"] = "U15",
         ["14"] = "U16",
         ["15"] = "U17",
-        ["26"] = "U18/19"
+        ["26"] = "U19"
     };
 
     var parser = new ScheduleParser(LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ScheduleParser>());
@@ -474,7 +474,7 @@ static async Task RunNjCupIngestion(string[] args, Microsoft.Extensions.Configur
         ["33"] = "U15",
         ["14"] = "U16",
         ["15"] = "U17",
-        ["26"] = "U18/19"
+        ["26"] = "U19"
     };
 
     var parser = new ScheduleParser(LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ScheduleParser>());
