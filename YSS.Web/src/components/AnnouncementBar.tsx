@@ -7,7 +7,7 @@ export default function AnnouncementBar() {
   const active = announcements.find(a =>
     a.enabled &&
     new Date() < new Date(a.expiresAt) &&
-    !localStorage.getItem(`announcement-dismissed-${a.id}`)
+    !sessionStorage.getItem(`announcement-dismissed-${a.id}`)
   )
 
   const [visible, setVisible] = useState(false)
@@ -25,7 +25,7 @@ export default function AnnouncementBar() {
   if (!active || !mounted) return null
 
   const dismiss = () => {
-    localStorage.setItem(`announcement-dismissed-${active.id}`, '1')
+    sessionStorage.setItem(`announcement-dismissed-${active.id}`, '1')
     setVisible(false)
   }
 
