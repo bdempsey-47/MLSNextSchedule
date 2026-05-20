@@ -321,13 +321,18 @@ function SchedulesPage() {
         </div>
       )}
 
-      {!loading && matches.length === 0 && !error && (
+      {filtersLoading && !loading && matches.length === 0 && (
+        <div className="loading-state">
+          <div className="loading-spinner" />
+          <p>Fetching data…</p>
+        </div>
+      )}
+
+      {!filtersLoading && !loading && matches.length === 0 && !error && (
         <div className="no-matches">
           <SearchX size={48} />
-          <p>{filtersLoading ? 'Fetching data…' : 'Select filters to view matches'}</p>
-          <span className="no-matches-hint">
-            {filtersLoading ? 'Loading regions and age groups' : 'Choose a program and season above to get started'}
-          </span>
+          <p>Select filters to view matches</p>
+          <span className="no-matches-hint">Choose a program and season above to get started</span>
         </div>
       )}
 
