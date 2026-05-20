@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Header from './components/Header'
 import NavMenu from './components/NavMenu'
+import AnnouncementBar from './components/AnnouncementBar'
 import HomePage from './pages/HomePage'
 import SchedulesPage from './pages/SchedulesPage'
 import StandingsPage from './pages/StandingsPage'
@@ -14,6 +15,7 @@ function App() {
   return (
     <Router>
       <div className="app">
+        <AnnouncementBar />
         <Header onMenuClick={() => setMenuOpen(true)} />
         <NavMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
