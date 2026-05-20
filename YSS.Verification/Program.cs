@@ -389,7 +389,7 @@ static async Task RunEventIngestion(string[] args, Microsoft.Extensions.Configur
 
 static string DeriveDivisionFromBracket(string nickName) => nickName switch
 {
-    "homegrown" or "hdshowcase" => "Homegrown",
+    "homegrown" or "hdshowcase" or "championship" or "premier" => "Homegrown",
     _ => "Academy"
 };
 
